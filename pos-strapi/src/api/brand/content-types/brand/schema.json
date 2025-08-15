@@ -1,0 +1,17 @@
+{
+  "collectionName": "brands",
+  "info": {
+    "singularName": "brand",
+    "pluralName": "brands",
+    "displayName": "Brand"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

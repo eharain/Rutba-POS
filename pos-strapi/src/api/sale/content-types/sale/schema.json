@@ -1,0 +1,63 @@
+{
+  "collectionName": "sales",
+  "info": {
+    "singularName": "sale",
+    "pluralName": "sales",
+    "displayName": "Sale"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "invoice_no": {
+      "type": "string",
+      "required": true
+    },
+    "sale_date": {
+      "type": "datetime",
+      "required": true
+    },
+    "subtotal": {
+      "type": "decimal"
+    },
+    "discount": {
+      "type": "decimal"
+    },
+    "tax": {
+      "type": "decimal"
+    },
+    "total": {
+      "type": "decimal",
+      "required": true
+    },
+    "payment_status": {
+      "type": "enumeration",
+      "enum": [
+        "Paid",
+        "Partial",
+        "Unpaid"
+      ],
+      "default": "Unpaid"
+    },
+    "customer": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::customer.customer"
+    },
+    "employee": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::employee.employee"
+    },
+    "items": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::sale-item.sale-item"
+    },
+    "payments": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::payment.payment"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "collectionName": "payments",
+  "info": {
+    "singularName": "payment",
+    "pluralName": "payments",
+    "displayName": "Payment"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "payment_method": {
+      "type": "enumeration",
+      "enum": [
+        "Cash",
+        "Card",
+        "Bank",
+        "Mobile Wallet"
+      ]
+    },
+    "amount": {
+      "type": "decimal"
+    },
+    "transaction_no": {
+      "type": "string"
+    },
+    "payment_date": {
+      "type": "datetime"
+    },
+    "sale": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::sale.sale"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "collectionName": "suppliers",
+  "info": {
+    "singularName": "supplier",
+    "pluralName": "suppliers",
+    "displayName": "Supplier"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "contact_person": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "address": {
+      "type": "text"
+    }
+  }
+}

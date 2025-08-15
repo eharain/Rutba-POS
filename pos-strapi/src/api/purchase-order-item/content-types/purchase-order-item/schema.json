@@ -1,0 +1,32 @@
+{
+  "collectionName": "purchase_order_items",
+  "info": {
+    "singularName": "purchase-order-item",
+    "pluralName": "purchase-order-items",
+    "displayName": "Purchase Order Item"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "quantity": {
+      "type": "integer"
+    },
+    "cost_price": {
+      "type": "decimal"
+    },
+    "total": {
+      "type": "decimal"
+    },
+    "purchase_order": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::purchase-order.purchase-order"
+    },
+    "product": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product.product"
+    }
+  }
+}

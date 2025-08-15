@@ -1,0 +1,31 @@
+{
+  "kind": "collectionType",
+  "collectionName": "up_me",
+  "info": {
+    "name": "me",
+    "description": "",
+    "singularName": "me",
+    "pluralName": "mes",
+    "displayName": "me"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {
+    "content-manager": {
+      "visible": false
+    },
+    "content-type-builder": {
+      "visible": false
+    }
+  },
+  "attributes": {
+    "username": {
+      "type": "string",
+      "minLength": 3,
+      "unique": true,
+      "configurable": false,
+      "required": true
+    }
+  }
+}

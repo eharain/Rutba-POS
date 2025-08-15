@@ -1,0 +1,34 @@
+{
+  "collectionName": "purchase_returns",
+  "info": {
+    "singularName": "purchase-return",
+    "pluralName": "purchase-returns",
+    "displayName": "Purchase Return"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "return_no": {
+      "type": "string",
+      "required": true
+    },
+    "return_date": {
+      "type": "datetime",
+      "required": true
+    },
+    "total_refund": {
+      "type": "decimal"
+    },
+    "purchase_order": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::purchase-order.purchase-order"
+    },
+    "items": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::purchase-return-item.purchase-return-item"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "collectionName": "purchase_return_items",
+  "info": {
+    "singularName": "purchase-return-item",
+    "pluralName": "purchase-return-items",
+    "displayName": "Purchase Return Item"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "quantity": {
+      "type": "integer"
+    },
+    "price": {
+      "type": "decimal"
+    },
+    "total": {
+      "type": "decimal"
+    },
+    "purchase_return": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::purchase-return.purchase-return"
+    },
+    "product": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product.product"
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "collectionName": "purchase_orders",
+  "info": {
+    "singularName": "purchase-order",
+    "pluralName": "purchase-orders",
+    "displayName": "Purchase Order"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "purchase_no": {
+      "type": "string",
+      "required": true
+    },
+    "order_date": {
+      "type": "datetime"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "Pending",
+        "Received",
+        "Cancelled"
+      ]
+    },
+    "total": {
+      "type": "decimal"
+    },
+    "supplier": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::supplier.supplier"
+    },
+    "items": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::purchase-item.purchase-item"
+    }
+  }
+}

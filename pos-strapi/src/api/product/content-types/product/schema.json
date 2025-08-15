@@ -1,0 +1,56 @@
+{
+  "collectionName": "products",
+  "info": {
+    "singularName": "product",
+    "pluralName": "products",
+    "displayName": "Product",
+    "description": "Items sold in the POS"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "sku": {
+      "type": "string",
+      "unique": true
+    },
+    "barcode": {
+      "type": "string",
+      "unique": true
+    },
+    "cost_price": {
+      "type": "decimal"
+    },
+    "selling_price": {
+      "type": "decimal",
+      "required": true
+    },
+    "tax_rate": {
+      "type": "decimal"
+    },
+    "stock_quantity": {
+      "type": "integer"
+    },
+    "reorder_level": {
+      "type": "integer"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "category": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::category.category"
+    },
+    "brand": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::brand.brand"
+    }
+  }
+}

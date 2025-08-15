@@ -1,0 +1,32 @@
+{
+  "collectionName": "sale_return_items",
+  "info": {
+    "singularName": "sale-return-item",
+    "pluralName": "sale-return-items",
+    "displayName": "Sale Return Item"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "quantity": {
+      "type": "integer"
+    },
+    "price": {
+      "type": "decimal"
+    },
+    "total": {
+      "type": "decimal"
+    },
+    "sale_return": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::sale-return.sale-return"
+    },
+    "product": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product.product"
+    }
+  }
+}

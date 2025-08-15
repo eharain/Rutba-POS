@@ -1,0 +1,28 @@
+{
+  "kind": "collectionType",
+  "collectionName": "terms",
+  "info": {
+    "singularName": "term",
+    "pluralName": "terms",
+    "displayName": "Term"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Name": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "string",
+      "unique": true
+    },
+    "term_types": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::term-type.term-type",
+      "mappedBy": "terms"
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "collectionName": "sale_returns",
+  "info": {
+    "singularName": "sale-return",
+    "pluralName": "sale-returns",
+    "displayName": "Sale Return"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "return_no": {
+      "type": "string",
+      "required": true
+    },
+    "return_date": {
+      "type": "datetime",
+      "required": true
+    },
+    "total_refund": {
+      "type": "decimal"
+    },
+    "sale": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::sale.sale"
+    },
+    "items": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::sale-return-item.sale-return-item"
+    }
+  }
+}
