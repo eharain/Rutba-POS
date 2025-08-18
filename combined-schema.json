@@ -1,0 +1,607 @@
+{
+  "brand.brand": {
+    "collectionName": "brands",
+    "info": {
+      "singularName": "brand",
+      "pluralName": "brands",
+      "displayName": "Brand"
+    },
+    "options": {
+      "draftAndPublish": true
+    },
+    "attributes": {
+      "name": {
+        "type": "string",
+        "required": true
+      }
+    }
+  },
+  "category.category": {
+    "collectionName": "categories",
+    "info": {
+      "singularName": "category",
+      "pluralName": "categories",
+      "displayName": "Category"
+    },
+    "options": {
+      "draftAndPublish": true
+    },
+    "attributes": {
+      "name": {
+        "type": "string",
+        "required": true
+      },
+      "description": {
+        "type": "text"
+      },
+      "parent_category": {
+        "type": "relation",
+        "relation": "manyToOne",
+        "target": "api::category.category"
+      }
+    }
+  },
+  "customer.customer": {
+    "collectionName": "customers",
+    "info": {
+      "singularName": "customer",
+      "pluralName": "customers",
+      "displayName": "Customer"
+    },
+    "options": {
+      "draftAndPublish": true
+    },
+    "attributes": {
+      "name": {
+        "type": "string",
+        "required": true
+      },
+      "phone": {
+        "type": "string"
+      },
+      "email": {
+        "type": "string"
+      },
+      "address": {
+        "type": "text"
+      }
+    }
+  },
+  "employee.employee": {
+    "collectionName": "employees",
+    "info": {
+      "singularName": "employee",
+      "pluralName": "employees",
+      "displayName": "Employee"
+    },
+    "options": {
+      "draftAndPublish": true
+    },
+    "attributes": {
+      "name": {
+        "type": "string",
+        "required": true
+      },
+      "role": {
+        "type": "string"
+      },
+      "phone": {
+        "type": "string"
+      },
+      "email": {
+        "type": "string"
+      }
+    }
+  },
+  "payment.payment": {
+    "collectionName": "payments",
+    "info": {
+      "singularName": "payment",
+      "pluralName": "payments",
+      "displayName": "Payment"
+    },
+    "options": {
+      "draftAndPublish": false
+    },
+    "attributes": {
+      "payment_method": {
+        "type": "enumeration",
+        "enum": [
+          "Cash",
+          "Card",
+          "Bank",
+          "Mobile Wallet"
+        ]
+      },
+      "amount": {
+        "type": "decimal"
+      },
+      "transaction_no": {
+        "type": "string"
+      },
+      "payment_date": {
+        "type": "datetime"
+      },
+      "sale": {
+        "type": "relation",
+        "relation": "manyToOne",
+        "target": "api::sale.sale"
+      }
+    }
+  },
+  "product.product": {
+    "collectionName": "products",
+    "info": {
+      "singularName": "product",
+      "pluralName": "products",
+      "displayName": "Product",
+      "description": "Items sold in the POS"
+    },
+    "options": {
+      "draftAndPublish": true
+    },
+    "attributes": {
+      "name": {
+        "type": "string",
+        "required": true
+      },
+      "sku": {
+        "type": "string",
+        "unique": true
+      },
+      "barcode": {
+        "type": "string",
+        "unique": true
+      },
+      "cost_price": {
+        "type": "decimal"
+      },
+      "selling_price": {
+        "type": "decimal",
+        "required": true
+      },
+      "tax_rate": {
+        "type": "decimal"
+      },
+      "stock_quantity": {
+        "type": "integer"
+      },
+      "reorder_level": {
+        "type": "integer"
+      },
+      "is_active": {
+        "type": "boolean",
+        "default": true
+      },
+      "category": {
+        "type": "relation",
+        "relation": "manyToOne",
+        "target": "api::category.category"
+      },
+      "brand": {
+        "type": "relation",
+        "relation": "manyToOne",
+        "target": "api::brand.brand"
+      }
+    }
+  },
+  "purchase-item.purchase-item": {
+    "collectionName": "purchase_items",
+    "info": {
+      "singularName": "purchase-item",
+      "pluralName": "purchase-items",
+      "displayName": "Purchase Item"
+    },
+    "options": {
+      "draftAndPublish": false
+    },
+    "attributes": {
+      "quantity": {
+        "type": "integer"
+      },
+      "price": {
+        "type": "decimal"
+      },
+      "total": {
+        "type": "decimal"
+      },
+      "purchase_order": {
+        "type": "relation",
+        "relation": "manyToOne",
+        "target": "api::purchase-order.purchase-order"
+      },
+      "product": {
+        "type": "relation",
+        "relation": "manyToOne",
+        "target": "api::product.product"
+      }
+    }
+  },
+  "purchase-order.purchase-order": {
+    "collectionName": "purchase_orders",
+    "info": {
+      "singularName": "purchase-order",
+      "pluralName": "purchase-orders",
+      "displayName": "Purchase Order"
+    },
+    "options": {
+      "draftAndPublish": false
+    },
+    "attributes": {
+      "purchase_no": {
+        "type": "string",
+        "required": true
+      },
+      "order_date": {
+        "type": "datetime"
+      },
+      "status": {
+        "type": "enumeration",
+        "enum": [
+          "Pending",
+          "Received",
+          "Cancelled"
+        ]
+      },
+      "total": {
+        "type": "decimal"
+      },
+      "supplier": {
+        "type": "relation",
+        "relation": "manyToOne",
+        "target": "api::supplier.supplier"
+      },
+      "items": {
+        "type": "relation",
+        "relation": "oneToMany",
+        "target": "api::purchase-item.purchase-item"
+      }
+    }
+  },
+  "purchase-order-item.purchase-order-item": {
+    "collectionName": "purchase_order_items",
+    "info": {
+      "singularName": "purchase-order-item",
+      "pluralName": "purchase-order-items",
+      "displayName": "Purchase Order Item"
+    },
+    "options": {
+      "draftAndPublish": false
+    },
+    "attributes": {
+      "quantity": {
+        "type": "integer"
+      },
+      "cost_price": {
+        "type": "decimal"
+      },
+      "total": {
+        "type": "decimal"
+      },
+      "purchase_order": {
+        "type": "relation",
+        "relation": "manyToOne",
+        "target": "api::purchase-order.purchase-order"
+      },
+      "product": {
+        "type": "relation",
+        "relation": "manyToOne",
+        "target": "api::product.product"
+      }
+    }
+  },
+  "purchase-return.purchase-return": {
+    "collectionName": "purchase_returns",
+    "info": {
+      "singularName": "purchase-return",
+      "pluralName": "purchase-returns",
+      "displayName": "Purchase Return"
+    },
+    "options": {
+      "draftAndPublish": false
+    },
+    "attributes": {
+      "return_no": {
+        "type": "string",
+        "required": true
+      },
+      "return_date": {
+        "type": "datetime",
+        "required": true
+      },
+      "total_refund": {
+        "type": "decimal"
+      },
+      "purchase_order": {
+        "type": "relation",
+        "relation": "manyToOne",
+        "target": "api::purchase-order.purchase-order"
+      },
+      "items": {
+        "type": "relation",
+        "relation": "oneToMany",
+        "target": "api::purchase-return-item.purchase-return-item"
+      }
+    }
+  },
+  "purchase-return-item.purchase-return-item": {
+    "collectionName": "purchase_return_items",
+    "info": {
+      "singularName": "purchase-return-item",
+      "pluralName": "purchase-return-items",
+      "displayName": "Purchase Return Item"
+    },
+    "options": {
+      "draftAndPublish": false
+    },
+    "attributes": {
+      "quantity": {
+        "type": "integer"
+      },
+      "price": {
+        "type": "decimal"
+      },
+      "total": {
+        "type": "decimal"
+      },
+      "purchase_return": {
+        "type": "relation",
+        "relation": "manyToOne",
+        "target": "api::purchase-return.purchase-return"
+      },
+      "product": {
+        "type": "relation",
+        "relation": "manyToOne",
+        "target": "api::product.product"
+      }
+    }
+  },
+  "sale.sale": {
+    "collectionName": "sales",
+    "info": {
+      "singularName": "sale",
+      "pluralName": "sales",
+      "displayName": "Sale"
+    },
+    "options": {
+      "draftAndPublish": false
+    },
+    "attributes": {
+      "invoice_no": {
+        "type": "string",
+        "required": true
+      },
+      "sale_date": {
+        "type": "datetime",
+        "required": true
+      },
+      "subtotal": {
+        "type": "decimal"
+      },
+      "discount": {
+        "type": "decimal"
+      },
+      "tax": {
+        "type": "decimal"
+      },
+      "total": {
+        "type": "decimal",
+        "required": true
+      },
+      "payment_status": {
+        "type": "enumeration",
+        "enum": [
+          "Paid",
+          "Partial",
+          "Unpaid"
+        ],
+        "default": "Unpaid"
+      },
+      "customer": {
+        "type": "relation",
+        "relation": "manyToOne",
+        "target": "api::customer.customer"
+      },
+      "employee": {
+        "type": "relation",
+        "relation": "manyToOne",
+        "target": "api::employee.employee"
+      },
+      "items": {
+        "type": "relation",
+        "relation": "oneToMany",
+        "target": "api::sale-item.sale-item"
+      },
+      "payments": {
+        "type": "relation",
+        "relation": "oneToMany",
+        "target": "api::payment.payment"
+      }
+    }
+  },
+  "sale-item.sale-item": {
+    "collectionName": "sale_items",
+    "info": {
+      "singularName": "sale-item",
+      "pluralName": "sale-items",
+      "displayName": "Sale Item"
+    },
+    "options": {
+      "draftAndPublish": false
+    },
+    "attributes": {
+      "quantity": {
+        "type": "integer"
+      },
+      "price": {
+        "type": "decimal"
+      },
+      "discount": {
+        "type": "decimal"
+      },
+      "tax": {
+        "type": "decimal"
+      },
+      "total": {
+        "type": "decimal"
+      },
+      "sale": {
+        "type": "relation",
+        "relation": "manyToOne",
+        "target": "api::sale.sale"
+      },
+      "product": {
+        "type": "relation",
+        "relation": "manyToOne",
+        "target": "api::product.product"
+      }
+    }
+  },
+  "sale-return.sale-return": {
+    "collectionName": "sale_returns",
+    "info": {
+      "singularName": "sale-return",
+      "pluralName": "sale-returns",
+      "displayName": "Sale Return"
+    },
+    "options": {
+      "draftAndPublish": false
+    },
+    "attributes": {
+      "return_no": {
+        "type": "string",
+        "required": true
+      },
+      "return_date": {
+        "type": "datetime",
+        "required": true
+      },
+      "total_refund": {
+        "type": "decimal"
+      },
+      "sale": {
+        "type": "relation",
+        "relation": "manyToOne",
+        "target": "api::sale.sale"
+      },
+      "items": {
+        "type": "relation",
+        "relation": "oneToMany",
+        "target": "api::sale-return-item.sale-return-item"
+      }
+    }
+  },
+  "sale-return-item.sale-return-item": {
+    "collectionName": "sale_return_items",
+    "info": {
+      "singularName": "sale-return-item",
+      "pluralName": "sale-return-items",
+      "displayName": "Sale Return Item"
+    },
+    "options": {
+      "draftAndPublish": false
+    },
+    "attributes": {
+      "quantity": {
+        "type": "integer"
+      },
+      "price": {
+        "type": "decimal"
+      },
+      "total": {
+        "type": "decimal"
+      },
+      "sale_return": {
+        "type": "relation",
+        "relation": "manyToOne",
+        "target": "api::sale-return.sale-return"
+      },
+      "product": {
+        "type": "relation",
+        "relation": "manyToOne",
+        "target": "api::product.product"
+      }
+    }
+  },
+  "supplier.supplier": {
+    "collectionName": "suppliers",
+    "info": {
+      "singularName": "supplier",
+      "pluralName": "suppliers",
+      "displayName": "Supplier"
+    },
+    "options": {
+      "draftAndPublish": true
+    },
+    "attributes": {
+      "name": {
+        "type": "string",
+        "required": true
+      },
+      "contact_person": {
+        "type": "string"
+      },
+      "phone": {
+        "type": "string"
+      },
+      "email": {
+        "type": "string"
+      },
+      "address": {
+        "type": "text"
+      }
+    }
+  },
+  "term.term": {
+    "kind": "collectionType",
+    "collectionName": "terms",
+    "info": {
+      "singularName": "term",
+      "pluralName": "terms",
+      "displayName": "Term"
+    },
+    "options": {
+      "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+      "Name": {
+        "type": "string"
+      },
+      "slug": {
+        "type": "string",
+        "unique": true
+      },
+      "term_types": {
+        "type": "relation",
+        "relation": "manyToMany",
+        "target": "api::term-type.term-type",
+        "mappedBy": "terms"
+      }
+    }
+  },
+  "term-type.term-type": {
+    "kind": "collectionType",
+    "collectionName": "term_types",
+    "info": {
+      "singularName": "term-type",
+      "pluralName": "term-types",
+      "displayName": "Term Type"
+    },
+    "options": {
+      "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+      "Name": {
+        "type": "string"
+      },
+      "terms": {
+        "type": "relation",
+        "relation": "manyToMany",
+        "target": "api::term.term",
+        "inversedBy": "term_types"
+      }
+    }
+  }
+}

@@ -1,4 +1,5 @@
 {
+  "kind": "collectionType",
   "collectionName": "purchase_items",
   "info": {
     "singularName": "purchase-item",
@@ -8,6 +9,7 @@
   "options": {
     "draftAndPublish": false
   },
+  "pluginOptions": {},
   "attributes": {
     "quantity": {
       "type": "integer"
@@ -18,15 +20,21 @@
     "total": {
       "type": "decimal"
     },
-    "purchase_order": {
+    "purchase": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "api::purchase-order.purchase-order"
+      "target": "api::purchase.purchase"
     },
     "product": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::product.product"
+    },
+    "stock_items": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::stock-item.stock-item",
+      "mappedBy": "purchase_item"
     }
   }
 }

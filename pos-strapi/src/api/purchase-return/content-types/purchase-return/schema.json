@@ -20,10 +20,10 @@
     "total_refund": {
       "type": "decimal"
     },
-    "purchase_order": {
+    "purchase": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "api::purchase-order.purchase-order"
+      "target": "api::purchase.purchase"
     },
     "items": {
       "type": "relation",

@@ -1,9 +1,9 @@
 {
-  "collectionName": "purchase_orders",
+  "collectionName": "purchases",
   "info": {
-    "singularName": "purchase-order",
-    "pluralName": "purchase-orders",
-    "displayName": "Purchase Order"
+    "singularName": "purchase",
+    "pluralName": "purchases",
+    "displayName": "Purchases"
   },
   "options": {
     "draftAndPublish": false

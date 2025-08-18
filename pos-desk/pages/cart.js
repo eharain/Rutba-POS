@@ -4,7 +4,7 @@ import PermissionCheck from "../components/PermissionCheck";
 import { useCart } from "../context/CartContext";
 import CartItem from "../components/CartItem";
 import { useAuth } from "../context/AuthContext";
-import { postAPI } from "../lib/api";
+import { authApi } from "../lib/api";
 
 export default function Cart() {
   const { items, setQty, remove, clear, total } = useCart();
@@ -16,7 +16,7 @@ export default function Cart() {
       return;
     }
     // 1) create sale
-    const sale = await postAPI("/sales", {
+      const sale = await authApi.post("/sales", {
       data: {
         sale_date: new Date().toISOString(),
         subtotal: total,
@@ -39,7 +39,7 @@ export default function Cart() {
       const price = item?.attributes?.selling_price ?? item?.selling_price ?? 0;
       const qty = item.__qty || 1;
 
-      await postAPI("/sale-items", {
+        await authApi.post("/sale-items", {
         data: {
           quantity: qty,
           price,

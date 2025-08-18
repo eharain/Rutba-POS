@@ -1,0 +1,60 @@
+{
+  "kind": "collectionType",
+  "collectionName": "stock_items",
+  "info": {
+    "singularName": "stock-item",
+    "pluralName": "stock-items",
+    "displayName": "Stock Item"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "barcode": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "status": {
+      "type": "enumeration",
+      "default": "InStock",
+      "enum": [
+        "InStock",
+        "Sold",
+        "Returned",
+        "Damaged"
+      ]
+    },
+    "purchase_price": {
+      "type": "decimal"
+    },
+    "selling_price": {
+      "type": "decimal"
+    },
+    "product": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product.product",
+      "inversedBy": "stock_items"
+    },
+    "purchase_item": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::purchase-item.purchase-item",
+      "inversedBy": "stock_items"
+    },
+    "sale_item": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::sale-item.sale-item",
+      "inversedBy": "stock_items"
+    },
+    "sale_return_item": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::sale-return-item.sale-return-item",
+      "inversedBy": "stock_items"
+    }
+  }
+}

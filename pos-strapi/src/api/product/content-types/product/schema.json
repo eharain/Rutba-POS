@@ -1,4 +1,5 @@
 {
+  "kind": "collectionType",
   "collectionName": "products",
   "info": {
     "singularName": "product",
@@ -9,6 +10,7 @@
   "options": {
     "draftAndPublish": true
   },
+  "pluginOptions": {},
   "attributes": {
     "name": {
       "type": "string",
@@ -51,6 +53,12 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::brand.brand"
+    },
+    "stock_items": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::stock-item.stock-item",
+      "mappedBy": "product"
     }
   }
 }

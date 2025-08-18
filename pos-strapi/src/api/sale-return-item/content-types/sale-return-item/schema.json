@@ -1,4 +1,5 @@
 {
+  "kind": "collectionType",
   "collectionName": "sale_return_items",
   "info": {
     "singularName": "sale-return-item",
@@ -8,6 +9,7 @@
   "options": {
     "draftAndPublish": false
   },
+  "pluginOptions": {},
   "attributes": {
     "quantity": {
       "type": "integer"
@@ -27,6 +29,12 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::product.product"
+    },
+    "stock_items": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::stock-item.stock-item",
+      "mappedBy": "sale_return_item"
     }
   }
 }

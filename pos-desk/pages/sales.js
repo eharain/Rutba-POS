@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import ProtectedRoute from "../components/ProtectedRoute";
 import PermissionCheck from "../components/PermissionCheck";
-import { fetchAPI } from "../lib/api";
+import { authApi } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 
 export default function Sales() {
@@ -11,7 +11,7 @@ export default function Sales() {
 
   useEffect(() => {
     (async () => {
-      const res = await fetchAPI("/sales", { sort: ["id:desc"], pagination: { pageSize: 100 } }, jwt);
+      const res = await authAPI.fetch("/sales", { sort: ["id:desc"], pagination: { pageSize: 100 } }, jwt);
       setSales(res.data || []);
     })();
   }, [jwt]);

@@ -37,30 +37,13 @@ export function AuthProvider({ children }) {
         const me = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/me/permissions`, { time: (new Date()).getMilliseconds() }, {
             headers: { Authorization: `Bearer ${jwt}` }
         });
-        console.log('mep', me.data);
 
-        //const me = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/users/me?populate=role`, {
-        //    headers: { Authorization: `Bearer ${jwt}` }
-        //});
+      //  console.log('mep', me.data);
+
         const roleName = me?.data?.role;
 
-        // Pull Users & Permissions role config
-        //const rolesRes = await axios.get(`${base}/users-permissions/roles`, {
-        //    headers: { Authorization: `Bearer ${jwt}` }
-        //});
-
-        //const rolesObj = rolesRes?.data?.roles || {};
-        //const role = Object.values(rolesObj).find(r => r.name === roleName);
-        // Flatten enabled permissions like "api::product.product.find"
-        //const allowed = [];
-        //if (role?.permissions) {
-        //    Object.entries(role.permissions).forEach(([key, obj]) => {
-        //        Object.entries(obj).forEach(([action, cfg]) => {
-        //            if (cfg?.enabled) allowed.push(`${key}.${action}`);
-        //        });
-        //    });
-        //}
         setPermissions(me?.data.permissions);
+
         localStorage.setItem("permissions", JSON.stringify(me?.data.permissions));
     };
 

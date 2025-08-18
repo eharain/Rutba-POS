@@ -4,22 +4,21 @@ import ProductCard from "../components/ProductCard";
 import SearchBar from "../components/SearchBar";
 import ProtectedRoute from "../components/ProtectedRoute";
 import PermissionCheck from "../components/PermissionCheck";
-import { fetchAPI } from "../lib/api";
+import { authApi } from "../lib/api";
 import { useCart } from "../context/CartContext";
-import { useAuth } from "../context/AuthContext";
+
 
 export default function Products() {
   const [products, setProducts] = useState([]);
   const [q, setQ] = useState("");
   const { add } = useCart();
-  const { jwt } = useAuth();
-
+ 
   useEffect(() => {
     (async () => {
-      const res = await fetchAPI("/products", { pagination: { pageSize: 100 } }, jwt);
+        const res = await authApi.fetch("/products", { pagination: { pageSize: 100 } });
       setProducts(res.data || []);
     })();
-  }, [jwt]);
+  }, []);
 
   const filtered = useMemo(() => {
     return products.filter((p) => {

@@ -558,6 +558,10 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     reorder_level: Schema.Attribute.Integer;
     selling_price: Schema.Attribute.Decimal & Schema.Attribute.Required;
     sku: Schema.Attribute.String & Schema.Attribute.Unique;
+    stock_items: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::stock-item.stock-item'
+    >;
     stock_quantity: Schema.Attribute.Integer;
     tax_rate: Schema.Attribute.Decimal;
     updatedAt: Schema.Attribute.DateTime;
@@ -592,9 +596,13 @@ export interface ApiPurchaseItemPurchaseItem
     publishedAt: Schema.Attribute.DateTime;
     purchase_order: Schema.Attribute.Relation<
       'manyToOne',
-      'api::purchase-order.purchase-order'
+      'api::purchase.purchase'
     >;
     quantity: Schema.Attribute.Integer;
+    stock_items: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::stock-item.stock-item'
+    >;
     total: Schema.Attribute.Decimal;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -607,8 +615,8 @@ export interface ApiPurchaseOrderItemPurchaseOrderItem
   collectionName: 'purchase_order_items';
   info: {
     displayName: 'Purchase Order Item';
-    pluralName: 'purchase-order-items';
-    singularName: 'purchase-order-item';
+    pluralName: 'purchase-items';
+    singularName: 'purchase-item';
   };
   options: {
     draftAndPublish: false;
@@ -621,14 +629,14 @@ export interface ApiPurchaseOrderItemPurchaseOrderItem
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
-      'api::purchase-order-item.purchase-order-item'
+      'api::purchase-item.purchase-item'
     > &
       Schema.Attribute.Private;
     product: Schema.Attribute.Relation<'manyToOne', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
     purchase_order: Schema.Attribute.Relation<
       'manyToOne',
-      'api::purchase-order.purchase-order'
+      'api::purchase.purchase'
     >;
     quantity: Schema.Attribute.Integer;
     total: Schema.Attribute.Decimal;
@@ -643,8 +651,8 @@ export interface ApiPurchaseOrderPurchaseOrder
   collectionName: 'purchase_orders';
   info: {
     displayName: 'Purchase Order';
-    pluralName: 'purchase-orders';
-    singularName: 'purchase-order';
+    pluralName: 'purchases';
+    singularName: 'purchase';
   };
   options: {
     draftAndPublish: false;
@@ -660,7 +668,7 @@ export interface ApiPurchaseOrderPurchaseOrder
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
-      'api::purchase-order.purchase-order'
+      'api::purchase.purchase'
     > &
       Schema.Attribute.Private;
     order_date: Schema.Attribute.DateTime;
@@ -739,7 +747,7 @@ export interface ApiPurchaseReturnPurchaseReturn
     publishedAt: Schema.Attribute.DateTime;
     purchase_order: Schema.Attribute.Relation<
       'manyToOne',
-      'api::purchase-order.purchase-order'
+      'api::purchase.purchase'
     >;
     return_date: Schema.Attribute.DateTime & Schema.Attribute.Required;
     return_no: Schema.Attribute.String & Schema.Attribute.Required;
@@ -776,6 +784,10 @@ export interface ApiSaleItemSaleItem extends Struct.CollectionTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     quantity: Schema.Attribute.Integer;
     sale: Schema.Attribute.Relation<'manyToOne', 'api::sale.sale'>;
+    stock_items: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::stock-item.stock-item'
+    >;
     tax: Schema.Attribute.Decimal;
     total: Schema.Attribute.Decimal;
     updatedAt: Schema.Attribute.DateTime;
@@ -812,6 +824,10 @@ export interface ApiSaleReturnItemSaleReturnItem
     sale_return: Schema.Attribute.Relation<
       'manyToOne',
       'api::sale-return.sale-return'
+    >;
+    stock_items: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::stock-item.stock-item'
     >;
     total: Schema.Attribute.Decimal;
     updatedAt: Schema.Attribute.DateTime;
@@ -873,7 +889,6 @@ export interface ApiSaleSale extends Struct.CollectionTypeSchema {
     discount: Schema.Attribute.Decimal;
     employee: Schema.Attribute.Relation<'manyToOne', 'api::employee.employee'>;
     invoice_no: Schema.Attribute.String & Schema.Attribute.Required;
-    items: Schema.Attribute.Relation<'oneToMany', 'api::sale-item.sale-item'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::sale.sale'> &
       Schema.Attribute.Private;
@@ -884,9 +899,62 @@ export interface ApiSaleSale extends Struct.CollectionTypeSchema {
     payments: Schema.Attribute.Relation<'oneToMany', 'api::payment.payment'>;
     publishedAt: Schema.Attribute.DateTime;
     sale_date: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    sale_items: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::sale-item.sale-item'
+    >;
     subtotal: Schema.Attribute.Decimal;
     tax: Schema.Attribute.Decimal;
     total: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiStockItemStockItem extends Struct.CollectionTypeSchema {
+  collectionName: 'stock_items';
+  info: {
+    displayName: 'Stock Item';
+    pluralName: 'stock-items';
+    singularName: 'stock-item';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    barcode: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::stock-item.stock-item'
+    > &
+      Schema.Attribute.Private;
+    product: Schema.Attribute.Relation<'manyToOne', 'api::product.product'>;
+    publishedAt: Schema.Attribute.DateTime;
+    purchase_item: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::purchase-item.purchase-item'
+    >;
+    purchase_price: Schema.Attribute.Decimal;
+    sale_item: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::sale-item.sale-item'
+    >;
+    sale_return_item: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::sale-return-item.sale-return-item'
+    >;
+    selling_price: Schema.Attribute.Decimal;
+    status: Schema.Attribute.Enumeration<
+      ['InStock', 'Sold', 'Returned', 'Damaged']
+    > &
+      Schema.Attribute.DefaultTo<'InStock'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1331,49 +1399,6 @@ export interface PluginUploadFolder extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface PluginUsersPermissionsMe extends Struct.CollectionTypeSchema {
-  collectionName: 'up_me';
-  info: {
-    description: '';
-    displayName: 'me';
-    name: 'me';
-    pluralName: 'mes';
-    singularName: 'me';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  pluginOptions: {
-    'content-manager': {
-      visible: false;
-    };
-    'content-type-builder': {
-      visible: false;
-    };
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'plugin::users-permissions.me'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    username: Schema.Attribute.String &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique &
-      Schema.Attribute.SetMinMaxLength<{
-        minLength: 3;
-      }>;
-  };
-}
-
 export interface PluginUsersPermissionsPermission
   extends Struct.CollectionTypeSchema {
   collectionName: 'up_permissions';
@@ -1482,6 +1507,7 @@ export interface PluginUsersPermissionsUser
   };
   options: {
     draftAndPublish: false;
+    timestamps: true;
   };
   attributes: {
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
@@ -1495,7 +1521,6 @@ export interface PluginUsersPermissionsUser
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;
-    isStaff: Schema.Attribute.Boolean;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -1543,14 +1568,15 @@ declare module '@strapi/strapi' {
       'api::payment.payment': ApiPaymentPayment;
       'api::product.product': ApiProductProduct;
       'api::purchase-item.purchase-item': ApiPurchaseItemPurchaseItem;
-      'api::purchase-order-item.purchase-order-item': ApiPurchaseOrderItemPurchaseOrderItem;
-      'api::purchase-order.purchase-order': ApiPurchaseOrderPurchaseOrder;
+      'api::purchase-item.purchase-item': ApiPurchaseOrderItemPurchaseOrderItem;
+      'api::purchase.purchase': ApiPurchaseOrderPurchaseOrder;
       'api::purchase-return-item.purchase-return-item': ApiPurchaseReturnItemPurchaseReturnItem;
       'api::purchase-return.purchase-return': ApiPurchaseReturnPurchaseReturn;
       'api::sale-item.sale-item': ApiSaleItemSaleItem;
       'api::sale-return-item.sale-return-item': ApiSaleReturnItemSaleReturnItem;
       'api::sale-return.sale-return': ApiSaleReturnSaleReturn;
       'api::sale.sale': ApiSaleSale;
+      'api::stock-item.stock-item': ApiStockItemStockItem;
       'api::supplier.supplier': ApiSupplierSupplier;
       'api::term-type.term-type': ApiTermTypeTermType;
       'api::term.term': ApiTermTerm;
@@ -1561,7 +1587,6 @@ declare module '@strapi/strapi' {
       'plugin::review-workflows.workflow-stage': PluginReviewWorkflowsWorkflowStage;
       'plugin::upload.file': PluginUploadFile;
       'plugin::upload.folder': PluginUploadFolder;
-      'plugin::users-permissions.me': PluginUsersPermissionsMe;
       'plugin::users-permissions.permission': PluginUsersPermissionsPermission;
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;

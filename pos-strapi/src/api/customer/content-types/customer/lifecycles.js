@@ -5,7 +5,7 @@ module.exports = {
     if ("customer" === 'sale') {
       data.invoice_no = 'INV-' + Date.now();
     }
-    if ("customer" === 'purchase-order') {
+    if ("customer" === 'purchase') {
       data.purchase_no = 'PO-' + Date.now();
     }
     if ("customer".includes('return')) {
