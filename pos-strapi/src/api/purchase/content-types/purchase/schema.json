@@ -36,6 +36,12 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::purchase-item.purchase-item"
+    },
+    "users": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "purchases"
     }
   }
 }

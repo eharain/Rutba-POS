@@ -52,5 +52,12 @@ export const authApi = {
     post: (path, data) => post(path, data, localStorage.getItem("jwt")),
     put: (path, data) => put(path, data, localStorage.getItem("jwt")),
     del: (path) => del(path, localStorage.getItem("jwt")),
+    getUser: () => {
+        const uj = localStorage.getItem("user");
+        if (!uj) return null;
+        let user = JSON.parse(uj);
+
+        return user;
+    },
 };
 

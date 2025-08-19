@@ -2,7 +2,7 @@ const meRoute = require('./routes/me');
 const meController = require('./controllers/me');
 //const userSchema = require('./content-types/user/schema');
 
-const isEdiding = true;
+const isEdiding = false;
 
 const meSchema = require('./content-types/me/schema');
 

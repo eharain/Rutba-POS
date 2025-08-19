@@ -29,6 +29,12 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::sale-return-item.sale-return-item"
+    },
+    "users": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "sale_returns"
     }
   }
 }

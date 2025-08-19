@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_pos_sales_desks",
+  "info": {
+    "displayName": "sales desks",
+    "icon": "paperPlane"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "note": {
+      "type": "string"
+    },
+    "invoice_prefix": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

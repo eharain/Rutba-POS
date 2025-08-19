@@ -30,6 +30,7 @@ export default function SalePage({ params }) {
                     stock_item: i.stock_item.id,
                     quantity: i.quantity,
                     price: i.price,
+                   
                 })),
             },
         });
