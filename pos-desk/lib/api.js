@@ -61,3 +61,4 @@ export const authApi = {
     },
 };
 
+export const authAPI = authApi;

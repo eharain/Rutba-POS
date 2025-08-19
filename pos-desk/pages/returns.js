@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import ProtectedRoute from "../components/ProtectedRoute";
 import PermissionCheck from "../components/PermissionCheck";
-import { authAPI } from "../lib/api";
+import { authApi } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 
 export default function Returns() {
@@ -12,7 +12,7 @@ export default function Returns() {
     useEffect(() => {
         (async () => {
             // populate sale->items->product
-            const res = await authAPI.fetch("/sales", {
+            const res = await authApi.fetch("/sales", {
                 populate: {
                     items: { populate: ["product"] }
                 },
@@ -29,7 +29,7 @@ export default function Returns() {
             return;
         }
         // 1) create sale-return
-        const ret = await authAPI.post("/sale-returns", {
+        const ret = await authApi.post("/sale-returns", {
             data: {
                 return_date: new Date().toISOString(),
                 total_refund: price * quantity,
@@ -41,7 +41,7 @@ export default function Returns() {
         if (!retId) return alert("Failed to create return header.");
 
         // 2) create sale-return-item
-        await authAPI.post("/sale-return-items", {
+        await authApi.post("/sale-return-items", {
             data: {
                 quantity,
                 price,

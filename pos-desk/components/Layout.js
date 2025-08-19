@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
-
+import { locationString } from "../lib/utils";
 export default function Layout({ children }) {
   const { user, logout } = useAuth();
   return (
@@ -30,7 +30,10 @@ export default function Layout({ children }) {
           </Link>
         </div>
       </nav>
-      <main style={{ padding: 16 }}>{children}</main>
-    </div>
+          <main style={{ padding: 16 }}>{children}</main>
+          <footer style={{ padding: "12px 16px", background: "#222", color: "#fff", textAlign: "center" }}>
+              {locationString()}
+          </footer>
+      </div>
   );
 }

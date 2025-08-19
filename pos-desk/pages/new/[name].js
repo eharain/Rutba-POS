@@ -2,7 +2,7 @@
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { authApi } from '../../lib/api'  // assuming api.js is in lib/
-
+import { generateNextInvoiceNumber } from '../../lib/utils' // assuming utils.js is in lib/
 export default function Home() {
 	const router = useRouter()
 	const { name } = router.query
@@ -10,7 +10,7 @@ export default function Home() {
 
 	const defaultNew = {
 		sales: () => ({
-			invoice_no: 'INV-' + Date.now(),
+			invoice_no: generateNextInvoiceNumber(),
 			sale_date: new Date().toISOString(),
 			total: 0,
 			users: {
