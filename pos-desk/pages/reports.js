@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import Layout from "../components/Layout";
 import ProtectedRoute from "../components/ProtectedRoute";
 import PermissionCheck from "../components/PermissionCheck";
-import { fetchAPI } from "../lib/api";
+import { fetchSales, fetchReturns } from "../lib/pos";
 import { useAuth } from "../context/AuthContext";
 
 export default function Reports() {
@@ -13,11 +13,11 @@ export default function Reports() {
   useEffect(() => {
     (async () => {
       if (permissions.includes("api::sale.sale.find")) {
-        const s = await fetchAPI("/sales", { pagination: { pageSize: 200 } }, jwt);
+        const s = await fetchSales(jwt);
         setSales(s.data || []);
       }
       if (permissions.includes("api::sale-return.sale-return.find")) {
-        const r = await fetchAPI("/sale-returns", { pagination: { pageSize: 200 } }, jwt);
+        const r = await fetchReturns(jwt);
         setReturns(r.data || []);
       }
     })();

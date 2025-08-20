@@ -22,7 +22,7 @@ export default function Products() {
 
   const filtered = useMemo(() => {
     return products.filter((p) => {
-      const a = p.attributes || {};
+      const a = p.attributes || p;
       const name = (a.name || "").toLowerCase();
       const barcode = (a.barcode || "");
       const needle = q.toLowerCase();
@@ -40,8 +40,8 @@ export default function Products() {
             {filtered.map((p) => (
               <ProductCard
                 key={p.id}
-                product={p.attributes}
-                onAdd={() => add({ ...p, attributes: p.attributes })}
+                product={p}
+                onAdd={() => add({ ...p, attributes: p })}
               />
             ))}
           </div>

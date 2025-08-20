@@ -1,3 +1,4 @@
+'use client';
 export function getBranch() {
     const branch = localStorage.getItem("branch");
     if (branch) {
@@ -49,11 +50,27 @@ export function generateNextInvoiceNumber() {
     if (!loc.branch || !loc.desk || !user) {
         throw new Error("Branch, desk, or user not set");
     }
-    return (loc.desk.invoice_prefix ?? 'INV') + '-' + pad(loc.branch.id, 3, '0') + pad(loc.desk.id, 3, '0') + pad(user.id, 3, '0') + pad(Date.now(), 4, '0');
+    return (loc.desk.invoice_prefix ?? 'INV') +
+        '-' +
+        (
+            padHex(loc.branch.id, 2, RandomNon22Char()) +
+            padHex(loc.desk.id, 2, RandomNon22Char()) +
+            padHex(user.id, 3, RandomNon22Char()) +
+            padHex(Date.now(), 5, RandomNon22Char())
+        );
+}
+export function RandomNon22Char() {
+    const start = 'O'.charCodeAt(0);
+    const end = 'Z'.charCodeAt(0);
+    const randomCode = Math.floor(Math.random() * (end - start + 1)) + start;
+    return String.fromCharCode(randomCode);
 }
 
+export function padHex(value, length, char = ' ') {
+    if (typeof value === 'number') {
+        value = value.toString(22).toUpperCase(); // convert to hex and uppercase
+    }
 
-export function pad(value, length, char = ' ') {
-    let ps = String(value ?? '').padStart(length, char); // or padEnd for right padding
+    let ps = char + String(value ?? '')//.padStart(length, char); // or padEnd for right padding
     return ps.length > length * 2 ? ps.substring(0, length * 2) : ps; // truncate if too long
 }

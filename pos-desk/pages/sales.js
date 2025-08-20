@@ -10,8 +10,8 @@ export default function Sales() {
   const { jwt } = useAuth();
 
   useEffect(() => {
-    (async () => {
-      const res = await authAPI.fetch("/sales", { sort: ["id:desc"], pagination: { pageSize: 100 } }, jwt);
+      (async () => {
+          const res = await authApi.fetch("/sales", { sort: ["id:desc"], pagination: { pageSize: 100 } });
       setSales(res.data || []);
     })();
   }, [jwt]);
@@ -25,8 +25,8 @@ export default function Sales() {
           {sales.map(s => (
             <div key={s.id} style={{ border: "1px solid #ddd", borderRadius: 8, padding: 10, marginBottom: 8 }}>
               <div><b>Sale #{s.id}</b></div>
-              <div>Total: ${s.attributes?.total}</div>
-              <div>Date: {new Date(s.attributes?.sale_date).toLocaleString()}</div>
+              <div>Total: ${s.total}</div>
+              <div>Date: {new Date(s.sale_date).toLocaleString()}</div>
             </div>
           ))}
         </Layout>
