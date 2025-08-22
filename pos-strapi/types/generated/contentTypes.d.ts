@@ -398,6 +398,10 @@ export interface ApiBranchBranch extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     name: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    stock_items: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::stock-item.stock-item'
+    >;
     town: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -928,6 +932,7 @@ export interface ApiStockItemStockItem extends Struct.CollectionTypeSchema {
     barcode: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.Unique;
+    branch: Schema.Attribute.Relation<'manyToOne', 'api::branch.branch'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -954,9 +959,24 @@ export interface ApiStockItemStockItem extends Struct.CollectionTypeSchema {
     >;
     selling_price: Schema.Attribute.Decimal;
     status: Schema.Attribute.Enumeration<
-      ['InStock', 'Sold', 'Returned', 'Damaged']
+      [
+        'InStock',
+        'Reserved',
+        'Sold',
+        'Returned',
+        'ReturnedDamaged',
+        'ReturnedToSupplier',
+        'Damaged',
+        'Lost',
+        'Expired',
+        'Transferred',
+      ]
     > &
       Schema.Attribute.DefaultTo<'InStock'>;
+    status_history: Schema.Attribute.Component<
+      'pos.stock-status-history',
+      true
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

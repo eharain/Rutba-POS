@@ -62,3 +62,21 @@ export const authApi = {
 };
 
 export const authAPI = authApi;
+
+
+export const stock_status = [
+    "InStock",      // Available for sale
+    "Reserved",     // Held for a customer/order but not yet sold
+    "Sold",         // Already sold
+    "Returned",     // Returned by customer and added back
+    "ReturnedDamaged", // Returned but damaged",
+    "ReturnedToSupplier", // Returned back to supplier
+    "Damaged",      // Not sellable due to damage
+    "Lost",         // Missing in inventory
+    "Expired",      // Expired product (if applicable)
+    "Transferred"   // Moved to another branch/warehouse
+].reduce((pre, status) => {
+    pre[status] = status;
+    return pre;
+}, {});
+

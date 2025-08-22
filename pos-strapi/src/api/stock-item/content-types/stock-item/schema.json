@@ -21,9 +21,15 @@
       "default": "InStock",
       "enum": [
         "InStock",
+        "Reserved",
         "Sold",
         "Returned",
-        "Damaged"
+        "ReturnedDamaged",
+        "ReturnedToSupplier",
+        "Damaged",
+        "Lost",
+        "Expired",
+        "Transferred"
       ]
     },
     "purchase_price": {
@@ -55,6 +61,18 @@
       "relation": "manyToOne",
       "target": "api::sale-return-item.sale-return-item",
       "inversedBy": "stock_items"
+    },
+    "branch": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::branch.branch",
+      "inversedBy": "stock_items"
+    },
+
+    "status_history": {
+      "type": "component",
+      "repeatable": true,
+      "component": "pos.stock-status-history"
     }
   }
 }

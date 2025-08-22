@@ -41,10 +41,10 @@ export default function Layout({ children }) {
             <nav className="navbar navbar-expand navbar-light bg-light px-3 py-1 border-bottom">
                 <ul className="navbar-nav">
                     <li className="nav-item">
-                        <Link className="nav-link" href="/new/sales/">New Sale</Link>
+                        <Link className="nav-link" href="/new/sale">New Sale</Link>
                     </li>
                     <li className="nav-item">
-                        <Link className="nav-link" href="/new/Return">New Return</Link>
+                        <Link className="nav-link" href="/new/return">New Return</Link>
                     </li>
                     <li className="nav-item">
                         <Link className="nav-link" href="/New Purchase">New Purchase</Link>

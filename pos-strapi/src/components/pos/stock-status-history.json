@@ -1,0 +1,33 @@
+{
+  "collectionName": "components_pos_stock_status_history",
+  "info": {
+    "displayName": "stock statis history",
+    "icon": "history"
+  },
+  "options": {},
+  "attributes": {
+  "status": {
+      "type": "enumeration",
+      "default": "InStock",
+      "enum": [
+        "InStock",      
+        "Reserved",     
+        "Sold",         
+        "Returned",     
+        "ReturnedDamaged", 
+        "ReturnedToSupplier",
+        "Damaged",      
+        "Lost",         
+        "Expired",      
+        "Transferred"  
+      ]
+    },
+    "createdAt": {
+      "type": "date",
+      "default": {
+        "$now": true
+      }
+    }
+  },
+  "config": {}
+}

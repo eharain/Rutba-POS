@@ -2,35 +2,39 @@ import { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import ProtectedRoute from "../components/ProtectedRoute";
 import PermissionCheck from "../components/PermissionCheck";
-import { authApi } from "../lib/api";
+import { fetchSales } from "../lib/pos";
 import { useAuth } from "../context/AuthContext";
+import Link from "next/link";
 
 export default function Sales() {
-  const [sales, setSales] = useState([]);
-  const { jwt } = useAuth();
+    const [sales, setSales] = useState([]);
+    const { jwt } = useAuth();
 
-  useEffect(() => {
-      (async () => {
-          const res = await authApi.fetch("/sales", { sort: ["id:desc"], pagination: { pageSize: 100 } });
-      setSales(res.data || []);
-    })();
-  }, [jwt]);
+    useEffect(() => {
+        (async () => {
+            //const res = await authApi.fetch("/sales", { sort: ["id:desc"], pagination: { pageSize: 100 } });
+            const res = await fetchSales();
+            setSales(res.data || []);
+        })();
+    }, [jwt]);
 
-  return (
-    <ProtectedRoute>
-      <PermissionCheck required="api::sale.sale.find">
-        <Layout>
-          <h1>Sales</h1>
-          {sales.length === 0 && <p>No sales yet.</p>}
-          {sales.map(s => (
-            <div key={s.id} style={{ border: "1px solid #ddd", borderRadius: 8, padding: 10, marginBottom: 8 }}>
-              <div><b>Sale #{s.id}</b></div>
-              <div>Total: ${s.total}</div>
-              <div>Date: {new Date(s.sale_date).toLocaleString()}</div>
-            </div>
-          ))}
-        </Layout>
-      </PermissionCheck>
-    </ProtectedRoute>
-  );
+    return (
+        <ProtectedRoute>
+            <PermissionCheck required="api::sale.sale.find">
+                <Layout>
+                    <h1>Sales</h1>
+                    {sales.length === 0 && <p>No sales yet.</p>}
+                    {sales.map(s => (
+                        <Link href={`/${s.invoice_no}/sale`} key={s.id}>
+                            <div style={{ border: "1px solid #ddd", borderRadius: 8, padding: 10, marginBottom: 8 }}>
+                                <div><b>Sale #{s.id}</b></div>
+                                <div>Total: ${s.total}</div>
+                                <div>Date: {new Date(s.sale_date).toLocaleString()}</div>
+                            </div>
+                        </Link>
+                    ))}
+                </Layout>
+            </PermissionCheck>
+        </ProtectedRoute>
+    );
 }
