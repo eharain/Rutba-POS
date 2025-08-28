@@ -14,6 +14,9 @@
     "name": {
       "type": "string"
     },
+    "po_prefix": {
+      "type": "string"
+    },
     "address": {
       "type": "string"
     },

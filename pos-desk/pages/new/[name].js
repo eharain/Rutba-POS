@@ -1,39 +1,41 @@
 // pages/new/[name].js
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { createNewEntity } from '../../lib/pos'
+import { UtilProvider } from '../../context/UtilContext'
 
 export default function Home() {
     const router = useRouter()
     const { name } = router.query
-    let errMessage;
+    const [errMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         if (!name) return
 
         const createEntity = async () => {
             try {
-                const res = await createNewEntity(name);
-                const data = res?.data || {};
-                const id = data.invoice_no ?? data.documentId ?? data.id;
+                setErrorMessage('');
+                const { data, id, nameSinglar } = await createNewEntity(name);
                 if (id) {
-                    router.replace(`/${id}/${name}`)
+                    router.replace(`/${id}/${nameSinglar}`)
                 } else {
                     console.error("Failed to create", res)
                 }
             } catch (err) {
                 console.error("Error creating", err)
-                errMessage = err?.response?.data?.error?.message || ("Failed to create " + name)
+                setErrorMessage(err?.response?.data?.error?.message || ("Failed to create " + name))
             }
         }
 
         createEntity()
-    }, [name])
+    }, [name, router])
 
     return (
+
         <div className="p-4">
             <p>Creating new {name}...</p>
             {errMessage && <p className="text-red-500">{errMessage}</p>}
         </div>
+
     )
 }

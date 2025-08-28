@@ -7,21 +7,21 @@ export default function Login() {
    
     const [identifier, setIdentifier] = useState("");
     const [password, setPassword] = useState("");
-    const [errorM, seterrorM] = useState("");
-    const [busy, setBusy] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [busyLoading, setBusyLoading] = useState(false);
 
     async function onSubmit(e) {
-        e.preventDefault();
-        setBusy(true);
+        e?.preventDefault();
+        setBusyLoading(true);
         try {
             await login(identifier, password);
             window.location.href = "/";
         } catch (e) {
-            seterrorM("Login failed" +' ' + e.message??'' );
-            alert("Login failed");
-            console.log("Login error:", e, identifier, password);
+            setErrorMessage("Login failed" +' ' + e.message??'' );
+            //alert("Login failed");
+            console.log("Login error:", e);
         } finally {
-            setBusy(false);
+            setBusyLoading(false);
         }
     }
 
@@ -31,8 +31,8 @@ export default function Login() {
             <form onSubmit={onSubmit} style={{ display: "grid", gap: 8, maxWidth: 360 }}>
                 <input placeholder="Email or Username" value={identifier} onChange={e => setIdentifier(e.target.value)} />
                 <input placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} />
-                <button type="submit" disabled={busy}>{busy ? "Signing in..." : "Sign in"}</button>
-                <span style={{ display: (errorM ? '' : 'none') }}>{errorM}</span>
+                <button type="submit" disabled={busyLoading}>{busyLoading ? "Signing in..." : "Sign in"}</button>
+                <span style={{ display: (errorMessage ? '' : 'none') }}>{errorMessage}</span>
             </form>
         </Layout>
     );

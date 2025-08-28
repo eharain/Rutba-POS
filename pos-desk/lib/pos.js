@@ -1,9 +1,11 @@
 import { authApi } from './api';
-import { generateNextInvoiceNumber } from './utils';
+import { generateNextInvoiceNumber ,generateNextPONumber} from './utils';
 
 // Create a new sale or purchase entity
 export async function createNewEntity(name) {
     let data = {};
+    let nameSinglar = name.endsWith('s') ? name.slice(0, -1) : name;
+    let namePlural = name.endsWith('s') ? name : name + 's';
     if (name === 'sales' || name === 'sale') {
         const user = authApi.getUser();
         data = {
@@ -18,7 +20,7 @@ export async function createNewEntity(name) {
     } else if (name === 'purchases' || name === 'purchase') {
         const user = authApi.getUser();
         data = {
-            invoice_no: generateNextInvoiceNumber(),
+            invoice_no: generateNextPONumber(),
             purchase_date: new Date().toISOString(),
             total: 0,
             users: {
@@ -27,8 +29,11 @@ export async function createNewEntity(name) {
             },
         };
     }
-    const res = await authApi.post(`/${name}`, { data });
-    return res;
+    const res = await authApi.post(`/${namePlural}`, { data });
+
+    const rdata = res?.data || {};
+    const id = rdata.invoice_no ?? rdata.documentId ?? rdata.id;
+    return { data: rdata, id, nameSinglar, namePlural };
 }
 
 // Fetch sales and returns for reports

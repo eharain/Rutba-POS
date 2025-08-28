@@ -397,6 +397,7 @@ export interface ApiBranchBranch extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     name: Schema.Attribute.String;
+    po_prefix: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     stock_items: Schema.Attribute.Relation<
       'oneToMany',

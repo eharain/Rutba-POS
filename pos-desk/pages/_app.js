@@ -1,15 +1,17 @@
 import { AuthProvider } from "../context/AuthContext";
 import { CartProvider } from "../context/CartContext";
+import { UtilProvider } from "../context/UtilContext";
+
 import RootLayout from "../src/app/RootLayout";
 
 export default function App({ Component, pageProps }) {
     return (
-        <RootLayout>
-            <AuthProvider>
-                <CartProvider>
-                    <Component {...pageProps} />
-                </CartProvider>
-            </AuthProvider>
-        </RootLayout>
+
+        <AuthProvider>
+            <UtilProvider>
+                <Component {...pageProps} />
+            </UtilProvider>
+        </AuthProvider>
+
     );
 }

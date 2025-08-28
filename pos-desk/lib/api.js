@@ -1,6 +1,8 @@
-import axios from "axios";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337/api";
+import axios from "axios";
+import { storage } from "./storage";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1338/api";
 
 // ------------------ Base Helper ------------------
 function authHeaders(jwt) {
@@ -38,27 +40,20 @@ async function del(path, jwt) {
 
 // ------------------ Public API (no auth) ------------------
 export const api = {
-    fetch: (path, params) => get(path, params),
-    post: (path, data) => post(path, data),
-    put: (path, data) => get(path, data),
-    get: (path) => get(path),
-    del: (path) => del(path),
+    fetch: async (path, params) => await get(path, params),
+    post: async (path, data) => await post(path, data),
+    put: async (path, data) => await get(path, data),
+    get: async (path) => await get(path),
+    del: async (path) => await del(path),
 };
 
 // ------------------ Auth API (uses localStorage JWT) ------------------
 export const authApi = {
-    fetch: (path, params) => get(path, params, localStorage.getItem("jwt")),
-    get: (path, data) => get(path, data, localStorage.getItem("jwt")),
-    post: (path, data) => post(path, data, localStorage.getItem("jwt")),
-    put: (path, data) => put(path, data, localStorage.getItem("jwt")),
-    del: (path) => del(path, localStorage.getItem("jwt")),
-    getUser: () => {
-        const uj = localStorage.getItem("user");
-        if (!uj) return null;
-        let user = JSON.parse(uj);
-
-        return user;
-    },
+    fetch: async (path, params) => await get(path, params, storage.getItem("jwt")),
+    get: async (path, data) => await get(path, data, storage.getItem("jwt")),
+    post: async (path, data) => await post(path, data, storage.getItem("jwt")),
+    put: async (path, data) => await put(path, data, storage.getItem("jwt")),
+    del: async (path) => await del(path, storage.getItem("jwt")),
 };
 
 export const authAPI = authApi;
@@ -77,6 +72,7 @@ export const stock_status = [
     "Transferred"   // Moved to another branch/warehouse
 ].reduce((pre, status) => {
     pre[status] = status;
+    pre.statuses.push(status);
     return pre;
-}, {});
+}, { statuses: [] });
 

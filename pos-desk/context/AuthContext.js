@@ -1,63 +1,68 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import axios from "axios";
+import { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
+import { storage } from "../lib/storage";
+import { api, authApi } from "../lib/api";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-    const [user, setUser] = useState(null);
-    const [jwt, setJwt] = useState(null);
-    const [permissions, setPermissions] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [currentUser, setCurrentUser] = useState(null);
+    const [currentJwt, setJwt] = useState(null);
+    const [currentPermissions, setPermissions] = useState([]);
+    const [reloading, setReLoading] = useState(true);
 
     // Bootstrap from localStorage
     useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        const storedJwt = localStorage.getItem("jwt");
-        const storedPerms = localStorage.getItem("permissions");
-        if (storedUser && storedJwt) {
-            setUser(JSON.parse(storedUser));
-            setJwt(storedJwt);
-            setPermissions(JSON.parse(storedPerms || "[]"));
+        const user = storage.getJSON("user");
+        const jwt = storage.getItem("jwt");
+        const permissions = storage.getJSON("permissions");
+
+        if (user && jwt && permissions) {
+            setCurrentUser(user);
+            setJwt(jwt);
+            setPermissions(permissions || []);
         }
-        setLoading(false);
+        setReLoading(false);
     }, []);
 
-    const login = async (identifier, password) => {
-        const base = (process.env.NEXT_PUBLIC_API_URL || "");//.replace("/api", "");
-        const authRes = await axios.post(`${base}/auth/local`, { identifier, password });
-        const { user, jwt } = authRes.data;
+    const login = useCallback(async (identifier, password) => {
+       // const base = (process.env.NEXT_PUBLIC_API_URL || "");//.replace("/api", "");
+        const authRes = await api.post(`/auth/local`, { identifier, password });
+        const { user, jwt } = authRes;
 
-        setUser(user);
+        setCurrentUser(user);
         setJwt(jwt);
-        localStorage.setItem("user", JSON.stringify(user));
-        localStorage.setItem("jwt", jwt);
 
-        // Fetch role name
-        //api/users - permissions / permissions
-        const me = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/me/permissions`, { time: (new Date()).getMilliseconds() }, {
-            headers: { Authorization: `Bearer ${jwt}` }
-        });
+        storage.setJSON("user", user);
+        storage.setItem("jwt", jwt);
 
-      //  console.log('mep', me.data);
+        const me = await authApi.post(`/me/permissions`, { time: (new Date()).getMilliseconds() });
+        const mePermissions = me?.permissions || [];
 
-        const roleName = me?.data?.role;
+        setPermissions(mePermissions);
 
-        setPermissions(me?.data.permissions);
+        storage.setJSON("permissions", mePermissions);
+    }, []);
 
-        localStorage.setItem("permissions", JSON.stringify(me?.data.permissions));
-    };
-
-    const logout = () => {
-        setUser(null);
+    const logout = useCallback(() => {
+        setCurrentUser(null);
         setJwt(null);
         setPermissions([]);
-        localStorage.removeItem("user");
-        localStorage.removeItem("jwt");
-        localStorage.removeItem("permissions");
-    };
+        storage.removeItem("user");
+        storage.removeItem("jwt");
+        storage.removeItem("permissions");
+    }, []);
+
+    const contextValue = useMemo(() => ({
+        user: currentUser,
+        jwt: currentJwt,
+        permissions: currentPermissions,
+        reloading,
+        login,
+        logout
+    }), [currentUser, currentJwt, currentPermissions, reloading, login, logout]);
 
     return (
-        <AuthContext.Provider value={{ user, jwt, permissions, loading, login, logout }}>
+        <AuthContext.Provider value={contextValue}>
             {children}
         </AuthContext.Provider>
     );
