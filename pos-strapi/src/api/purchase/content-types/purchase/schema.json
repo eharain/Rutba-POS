@@ -16,6 +16,9 @@
     "order_date": {
       "type": "datetime"
     },
+    "order_recieved_date": {
+      "type": "datetime"
+    },
     "status": {
       "type": "enumeration",
       "enum": [

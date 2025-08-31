@@ -14,7 +14,7 @@ export default function NavigationSecondary() {
 					<Link className="nav-link" href="/new/return">New Return</Link>
 				</li>
 				<li className="nav-item">
-					<Link className="nav-link" href="/New Purchase">New Purchase</Link>
+					<Link className="nav-link" href="/new/purchase">New Purchase</Link>
 				</li>
 			</ul>
 

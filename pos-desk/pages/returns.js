@@ -21,6 +21,7 @@ export default function Returns() {
             }, jwt);
             setSales(res.data || []);
         })();
+      
     }, [jwt]);
 
     async function createSaleReturn(saleId, productId, quantity, price) {

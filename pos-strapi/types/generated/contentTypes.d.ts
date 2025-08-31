@@ -745,6 +745,7 @@ export interface ApiPurchasePurchase extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     order_date: Schema.Attribute.DateTime;
+    order_recieved_date: Schema.Attribute.DateTime;
     publishedAt: Schema.Attribute.DateTime;
     purchase_no: Schema.Attribute.String & Schema.Attribute.Required;
     status: Schema.Attribute.Enumeration<['Pending', 'Received', 'Cancelled']>;
@@ -930,9 +931,7 @@ export interface ApiStockItemStockItem extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
-    barcode: Schema.Attribute.String &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique;
+    barcode: Schema.Attribute.String & Schema.Attribute.Unique;
     branch: Schema.Attribute.Relation<'manyToOne', 'api::branch.branch'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -959,6 +958,7 @@ export interface ApiStockItemStockItem extends Struct.CollectionTypeSchema {
       'api::sale-return-item.sale-return-item'
     >;
     selling_price: Schema.Attribute.Decimal;
+    sku: Schema.Attribute.String;
     status: Schema.Attribute.Enumeration<
       [
         'InStock',

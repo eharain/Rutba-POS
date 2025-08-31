@@ -1,5 +1,5 @@
 import { authApi } from './api';
-import { generateNextInvoiceNumber ,generateNextPONumber} from './utils';
+import { generateNextInvoiceNumber, generateNextPONumber, getUser } from './utils';
 
 // Create a new sale or purchase entity
 export async function createNewEntity(name) {
@@ -7,7 +7,7 @@ export async function createNewEntity(name) {
     let nameSinglar = name.endsWith('s') ? name.slice(0, -1) : name;
     let namePlural = name.endsWith('s') ? name : name + 's';
     if (name === 'sales' || name === 'sale') {
-        const user = authApi.getUser();
+        const user = getUser();
         data = {
             invoice_no: generateNextInvoiceNumber(),
             sale_date: new Date().toISOString(),
@@ -18,10 +18,10 @@ export async function createNewEntity(name) {
             },
         };
     } else if (name === 'purchases' || name === 'purchase') {
-        const user = authApi.getUser();
+        const user = getUser();
         data = {
-            invoice_no: generateNextPONumber(),
-            purchase_date: new Date().toISOString(),
+            purchase_no: generateNextPONumber(),
+            order_date: new Date().toISOString(),
             total: 0,
             users: {
                 connect: [user.id],
@@ -41,14 +41,16 @@ export async function fetchSales() {
     return await authApi.fetch("/sales", { sort: ["id:desc"], pagination: { pageSize: 200 } },);
 }
 
-export async function fetchReturns() {
-    return await authApi.fetch("/sale-returns", { pagination: { pageSize: 200 } });
+export async function fetchReturns(page, rowsPerPage) {
+    return await authApi.fetch("/sale-returns", { pagination: { page, pageSize: rowsPerPage } });
 }
 
 // Fetch purchases for reports
-export async function fetchPurchases() {
-    return await authApi.fetch("/purchases", { sort: ["id:desc"], pagination: { pageSize: 200 } });
+export async function fetchPurchases(page, rowsPerPage) {
+    return await authApi.fetch("/purchases", { sort: ["id:desc"], pagination: { page, pageSize: rowsPerPage } });
 }
+
+
 
 // Fetch a sale or purchase by id or invoice_no
 export async function fetchSaleByIdOrInvoice(id) {
@@ -67,7 +69,7 @@ export async function fetchPurchaseByIdOrInvoice(id) {
     let res;
     res = await authApi.get("/purchases/", {
         filters: {
-            $or: [{ invoice_no: id }, { id }, { documentId: id }]
+            $or: [{ purchase_no: id }, { id }, { documentId: id }]
         },
         populate: { items: { populate: ["stock_items"] } }
     });
@@ -111,4 +113,75 @@ export async function savePurchaseItems(id, items) {
             })),
         },
     });
+}
+
+
+
+export async function featchSearch(searchTerm, page, rowsPerPage) {
+    let queries = [
+        {
+            entity: 'products',
+            query: {
+                filters: {
+                    $or: [
+                        { name: { $containsi: searchTerm } },
+                        { barcode: { $eq: searchTerm } },
+                        { sku: { $eq: searchTerm } }
+                    ]
+                },
+                pagination : { page, pageSize: rowsPerPage }
+            }
+        },
+        {
+            entity: 'purchases',
+            query: {
+                filters: {
+                    $or: [
+                        { customer: { name: { $containsi: searchTerm } } },
+                        { customer: { phone: { $containsi: searchTerm } } },
+                        { purchase_no: { $eq: searchTerm } },
+                    ]
+                },
+                pagination : { page, pageSize: rowsPerPage }
+            }
+        },
+        {
+            entity: 'sales',
+            query: {
+                filters: {
+                    $or: [
+                        { customer: { name: { $containsi: searchTerm } } },
+                        { customer: { phone: { $containsi: searchTerm } } },
+                        { invoice_no: { $eq: searchTerm } },
+                    ]
+                },
+                pagination : { page, pageSize: rowsPerPage }
+            }
+        },
+        {
+            entity: 'stock-items',
+            query: {
+                filters: {
+                    $or: [
+                        { name: { $containsi: searchTerm } },
+                        { barcode: { $eq: searchTerm } },
+                        { sku: { $eq: searchTerm } }
+                    ]
+                },
+                pagination : { page, pageSize: rowsPerPage }
+            }
+        }
+    ];
+
+
+    let results = [];
+    // for (let { name, query } in queries) {
+    for (let { entity, query } of queries) {
+        console.log('Fetching', entity, query);
+        const res = await authApi.fetch(`/${entity}`, query);
+        results.push({ data: res?.data?.data ?? {}, pagination: res.meta.pagination })
+    }
+    console.log(results);
+
+    return results;
 }

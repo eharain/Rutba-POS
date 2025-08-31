@@ -21,6 +21,7 @@ export default function Reports() {
         setReturns(r.data || []);
       }
     })();
+    
   }, [jwt, permissions]);
 
   const totals = useMemo(() => {

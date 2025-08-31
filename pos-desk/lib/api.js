@@ -9,9 +9,9 @@ function authHeaders(jwt) {
     return jwt ? { Authorization: `Bearer ${jwt}` } : {};
 }
 
-async function get(path, params = {}, jwt) {
+async function get(path, data = {}, jwt) {
     const res = await axios.get(`${API_URL}${path}`, {
-        params,
+        data,
         headers: { ...authHeaders(jwt) },
     });
     return res.data; // Strapi returns { data, meta }
@@ -41,15 +41,15 @@ async function del(path, jwt) {
 // ------------------ Public API (no auth) ------------------
 export const api = {
     fetch: async (path, params) => await get(path, params),
+    get: async (path) => await get(path),
     post: async (path, data) => await post(path, data),
     put: async (path, data) => await get(path, data),
-    get: async (path) => await get(path),
     del: async (path) => await del(path),
 };
 
 // ------------------ Auth API (uses localStorage JWT) ------------------
 export const authApi = {
-    fetch: async (path, params) => await get(path, params, storage.getItem("jwt")),
+    fetch: async (path, data) => await get(path, data, storage.getItem("jwt")),
     get: async (path, data) => await get(path, data, storage.getItem("jwt")),
     post: async (path, data) => await post(path, data, storage.getItem("jwt")),
     put: async (path, data) => await put(path, data, storage.getItem("jwt")),

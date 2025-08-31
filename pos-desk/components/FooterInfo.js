@@ -6,6 +6,7 @@ function FooterInfo() {
     const { locationString, branch, desk } = useUtil();
     useEffect(() => {
         setLocation(locationString())
+      
     }, [branch, desk]);
 
 

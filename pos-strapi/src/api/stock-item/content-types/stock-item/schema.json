@@ -11,9 +11,11 @@
   },
   "pluginOptions": {},
   "attributes": {
+    "sku": {
+      "type": "string"
+    },
     "barcode": {
       "type": "string",
-      "required": true,
       "unique": true
     },
     "status": {

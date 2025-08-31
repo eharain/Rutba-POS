@@ -16,8 +16,9 @@ export default function Products() {
   useEffect(() => {
     (async () => {
         const res = await authApi.fetch("/products", { pagination: { pageSize: 100 } });
-      setProducts(res || []);
+      setProducts(res.data || []);
     })();
+    
   }, []);
 
   const filtered = useMemo(() => {

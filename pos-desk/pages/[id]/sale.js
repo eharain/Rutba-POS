@@ -23,6 +23,7 @@ export default function SalePage({ params }) {
             setSale(saleData);
         }
         if (id) fetchSale();
+      
     }, [id]);
 
 
@@ -52,7 +53,7 @@ export default function SalePage({ params }) {
         const updatedItems = sale.items.map((item, i) =>
             i === index ? { ...item, [field]: value } : item
         );
-        setSale({ ...sale, attributes: { ...sale, items: updatedItems } });
+        setSale({ ...sale, ... { ...sale, items: updatedItems } });
     }
 
     async function saveChanges() {

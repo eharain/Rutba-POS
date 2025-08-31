@@ -8,7 +8,7 @@ export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState(null);
     const [currentJwt, setJwt] = useState(null);
     const [currentPermissions, setPermissions] = useState([]);
-    const [reloading, setReLoading] = useState(true);
+    const [loading, setReLoading] = useState(true);
 
     // Bootstrap from localStorage
     useEffect(() => {
@@ -22,6 +22,7 @@ export function AuthProvider({ children }) {
             setPermissions(permissions || []);
         }
         setReLoading(false);
+      
     }, []);
 
     const login = useCallback(async (identifier, password) => {
@@ -56,10 +57,10 @@ export function AuthProvider({ children }) {
         user: currentUser,
         jwt: currentJwt,
         permissions: currentPermissions,
-        reloading,
+        loading,
         login,
         logout
-    }), [currentUser, currentJwt, currentPermissions, reloading, login, logout]);
+    }), [currentUser, currentJwt, currentPermissions, loading, login, logout]);
 
     return (
         <AuthContext.Provider value={contextValue}>

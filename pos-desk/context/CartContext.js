@@ -9,11 +9,13 @@ export function CartProvider({ children }) {
 
   useEffect(() => {
     const stored = storage.getJSON("cart") ??[];
-    setCartItems(stored);
+      setCartItems(stored);
+    
   }, []);
 
   useEffect(() => {
-    storage.setJSON("cart", cartItems);
+      storage.setJSON("cart", cartItems);
+    
   }, [cartItems]);
 
   const add = (product) => {
