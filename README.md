@@ -1,4 +1,5 @@
-# POS# POS
+# POS
+Point of Sale System (POS) - Rutba POS - Open Source Web and Desktop Application with Strapi Backend
 
 Rutba POS is under development for a retail environment, consisting of two main components: the POS Desk and the Strapi backend.
 Please stay tuned for updates and releases. Contributions and feedback are welcome!
