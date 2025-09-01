@@ -476,7 +476,7 @@ export interface ApiCustomerCustomer extends Struct.CollectionTypeSchema {
     singularName: 'customer';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     address: Schema.Attribute.Text;

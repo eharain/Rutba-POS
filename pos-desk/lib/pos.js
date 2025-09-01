@@ -1,3 +1,4 @@
+import qs from 'qs';
 import { authApi } from './api';
 import { generateNextInvoiceNumber, generateNextPONumber, getUser } from './utils';
 
@@ -129,7 +130,8 @@ export async function featchSearch(searchTerm, page, rowsPerPage) {
                         { sku: { $eq: searchTerm } }
                     ]
                 },
-                pagination : { page, pageSize: rowsPerPage }
+                populate: ['category', 'brand'],
+                pagination: { page, pageSize: rowsPerPage }
             }
         },
         {
@@ -137,12 +139,14 @@ export async function featchSearch(searchTerm, page, rowsPerPage) {
             query: {
                 filters: {
                     $or: [
-                        { customer: { name: { $containsi: searchTerm } } },
-                        { customer: { phone: { $containsi: searchTerm } } },
+                        { supplier: { $or: [{ name: { $containsi: searchTerm } }, { phone: { $containsi: searchTerm } }] } },
+
                         { purchase_no: { $eq: searchTerm } },
                     ]
                 },
-                pagination : { page, pageSize: rowsPerPage }
+                populate: ['supplier'],
+                pagination: { page, pageSize: rowsPerPage }
+
             }
         },
         {
@@ -150,12 +154,12 @@ export async function featchSearch(searchTerm, page, rowsPerPage) {
             query: {
                 filters: {
                     $or: [
-                        { customer: { name: { $containsi: searchTerm } } },
-                        { customer: { phone: { $containsi: searchTerm } } },
+                        { customer: { $or: [{ name: { $containsi: searchTerm } }, { phone: { $containsi: searchTerm } }] } },
                         { invoice_no: { $eq: searchTerm } },
                     ]
                 },
-                pagination : { page, pageSize: rowsPerPage }
+                populate: ['customer'],
+                pagination: { page, pageSize: rowsPerPage }
             }
         },
         {
@@ -163,12 +167,12 @@ export async function featchSearch(searchTerm, page, rowsPerPage) {
             query: {
                 filters: {
                     $or: [
-                        { name: { $containsi: searchTerm } },
                         { barcode: { $eq: searchTerm } },
                         { sku: { $eq: searchTerm } }
                     ]
                 },
-                pagination : { page, pageSize: rowsPerPage }
+                populate: ['product'],
+                pagination: { page, pageSize: rowsPerPage }
             }
         }
     ];
@@ -177,11 +181,43 @@ export async function featchSearch(searchTerm, page, rowsPerPage) {
     let results = [];
     // for (let { name, query } in queries) {
     for (let { entity, query } of queries) {
-        console.log('Fetching', entity, query);
-        const res = await authApi.fetch(`/${entity}`, query);
-        results.push({ data: res?.data?.data ?? {}, pagination: res.meta.pagination })
+        
+        const res = await authApi.fetch(`/${entity}?` + qs.stringify(query, { encodeValuesOnly: true }));
+        console.log('Fetching', entity, query, res.data);
+        results.push({ entity, data: res?.data ??[], pagination: res?.meta?.pagination })
     }
-    console.log(results);
 
-    return results;
+
+    const data = results.map((res, i) => {
+        return res.data.map((r) => {
+         //   const r = res.data;
+            //const total
+            return {
+                entity: res.entity,
+                name: r.name ?? r?.product?.name,
+                code: r.purchase_no ?? r.invoice_no,
+                barcode: r.barcode,
+                sku: r.sku,
+                id: r.id,
+                documentId: r.documentId,
+                date: r.sale_date ?? r.order_date,
+                person_name: r.customer?.name ?? r.supplier?.name ?? r.name,
+                phone: r.customer?.phone ?? r.supplier?.phone ?? '',
+                email: r.customer?.email ?? r.supplier?.email ?? '',
+                total: r.total,
+                subtotal: r.subtotal,
+            }
+        })
+    }).flat();
+
+    const pagination = results.reduce((pre, curr) => {
+        const p = curr.pagination
+        pre.total = Math.max(pre.total, p?.total ?? 0);
+        return pre;
+    }, { total: 0, page, pageSize: rowsPerPage });
+
+    const result = { results, data, pagination, meta: { pagination } };
+    console.log(result);
+
+    return result;
 }

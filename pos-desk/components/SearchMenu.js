@@ -4,7 +4,7 @@ import { TablePagination } from "../components/Table";
 
 export default function SearchMenu() {
     const [searchText, setSearchText] = useState("");
-    const [purchases, setPurchases] = useState([]);
+    const [results, setResults] = useState([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [total, setTotal] = useState(0);
@@ -14,13 +14,13 @@ export default function SearchMenu() {
 
 
         loadPurchaseData();
-        
+
 
         async function loadPurchaseData() {
             if (!searchText) return;
             setLoading(true);
             const data = await pos.featchSearch(searchText, page, rowsPerPage);
-            setPurchases(data.data);
+            setResults(data.data||[]);
             setTotal(data.meta.pagination.total);
             setLoading(false);
         }
@@ -28,8 +28,8 @@ export default function SearchMenu() {
     }, [page, rowsPerPage, searchText]);
 
     const SearchTerm = (sterm) => {
-     
-       setSearchText(sterm);
+
+        setSearchText(sterm);
 
     }
     const handleFocus = (e) => {
@@ -49,9 +49,9 @@ export default function SearchMenu() {
         setPage(0);
     };
     return (
-        <div class="col-md-4">
-            <div class="row ">
-                <div class="p-3 bg-white border rounded">
+        <div className="col-md-4">
+            <div className="row ">
+                <div className="p-3 bg-white border rounded">
                     <input
                         type="text"
                         placeholder="Search or scan barcode..."
@@ -60,12 +60,16 @@ export default function SearchMenu() {
                         style={{ padding: "8px 10px", width: "100%", marginBottom: 12, borderRadius: 6, border: "1px solid #ccc" }}
                     />
                 </div>
-                <div class="p-3 bg-white border rounded" onClick={handleFocus} onFocus={handleFocus}>
-                    <h4>{searchText}</h4>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">Item 1</li>
-                        <li class="list-group-item">Item 2</li>
-                        <li class="list-group-item">Item 3</li>
+                <div className="p-3 bg-white border rounded" onClick={handleFocus} onFocus={handleFocus}>
+                    <h4>Result {searchText}</h4>
+                    <ul className="list-group list-group-flush">
+                        {results.map((r, i) => {
+                            return (
+                                <li key={r.id} className="list-group-item">
+                                    {i} -{r.name} - {r.data ? new Date(r.date)?.toLocaleDateString() : ''} - {r.total}
+                                </li>
+                            )
+                        })}
                     </ul>
                 </div>
             </div>

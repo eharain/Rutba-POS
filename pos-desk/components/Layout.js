@@ -6,8 +6,8 @@ import FooterInfo from "./FooterInfo";
 
 export default function Layout({ children }) {
     return (
-        <div class="container mt-4">
-            <div class="row">
+        <div className="container mt-4">
+            <div className="row">
                 <Navigation />
                 <NavigationSecondary></NavigationSecondary>
                 <main className="col-md container py-3">{children}</main>
