@@ -1,4 +1,5 @@
 {
+  "kind": "collectionType",
   "collectionName": "purchase_returns",
   "info": {
     "singularName": "purchase-return",
@@ -8,6 +9,7 @@
   "options": {
     "draftAndPublish": false
   },
+  "pluginOptions": {},
   "attributes": {
     "return_no": {
       "type": "string",
@@ -34,6 +36,12 @@
       "type": "relation",
       "relation": "manyToMany",
       "target": "plugin::users-permissions.user",
+      "mappedBy": "purchase_returns"
+    },
+    "branches": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::branch.branch",
       "mappedBy": "purchase_returns"
     }
   }

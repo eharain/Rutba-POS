@@ -1,0 +1,52 @@
+import qs from 'qs';
+import { authApi } from '../api';
+
+// Fetch sales and returns for reports
+export async function fetchSales() {
+    return await authApi.fetch("/sales", { sort: ["id:desc"], pagination: { pageSize: 200 } },);
+}
+
+export async function fetchReturns(page, rowsPerPage) {
+    return await authApi.fetch("/sale-returns", { pagination: { page, pageSize: rowsPerPage } });
+}
+
+// Fetch purchases for reports
+export async function fetchPurchases(page, rowsPerPage) {
+    return await authApi.fetch("/purchases", { sort: ["id:desc"], pagination: { page, pageSize: rowsPerPage } });
+}
+
+//fetchCategories 
+export async function fetchCategories(page, rowPerPage) {
+    return await authApi.fetch("/categories", { sort: ["name:asc"], pagination: { page, pageSize: rowPerPage ?? 100 } });
+}
+
+//fetchBrands
+export async function fetchBrands(page, rowPerPage) {
+    return await authApi.fetch("/brands", { sort: ["name:asc"], pagination: { page, pageSize: rowPerPage ?? 100 } });
+}
+
+
+// Fetch a sale or purchase by id or invoice_no
+export async function fetchSaleByIdOrInvoice(id) {
+    let res;
+    res = await authApi.get("/sales/", {
+        filters: {
+            $or: [{ invoice_no: id }, { id }, { documentId: id }]
+        },
+        populate: { items: { populate: ["stock_items"] } }
+    });
+    let data = res?.data?.data ?? res?.data;
+    return Array.isArray(data) ? data[0] : data;
+}
+
+export async function fetchPurchaseByIdOrInvoice(id) {
+    let res;
+    res = await authApi.get("/purchases/", {
+        filters: {
+            $or: [{ purchase_no: id }, { id }, { documentId: id }]
+        },
+        populate: { items: { populate: ["stock_items"] } }
+    });
+    let data = res?.data?.data ?? res?.data;
+    return Array.isArray(data) ? data[0] : data;
+}

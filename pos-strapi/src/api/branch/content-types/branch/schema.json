@@ -35,6 +35,46 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::stock-item.stock-item"
+    },
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "payments": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::payment.payment",
+      "inversedBy": "branches"
+    },
+    "products": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::product.product",
+      "inversedBy": "branches"
+    },
+    "purchase_returns": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::purchase-return.purchase-return",
+      "inversedBy": "branches"
+    },
+    "sales": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::sale.sale",
+      "inversedBy": "branches"
+    },
+    "sale_returns": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::sale-return.sale-return",
+      "inversedBy": "branches"
     }
   }
 }

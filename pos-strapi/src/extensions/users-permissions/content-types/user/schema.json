@@ -78,6 +78,12 @@
       "target": "api::purchase.purchase",
       "inversedBy": "users"
     },
+    "products": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::product.product",
+      "inversedBy": "users"
+    },
     "sale_returns": {
       "type": "relation",
       "relation": "manyToMany",

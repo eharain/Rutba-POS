@@ -1,4 +1,5 @@
 {
+  "kind": "collectionType",
   "collectionName": "suppliers",
   "info": {
     "singularName": "supplier",
@@ -8,6 +9,7 @@
   "options": {
     "draftAndPublish": true
   },
+  "pluginOptions": {},
   "attributes": {
     "name": {
       "type": "string",
@@ -24,6 +26,22 @@
     },
     "address": {
       "type": "text"
+    },
+    "purchases": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::purchase.purchase",
+      "mappedBy": "suppliers"
+    },
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
     }
   }
 }

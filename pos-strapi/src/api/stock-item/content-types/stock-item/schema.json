@@ -70,7 +70,6 @@
       "target": "api::branch.branch",
       "inversedBy": "stock_items"
     },
-
     "status_history": {
       "type": "component",
       "repeatable": true,

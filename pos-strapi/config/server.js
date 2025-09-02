@@ -8,7 +8,7 @@ module.exports = ({ env }) => ({
         populateRelations: env.bool('WEBHOOKS_POPULATE_RELATIONS', false),
     },
     logger: {
-        config: { level: 'silly' }
+     //   config: { level: 'silly' }
         // silly, debug, info, warn, or error.
     }
 });

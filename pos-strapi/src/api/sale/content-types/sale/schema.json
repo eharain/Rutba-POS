@@ -66,6 +66,12 @@
       "relation": "manyToMany",
       "target": "plugin::users-permissions.user",
       "mappedBy": "sales"
+    },
+    "branches": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::branch.branch",
+      "mappedBy": "sales"
     }
   }
 }

@@ -59,6 +59,38 @@
       "relation": "oneToMany",
       "target": "api::stock-item.stock-item",
       "mappedBy": "product"
+    },
+    "users": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "products"
+    },
+    "branches": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::branch.branch",
+      "mappedBy": "products"
+    },
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "gallery": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
     }
   }
 }

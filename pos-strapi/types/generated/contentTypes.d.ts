@@ -396,9 +396,21 @@ export interface ApiBranchBranch extends Struct.CollectionTypeSchema {
       'api::branch.branch'
     > &
       Schema.Attribute.Private;
+    logo: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     name: Schema.Attribute.String;
+    payments: Schema.Attribute.Relation<'manyToMany', 'api::payment.payment'>;
     po_prefix: Schema.Attribute.String;
+    products: Schema.Attribute.Relation<'manyToMany', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
+    purchase_returns: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::purchase-return.purchase-return'
+    >;
+    sale_returns: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::sale-return.sale-return'
+    >;
+    sales: Schema.Attribute.Relation<'manyToMany', 'api::sale.sale'>;
     stock_items: Schema.Attribute.Relation<
       'oneToMany',
       'api::stock-item.stock-item'
@@ -427,6 +439,7 @@ export interface ApiBrandBrand extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::brand.brand'> &
       Schema.Attribute.Private;
+    logo: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
@@ -492,6 +505,7 @@ export interface ApiCustomerCustomer extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     phone: Schema.Attribute.String;
+    picture: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -522,6 +536,7 @@ export interface ApiEmployeeEmployee extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     phone: Schema.Attribute.String;
+    picture: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     publishedAt: Schema.Attribute.DateTime;
     role: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
@@ -542,6 +557,7 @@ export interface ApiPaymentPayment extends Struct.CollectionTypeSchema {
   };
   attributes: {
     amount: Schema.Attribute.Decimal;
+    branches: Schema.Attribute.Relation<'manyToMany', 'api::branch.branch'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -577,12 +593,17 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
   };
   attributes: {
     barcode: Schema.Attribute.String & Schema.Attribute.Unique;
+    branches: Schema.Attribute.Relation<'manyToMany', 'api::branch.branch'>;
     brand: Schema.Attribute.Relation<'manyToOne', 'api::brand.brand'>;
     category: Schema.Attribute.Relation<'manyToOne', 'api::category.category'>;
     cost_price: Schema.Attribute.Decimal;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    gallery: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
     is_active: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -590,6 +611,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       'api::product.product'
     > &
       Schema.Attribute.Private;
+    logo: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     reorder_level: Schema.Attribute.Integer;
@@ -604,6 +626,10 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    users: Schema.Attribute.Relation<
+      'manyToMany',
+      'plugin::users-permissions.user'
+    >;
   };
 }
 
@@ -692,6 +718,7 @@ export interface ApiPurchaseReturnPurchaseReturn
     draftAndPublish: false;
   };
   attributes: {
+    branches: Schema.Attribute.Relation<'manyToMany', 'api::branch.branch'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -734,6 +761,10 @@ export interface ApiPurchasePurchase extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    gallery: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
     items: Schema.Attribute.Relation<
       'oneToMany',
       'api::purchase-item.purchase-item'
@@ -749,7 +780,10 @@ export interface ApiPurchasePurchase extends Struct.CollectionTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     purchase_no: Schema.Attribute.String & Schema.Attribute.Required;
     status: Schema.Attribute.Enumeration<['Pending', 'Received', 'Cancelled']>;
-    supplier: Schema.Attribute.Relation<'manyToOne', 'api::supplier.supplier'>;
+    suppliers: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::supplier.supplier'
+    >;
     total: Schema.Attribute.Decimal;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -850,6 +884,7 @@ export interface ApiSaleReturnSaleReturn extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
+    branches: Schema.Attribute.Relation<'manyToMany', 'api::branch.branch'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -889,6 +924,7 @@ export interface ApiSaleSale extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
+    branches: Schema.Attribute.Relation<'manyToMany', 'api::branch.branch'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1007,9 +1043,14 @@ export interface ApiSupplierSupplier extends Struct.CollectionTypeSchema {
       'api::supplier.supplier'
     > &
       Schema.Attribute.Private;
+    logo: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     phone: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    purchases: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::purchase.purchase'
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1598,6 +1639,7 @@ export interface PluginUsersPermissionsUser
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;
+    products: Schema.Attribute.Relation<'manyToMany', 'api::product.product'>;
     provider: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     purchase_returns: Schema.Attribute.Relation<

@@ -1,4 +1,5 @@
 {
+  "kind": "collectionType",
   "collectionName": "payments",
   "info": {
     "singularName": "payment",
@@ -8,6 +9,7 @@
   "options": {
     "draftAndPublish": false
   },
+  "pluginOptions": {},
   "attributes": {
     "payment_method": {
       "type": "enumeration",
@@ -31,6 +33,12 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::sale.sale"
+    },
+    "branches": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::branch.branch",
+      "mappedBy": "payments"
     }
   }
 }
