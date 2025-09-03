@@ -2,6 +2,9 @@ import qs from 'qs';
 import { authApi } from '../api';
 
 // Fetch sales and returns for reports
+export async function fetchEntities(entities, page, rowsPerPage) {
+    return await authApi.fetch("/" + entities, { sort: ["id:desc"], pagination: {page, pageSize: rowsPerPage } },);
+}
 export async function fetchSales() {
     return await authApi.fetch("/sales", { sort: ["id:desc"], pagination: { pageSize: 200 } },);
 }

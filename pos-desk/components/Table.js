@@ -13,9 +13,10 @@ export function TableBody({ children }) {
 export function TableRow({ children }) {
     return <tr>{children}</tr>;
 }
-export function TableCell({ children, align, colSpan }) {
+export function TableCell({ children, align, colSpan ,title}) {
     return (
         <td
+            title={title}
             colSpan={colSpan}
             style={{
                 border: "1px solid Black",
