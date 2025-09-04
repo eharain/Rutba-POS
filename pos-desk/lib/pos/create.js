@@ -37,8 +37,11 @@ export async function createNewEntity(name) {
             selling_price: 0,
             reorder_level: 1,
             is_active: false,
-            order_date: new Date().toISOString(),
-            total: 0,
+            branches: {
+                connect: [branch.id],
+                disconnect: [],
+            },
+            
             users: {
                 connect: [user.id],
                 disconnect: [],

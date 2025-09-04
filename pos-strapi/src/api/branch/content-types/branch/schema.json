@@ -36,16 +36,6 @@
       "relation": "oneToMany",
       "target": "api::stock-item.stock-item"
     },
-    "logo": {
-      "type": "media",
-      "multiple": false,
-      "allowedTypes": [
-        "images",
-        "files",
-        "videos",
-        "audios"
-      ]
-    },
     "payments": {
       "type": "relation",
       "relation": "manyToMany",
@@ -75,6 +65,26 @@
       "relation": "manyToMany",
       "target": "api::sale-return.sale-return",
       "inversedBy": "branches"
+    },
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "gallery": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
     }
   }
 }

@@ -1,21 +1,27 @@
 import qs from 'qs';
 import { authApi } from '../api';
-import { generateNextInvoiceNumber, generateNextPONumber, getUser } from '../utils';
 
+function createQueries(searchText, page, rowsPerPage) {
+    // Helper to build filters only if searchText is present
+    const hasSearch = !!searchText && searchText.trim().length > 0;
 
-function createQueries(searchTerm, page, rowsPerPage) {
-    return [
+    const queries = [
         {
             entity: 'products',
             query: {
                 filters: {
                     $or: [
-                        { name: { $containsi: searchTerm } },
-                        { barcode: { $eq: searchTerm } },
-                        { sku: { $eq: searchTerm } }
+                        { name: { $containsi: searchText } },
+                        { barcode: { $eq: searchText } },
+                        { sku: { $eq: searchText } }
                     ]
                 },
-                populate: ['category', 'brand'],
+                populate: [
+                    'category',
+                    'brand',
+                    'logo',
+                    'gallery'
+                ],
                 pagination: { page, pageSize: rowsPerPage }
             }
         },
@@ -24,12 +30,15 @@ function createQueries(searchTerm, page, rowsPerPage) {
             query: {
                 filters: {
                     $or: [
-                        { suppliers: { $or: [{ name: { $containsi: searchTerm } }, { phone: { $containsi: searchTerm } }] } },
-
-                        { purchase_no: { $eq: searchTerm } },
+                        { suppliers: { $or: [{ name: { $containsi: searchText } }, { phone: { $containsi: searchText } }] } },
+                        { purchase_no: { $eq: searchText } },
                     ]
                 },
-                populate: ['suppliers'],
+                populate: [
+                    'suppliers',
+                    'logo',
+                    'gallery'
+                ],
                 pagination: { page, pageSize: rowsPerPage }
             }
         },
@@ -38,11 +47,16 @@ function createQueries(searchTerm, page, rowsPerPage) {
             query: {
                 filters: {
                     $or: [
-                        { customer: { $or: [{ name: { $containsi: searchTerm } }, { phone: { $containsi: searchTerm } }] } },
-                        { invoice_no: { $eq: searchTerm } },
+                        { customer: { $or: [{ name: { $containsi: searchText } }, { phone: { $containsi: searchText } }] } },
+                        { invoice_no: { $eq: searchText } },
                     ]
                 },
-                populate: ['customer'],
+                populate: [
+                    'customer',
+                    'logo',
+                    'gallery',
+                    'items'
+                ],
                 pagination: { page, pageSize: rowsPerPage }
             }
         },
@@ -51,16 +65,98 @@ function createQueries(searchTerm, page, rowsPerPage) {
             query: {
                 filters: {
                     $or: [
-                        { barcode: { $eq: searchTerm } },
-                        { sku: { $eq: searchTerm } }
+                        { barcode: { $eq: searchText } },
+                        { sku: { $eq: searchText } }
                     ]
                 },
-                populate: ['product'],
+                populate: [
+                    'product',
+                    'logo',
+                    'gallery'
+                ],
+                pagination: { page, pageSize: rowsPerPage }
+            }
+        },
+        {
+            entity: 'branches',
+            query: {
+                filters: {
+                    $or: [
+                        { name: { $containsi: searchText } },
+                        { code: { $eq: searchText } }
+                    ]
+                },
+                populate: [
+                    'logo',
+                    'gallery',
+                    { categories: { populate: ['logo', 'gallery'] } }
+                ],
+                pagination: { page, pageSize: rowsPerPage }
+            }
+        },
+        {
+            entity: 'categories',
+            query: {
+                filters: {
+                    $or: [
+                        { name: { $containsi: searchText } },
+                        { code: { $eq: searchText } }
+                    ]
+                },
+                populate: [
+                    'logo',
+                    'gallery',
+                    { parent: { populate: ['logo', 'gallery'] } }
+                ],
+                pagination: { page, pageSize: rowsPerPage }
+            }
+        },
+        {
+            entity: 'term_types',
+            query: {
+                filters: {
+                    $or: [
+                        { name: { $containsi: searchText } },
+                        { code: { $eq: searchText } }
+                    ]
+                },
+                populate: [
+                    'logo',
+                    'gallery',
+                    { terms: { populate: ['logo', 'gallery'] } }
+                ],
+                pagination: { page, pageSize: rowsPerPage }
+            }
+        },
+        {
+            entity: 'terms',
+            query: {
+                filters: {
+                    $or: [
+                        { name: { $containsi: searchText } },
+                        { code: { $eq: searchText } }
+                    ]
+                },
+                populate: [
+                    'logo',
+                    'gallery',
+                    { term_type: { populate: ['logo', 'gallery'] } }
+                ],
                 pagination: { page, pageSize: rowsPerPage }
             }
         }
     ];
+
+    if (!hasSearch) {
+        queries.forEach(q => {
+            delete q.query.filters;
+        })
+    }
+
+    return queries;
 }
+
+
 
 // General search function across multiple entities
 export async function featchSearch(searchTerm, page, rowsPerPage) {

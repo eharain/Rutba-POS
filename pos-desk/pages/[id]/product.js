@@ -27,6 +27,7 @@ export default function EditProduct() {
 
     const [categories, setCategories] = useState([]);
     const [brands, setBrands] = useState([]);
+    const [branches, setBranches] = useState([]);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
@@ -39,7 +40,8 @@ export default function EditProduct() {
                 // Fetch categories and brands
                 const [categoriesData, brandsData] = await Promise.all([
                     authApi.fetch('/categories').data||[],
-                    authApi.fetch('/brands').data||[]
+                    authApi.fetch('/brands').data||[],
+                    authApi.fetch('/branches').data||[]
                 ]);
 
 
