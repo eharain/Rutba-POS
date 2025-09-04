@@ -2,7 +2,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const STRAPI_SRC_DIR = path.join(__dirname,"pos-strapi", "src", "api"); // Change if needed
+const STRAPI_SRC_DIR = path.join(__dirname,"../../","pos-strapi", "src", "api"); // Change if needed
 const outputFile = path.join(__dirname, "combined-schema.json");
 
 function readSchemas(dir) {
