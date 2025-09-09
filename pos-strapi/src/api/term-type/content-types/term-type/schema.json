@@ -20,6 +20,10 @@
       "target": "api::term.term",
       "inversedBy": "term_types"
     },
+    "slug": {
+      "type": "string",
+      "unique": true
+    },
     "logo": {
       "type": "media",
       "multiple": false,

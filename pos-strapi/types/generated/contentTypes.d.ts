@@ -444,12 +444,14 @@ export interface ApiBrandBrand extends Struct.CollectionTypeSchema {
       'images' | 'files' | 'videos' | 'audios',
       true
     >;
+    keywords: Schema.Attribute.JSON;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::brand.brand'> &
       Schema.Attribute.Private;
     logo: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.String & Schema.Attribute.Unique;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -467,6 +469,7 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    childern: Schema.Attribute.Relation<'oneToMany', 'api::category.category'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -475,6 +478,7 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
       'images' | 'files' | 'videos' | 'audios',
       true
     >;
+    keywords: Schema.Attribute.JSON;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -483,11 +487,9 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     logo: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
-    parent_category: Schema.Attribute.Relation<
-      'manyToOne',
-      'api::category.category'
-    >;
+    parent: Schema.Attribute.Relation<'manyToOne', 'api::category.category'>;
     publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.String & Schema.Attribute.Unique;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -605,10 +607,13 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    barcode: Schema.Attribute.String & Schema.Attribute.Unique;
+    barcode: Schema.Attribute.String;
     branches: Schema.Attribute.Relation<'manyToMany', 'api::branch.branch'>;
-    brand: Schema.Attribute.Relation<'manyToOne', 'api::brand.brand'>;
-    category: Schema.Attribute.Relation<'manyToOne', 'api::category.category'>;
+    brands: Schema.Attribute.Relation<'manyToMany', 'api::brand.brand'>;
+    categories: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::category.category'
+    >;
     cost_price: Schema.Attribute.Decimal;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -618,6 +623,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       true
     >;
     is_active: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    keywords: Schema.Attribute.JSON;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -625,17 +631,22 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     logo: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
-    name: Schema.Attribute.String & Schema.Attribute.Required;
+    name: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     reorder_level: Schema.Attribute.Integer;
-    selling_price: Schema.Attribute.Decimal & Schema.Attribute.Required;
-    sku: Schema.Attribute.String & Schema.Attribute.Unique;
+    selling_price: Schema.Attribute.Decimal;
+    sku: Schema.Attribute.String;
     stock_items: Schema.Attribute.Relation<
       'oneToMany',
       'api::stock-item.stock-item'
     >;
     stock_quantity: Schema.Attribute.Integer;
+    suppliers: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::supplier.supplier'
+    >;
     tax_rate: Schema.Attribute.Decimal;
+    terms: Schema.Attribute.Relation<'manyToMany', 'api::term.term'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1054,6 +1065,7 @@ export interface ApiSupplierSupplier extends Struct.CollectionTypeSchema {
       'images' | 'files' | 'videos' | 'audios',
       true
     >;
+    keywords: Schema.Attribute.JSON;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -1063,6 +1075,7 @@ export interface ApiSupplierSupplier extends Struct.CollectionTypeSchema {
     logo: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     phone: Schema.Attribute.String;
+    products: Schema.Attribute.Relation<'manyToMany', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
     purchases: Schema.Attribute.Relation<
       'manyToMany',
@@ -1101,6 +1114,7 @@ export interface ApiTermTypeTermType extends Struct.CollectionTypeSchema {
     logo: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     name: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.String & Schema.Attribute.Unique;
     terms: Schema.Attribute.Relation<'manyToMany', 'api::term.term'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1126,6 +1140,7 @@ export interface ApiTermTerm extends Struct.CollectionTypeSchema {
       'images' | 'files' | 'videos' | 'audios',
       true
     >;
+    keywords: Schema.Attribute.JSON;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::term.term'> &
       Schema.Attribute.Private;

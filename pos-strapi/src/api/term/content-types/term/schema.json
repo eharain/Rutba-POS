@@ -43,6 +43,9 @@
         "videos",
         "audios"
       ]
+    },
+    "keywords": {
+      "type": "json"
     }
   }
 }

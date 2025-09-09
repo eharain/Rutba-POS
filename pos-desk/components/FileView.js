@@ -143,3 +143,14 @@ function FileView({ multiple = false }) {
 }
 
 export default FileView;
+
+export function uploadToStrapi(fileObj, ref, refId, field) {
+    return (
+        <form>
+            <input type="file" name="files" />
+            <input type="text" name="ref" value="api::restaurant.restaurant" />
+            <input type="text" name="refId" value="YOUR_ENTRY_ID" />
+            <input type="text" name="field" value="cover" />
+        </form>
+    );
+}

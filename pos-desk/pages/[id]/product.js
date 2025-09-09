@@ -6,6 +6,7 @@ import { Input, Select, Checkbox, Button, Form } from '../../components/FormElem
 import ProtectedRoute from '../../components/ProtectedRoute';
 import Layout from '../../components/Layout';
 import { authApi } from '../../lib/api';
+import { saveProduct, loadProduct } from '../../lib/pos';
 // Example usage in a product edit form
 export default function EditProduct() {
     const router = useRouter();
@@ -39,9 +40,9 @@ export default function EditProduct() {
 
                 // Fetch categories and brands
                 const [categoriesData, brandsData] = await Promise.all([
-                    authApi.fetch('/categories').data||[],
-                    authApi.fetch('/brands').data||[],
-                    authApi.fetch('/branches').data||[]
+                    authApi.fetch('/categories').data || [],
+                    authApi.fetch('/brands').data || [],
+                    authApi.fetch('/branches').data || []
                 ]);
 
 
@@ -53,21 +54,8 @@ export default function EditProduct() {
 
                 // If editing existing product, fetch product data
                 if (id && id !== 'new') {
-                    let productData = await authApi.fetch(`/products/${id}`);
-                    productData = productData.data || productData;
-                    setFormData({
-                        name: productData.name || '',
-                        sku: productData.sku || '',
-                        barcode: productData.barcode || '',
-                        cost_price: productData.cost_price || '',
-                        selling_price: productData.selling_price || '',
-                        tax_rate: productData.tax_rate || '',
-                        stock_quantity: productData.stock_quantity || '',
-                        reorder_level: productData.reorder_level || '',
-                        is_active: productData.is_active !== undefined ? productData.is_active : true,
-                        category: productData.category?.id || '',
-                        brand: productData.brand?.id || ''
-                    });
+                    let data = loadProduct(id);
+                    setFormData(data);
                 }
             } catch (err) {
                 setError('Failed to fetch data');
@@ -94,21 +82,12 @@ export default function EditProduct() {
         setError('');
 
         try {
-            const url = id && id !== 'new' ? `/api/products/${id}` : '/api/products';
-            const method = id && id !== 'new' ? 'PUT' : 'POST';
+            const response = await saveProduct(id, formData);
 
-            const response = await fetch(url, {
-                method,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
-
-            if (response.ok) {
+            if (response.data.id > 0) {
                 router.push('/products');
             } else {
-                const errorData = await response.json();
+                const errorData = await response.message;
                 setError(errorData.message || 'Failed to save product');
             }
         } catch (err) {
@@ -148,7 +127,7 @@ export default function EditProduct() {
                     )}
 
                     <Form onSubmit={handleSubmit}>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 pl-10 gap-4 mb-4">
                             <Input
                                 label="Product Name"
                                 name="name"
@@ -284,3 +263,4 @@ export default function EditProduct() {
         </ProtectedRoute>
     );
 }
+

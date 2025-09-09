@@ -14,22 +14,20 @@
   "attributes": {
     "name": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "sku": {
-      "type": "string",
-      "unique": true
+      "type": "string"
+
     },
     "barcode": {
-      "type": "string",
-      "unique": true
+      "type": "string"
     },
     "cost_price": {
       "type": "decimal"
     },
     "selling_price": {
-      "type": "decimal",
-      "required": true
+      "type": "decimal"
     },
     "tax_rate": {
       "type": "decimal"
@@ -44,14 +42,14 @@
       "type": "boolean",
       "default": true
     },
-    "category": {
+    "categories": {
       "type": "relation",
-      "relation": "manyToOne",
+      "relation": "manyToMany",
       "target": "api::category.category"
     },
-    "brand": {
+    "brands": {
       "type": "relation",
-      "relation": "manyToOne",
+      "relation": "manyToMany",
       "target": "api::brand.brand"
     },
     "stock_items": {
@@ -91,6 +89,20 @@
         "videos",
         "audios"
       ]
+    },
+    "keywords": {
+      "type": "json"
+    },
+    "suppliers": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::supplier.supplier",
+      "inversedBy": "products"
+    },
+    "terms": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::term.term"
     }
   }
 }

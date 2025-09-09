@@ -21,13 +21,13 @@ export const Input = ({
     return (
         <div className={`mb-4 ${className}`}>
             {label && (
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={name}>
+                <label className="form-label w-25 items-center" htmlFor={name}>
                     {label}
                     {required && <span className="text-red-500"> *</span>}
                 </label>
             )}
             <input
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${error ? 'border-red-500' : ''
+                className={`form-control ${error ? 'border-red-500' : ''
                     } ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                 id={name}
                 name={name}
@@ -58,9 +58,9 @@ export const Checkbox = ({
 }) => {
     return (
         <div className={`mb-4 ${className}`}>
-            <label className="flex items-center">
+            <label className="form-label w-25 items-center">
                 <input
-                    className="form-checkbox h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="form-checkbox form-control"
                     name={name}
                     type="checkbox"
                     checked={checked}
@@ -68,7 +68,7 @@ export const Checkbox = ({
                     required={required}
                     disabled={disabled}
                 />
-                <span className="ml-2 text-gray-700">{label}</span>
+                <span className="ml-2 text-primary">{label}</span>
                 {required && <span className="text-red-500 ml-1">*</span>}
             </label>
         </div>
@@ -90,13 +90,13 @@ export const Select = ({
     return (
         <div className={`mb-4 ${className}`}>
             {label && (
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={name}>
+                <label className="form-label w-25 items-center" htmlFor={name}>
                     {label}
                     {required && <span className="text-red-500"> *</span>}
                 </label>
             )}
             <select
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${error ? 'border-red-500' : ''
+                className={`form-control ${error ? 'border-red-500' : ''
                     } ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                 id={name}
                 name={name}
@@ -133,13 +133,13 @@ export const TextArea = ({
     return (
         <div className={`mb-4 ${className}`}>
             {label && (
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={name}>
+                <label className="form-label w-25 items-center" htmlFor={name}>
                     {label}
                     {required && <span className="text-red-500"> *</span>}
                 </label>
             )}
             <textarea
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${error ? 'border-red-500' : ''
+                className={`form-control ${error ? 'border-red-500' : ''
                     } ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                 id={name}
                 name={name}

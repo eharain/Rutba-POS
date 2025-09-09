@@ -33,6 +33,12 @@
       "target": "api::purchase.purchase",
       "mappedBy": "suppliers"
     },
+    "products": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::product.product",
+      "mappedBy": "suppliers"
+    },
     "logo": {
       "type": "media",
       "multiple": false,
@@ -52,6 +58,9 @@
         "videos",
         "audios"
       ]
+    },
+    "keywords": {
+      "type": "json"
     }
   }
 }

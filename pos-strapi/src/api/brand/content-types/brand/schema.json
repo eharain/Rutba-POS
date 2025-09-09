@@ -13,6 +13,10 @@
       "type": "string",
       "required": true
     },
+    "slug": {
+      "type": "string",
+      "unique": true
+    },
     "logo": {
       "type": "media",
       "multiple": false,
@@ -32,6 +36,10 @@
         "videos",
         "audios"
       ]
+    },
+    "keywords": {
+      "type": "json"
+
     }
   }
 }

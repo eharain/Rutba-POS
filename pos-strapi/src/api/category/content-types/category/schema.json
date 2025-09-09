@@ -13,13 +13,24 @@
       "type": "string",
       "required": true
     },
+    "slug": {
+      "type": "string",
+      "unique": true
+    },
     "description": {
       "type": "text"
     },
-    "parent_category": {
+    "parent": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "api::category.category"
+      "target": "api::category.category",
+      "inverseBy": "childern"
+    },
+    "childern": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::category.category",
+      "mappedBy": "parent"
     },
     "logo": {
       "type": "media",
@@ -40,6 +51,10 @@
         "videos",
         "audios"
       ]
+    },
+    "keywords": {
+      "type": "json"
+
     }
   }
 }

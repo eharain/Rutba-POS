@@ -38,6 +38,24 @@ async function del(path, jwt) {
     return res.data;
 }
 
+
+async function uploadFile(file, ref, field, refId,jwt) {
+    const form = new FormData();
+    form.append('files', file);
+    if (ref) {
+        form.append('ref', `api::${ref}.${ref}`);
+    }
+
+    if (field) {
+        form.append('field', field);
+    }
+    if (refId) {
+        form.append('refId', refId);
+    }
+
+    return post('/upload', form, jwt)
+}
+
 // ------------------ Public API (no auth) ------------------
 export const api = {
     fetch: async (path, params) => await get(path, params),
@@ -45,6 +63,7 @@ export const api = {
     post: async (path, data) => await post(path, data),
     put: async (path, data) => await get(path, data),
     del: async (path) => await del(path),
+    uploadFile: async (file, ref, field, refId) => await uploadFile(file, ref, field, refId),
 };
 
 // ------------------ Auth API (uses localStorage JWT) ------------------
@@ -54,7 +73,10 @@ export const authApi = {
     post: async (path, data) => await post(path, data, storage.getItem("jwt")),
     put: async (path, data) => await put(path, data, storage.getItem("jwt")),
     del: async (path) => await del(path, storage.getItem("jwt")),
+    uploadFile: async (file, ref, field, refId) => await uploadFile(file, ref, field, refId, storage.getItem("jwt")),
 };
+
+
 
 export const authAPI = authApi;
 
