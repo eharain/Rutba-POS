@@ -12,7 +12,7 @@ const meSchema = require('./content-types/me/schema');
 
 if (!isEdiding) {
     module.exports = (plugin) => {
-        console.info('plugins', strapi.internal_config)
+       // console.info('plugins', strapi.internal_config)
 
         const capi = plugin.routes['content-api'];
 
