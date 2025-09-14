@@ -10,5 +10,8 @@ module.exports = ({ env }) => ({
     logger: {
      //   config: { level: 'silly' }
         // silly, debug, info, warn, or error.
+    },
+    dirs:  {
+        public:env('STRAPI_PUBLIC_DIR','./public')
     }
 });

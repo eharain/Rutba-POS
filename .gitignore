@@ -5,4 +5,4 @@
 /.vs
 /pos-desk/.vs
 /generators/data
-/pos-file-server/package-lock.json
+/pos-strapi/src/admin/vite.config.js

@@ -41,6 +41,7 @@ async function del(path, jwt) {
 
 async function uploadFile(file, ref, field, refId,jwt) {
     const form = new FormData();
+
     form.append('files', file);
     if (ref) {
         form.append('ref', `api::${ref}.${ref}`);
