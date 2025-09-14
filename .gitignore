@@ -5,3 +5,4 @@
 /.vs
 /pos-desk/.vs
 /generators/data
+/pos-file-server/package-lock.json
