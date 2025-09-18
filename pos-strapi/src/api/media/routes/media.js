@@ -15,5 +15,23 @@ module.exports = {
             handler: 'media.createFolder',
             config: { auth: false }
         },
+        {
+            method: 'PUT',
+            path: '/media/folders/:documentId/files',
+            handler: 'media.folderAddFilesByDocumentId',
+            config: { auth: false },
+        },
+        {
+            method: 'POST',
+            path: '/media/files',
+            handler: 'media.createFile',
+            config: { auth: false },
+        },
+        {
+            method: 'POST',
+            path: '/media/publish/:type/:documentId',
+            handler: 'media.publishByTypeAndDocumentId',
+            config: { auth: false },
+        },
     ],
 };
