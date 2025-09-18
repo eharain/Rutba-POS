@@ -9,6 +9,7 @@ import PermissionCheck from "../components/PermissionCheck";
 import { authApi } from "../lib/api";
 import { fetchEntities } from "../lib/pos";
 import { useCart } from "../context/CartContext";
+import StrapiImage from "../components/StrapiImage";
 
 
 export default function Products() {
@@ -60,13 +61,13 @@ export default function Products() {
                 <Layout>
                     <div style={{ padding: 10 }}>
                         <h1>Products</h1>
-                        <SearchBar value={q} onChange={setQ} />
                         <div>
                             <Table>
                                 <TableHead>
                                     <TableRow>
                                         <TableCell>id</TableCell>
                                         <TableCell>Product Name</TableCell>
+                                        <TableCell>Logo</TableCell>
                                         <TableCell>Barcode</TableCell>
                                         <TableCell>SKU</TableCell>
                                         <TableCell>Suppliers</TableCell>
@@ -94,6 +95,7 @@ export default function Products() {
                                             <TableRow key={product.id}>
                                                 <TableCell title={product.documentId}>{product.id}</TableCell>
                                                 <TableCell>{product.name}</TableCell>
+                                                <TableCell><StrapiImage media={product.logo} format="thumbnail" ></StrapiImage> </TableCell>
                                                 <TableCell>{product.barcode}</TableCell>
                                                 <TableCell>{product.sku}</TableCell>
                                                 <TableCell>{product.suppliers?.map(s => s.name)}</TableCell>

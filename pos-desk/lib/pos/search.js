@@ -17,8 +17,8 @@ function createQueries(searchText, page, rowsPerPage) {
                     ]
                 },
                 populate: [
-                    'category',
-                    'brand',
+                    'categories',
+                    'brands',
                     'logo',
                     'gallery'
                 ],

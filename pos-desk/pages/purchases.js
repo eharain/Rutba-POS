@@ -38,9 +38,9 @@ export default function PurchasesPage() {
     return (
         <ProtectedRoute>
             <Layout>
-                <div style={{ padding: 24 }}>
+                <div >
                     <h2 style={{ marginBottom: 16 }}>Purchases</h2>
-                    <div style={{ background: "#fff", borderRadius: 4, boxShadow: "0 2px 8px #eee", overflow: "hidden" }}>
+                    <div >
                         <Table>
                             <TableHead>
                                 <TableRow>

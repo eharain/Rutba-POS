@@ -2,30 +2,32 @@ import qs from 'qs';
 import { authApi } from '../api';
 
 // Fetch sales and returns for reports
-export async function fetchEntities(entities, page, rowsPerPage) {
-    return await authApi.fetch("/" + entities, { sort: ["id:desc"], pagination: {page, pageSize: rowsPerPage } },);
+export async function fetchEntities(entities, page, rowsPerPage=100) {
+    return await authApi.fetch("/" + entities, {
+        sort: ["id:desc"], populate: ['logo'], pagination: { page, pageSize: rowsPerPage }
+    },);
 }
-export async function fetchSales() {
-    return await authApi.fetch("/sales", { sort: ["id:desc"], pagination: { pageSize: 200 } },);
+export async function fetchSales(page, rowsPerPage=200) {
+    return await authApi.fetch("/sales", { sort: ["id:desc"], pagination: { page, pageSize: rowsPerPage } },);
 }
 
-export async function fetchReturns(page, rowsPerPage) {
+export async function fetchReturns(page, rowsPerPage=100) {
     return await authApi.fetch("/sale-returns", { pagination: { page, pageSize: rowsPerPage } });
 }
 
 // Fetch purchases for reports
-export async function fetchPurchases(page, rowsPerPage) {
+export async function fetchPurchases(page, rowsPerPage=100) {
     return await authApi.fetch("/purchases", { sort: ["id:desc"], pagination: { page, pageSize: rowsPerPage } });
 }
 
 //fetchCategories 
-export async function fetchCategories(page, rowPerPage) {
-    return await authApi.fetch("/categories", { sort: ["name:asc"], pagination: { page, pageSize: rowPerPage ?? 100 } });
+export async function fetchCategories(page, rowsPerPage) {
+    return await authApi.fetch("/categories", { sort: ["name:asc"], pagination: { page, pageSize: rowsPerPage ?? 100 } });
 }
 
 //fetchBrands
-export async function fetchBrands(page, rowPerPage) {
-    return await authApi.fetch("/brands", { sort: ["name:asc"], pagination: { page, pageSize: rowPerPage ?? 100 } });
+export async function fetchBrands(page, rowsPerPage) {
+    return await authApi.fetch("/brands", { sort: ["name:asc"], pagination: { page, pageSize: rowsPerPage ?? 100 } });
 }
 
 

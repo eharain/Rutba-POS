@@ -1,11 +1,12 @@
-import React from "react";
+﻿import React from "react";
+import { useState } from "react";
 
 // Simple Table Components
 export function Table({ children }) {
     return <table style={{ width: "100%", borderCollapse: "collapse" }}>{children}</table>;
 }
 export function TableHead({ children }) {
-    return <thead style={{ background: "black" }}>{children}</thead>;
+    return <thead style={{ background: "lightYellow" }}>{children}</thead>;
 }
 export function TableBody({ children }) {
     return <tbody>{children}</tbody>;
@@ -13,14 +14,14 @@ export function TableBody({ children }) {
 export function TableRow({ children }) {
     return <tr>{children}</tr>;
 }
-export function TableCell({ children, align, colSpan ,title}) {
+export function TableCell({ children, align, colSpan, title }) {
     return (
         <td
             title={title}
             colSpan={colSpan}
             style={{
                 border: "1px solid Black",
-                color: "black",
+                color: "gray",
                 padding: "8px",
                 textAlign: align || "left",
             }}
@@ -30,7 +31,7 @@ export function TableCell({ children, align, colSpan ,title}) {
     );
 }
 // Simple Pagination Component
-export function TablePagination({ count, page, rowsPerPage, onPageChange, onRowsPerPageChange, rowsPerPageOptions }) {
+export function TablePagination1({ count, page, rowsPerPage, onPageChange, onRowsPerPageChange, rowsPerPageOptions }) {
     const totalPages = Math.ceil(count / rowsPerPage);
     return (
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px" }}>
@@ -58,6 +59,79 @@ export function TablePagination({ count, page, rowsPerPage, onPageChange, onRows
         </div>
     );
 }
+
+
+export function TablePagination({
+    count,
+    page,
+    rowsPerPage,
+    onPageChange,
+    onRowsPerPageChange,
+    rowsPerPageOptions
+}) {
+    const totalPages = Math.ceil(count / rowsPerPage);
+    const [inputPage, setInputPage] = useState(page + 1); // user-facing is 1-based
+
+    const handleJump = (e) => {
+        e.preventDefault();
+        const targetPage = Number(inputPage) - 1;
+        if (!isNaN(targetPage) && targetPage >= 0 && targetPage < totalPages) {
+            onPageChange(null, targetPage);
+        } else {
+            // Reset to current page if invalid
+            setInputPage(page + 1);
+        }
+    };
+
+    return (
+        <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "8px",
+            gap: "12px"
+        }}>
+            <span>
+                Rows per page:{" "}
+                <select value={rowsPerPage} onChange={onRowsPerPageChange}>
+                    {rowsPerPageOptions.map((opt) => (
+                        <option key={opt} value={opt}>
+                            {opt}
+                        </option>
+                    ))}
+                </select>
+            </span>
+            <span>
+                {page * rowsPerPage + 1}-{Math.min((page + 1) * rowsPerPage, count)} of {count}
+            </span>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <button onClick={() => onPageChange(null, Math.max(0, page - 1))} disabled={page === 0}>
+                    {"< Prev"}
+                </button>
+
+                <form onSubmit={handleJump} style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                    <input
+                        type="number"
+                        min={1}
+                        max={totalPages}
+                        value={inputPage}
+                        onChange={(e) => setInputPage(e.target.value)}
+                        style={{ width: "50px", textAlign: "center" }}
+                    />
+                    <span>/ {totalPages}</span>
+
+                </form>
+
+                <button onClick={() => onPageChange(null, Math.min(totalPages - 1, page + 1))} disabled={page >= totalPages - 1}>
+                    {"Next >"}
+                </button>
+            </div>
+        </div>
+    );
+}
+
+
 // Simple Loader
 export function CircularProgress({ size }) {
     return (

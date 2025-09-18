@@ -1,8 +1,12 @@
 
 import axios from "axios";
 import { storage } from "./storage";
+import qs from 'qs';
+
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1338/api";
+
+export const IMAGE_URL = API_URL.substring(0, API_URL.length-4)
 
 // ------------------ Base Helper ------------------
 function authHeaders(jwt) {
@@ -10,7 +14,7 @@ function authHeaders(jwt) {
 }
 
 async function get(path, data = {}, jwt) {
-    const res = await axios.get(`${API_URL}${path}`, {
+    const res = await axios.get(querify(`${API_URL}${path}`, data), {
         data,
         headers: { ...authHeaders(jwt) },
     });
@@ -81,6 +85,12 @@ export const authApi = {
 
 export const authAPI = authApi;
 
+export function querify(u, data) {
+    if (typeof data == "object" && Object.keys(data).length > 0) {
+        return u + '?' + qs.stringify(data);
+    }
+    return u;
+}
 
 export const stock_status = [
     "InStock",      // Available for sale

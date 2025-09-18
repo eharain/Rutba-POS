@@ -10,9 +10,7 @@ export default function Layout({ children }) {
             <div className="row">
                 <Navigation />
                 <NavigationSecondary></NavigationSecondary>
-                <main className="col-md container py-3">{children}</main>
-
-
+                <main className="col-md container py-3 bg-white">{children}</main>
                 <SearchMenu></SearchMenu>
                 <FooterInfo />
             </div>

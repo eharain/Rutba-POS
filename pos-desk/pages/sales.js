@@ -36,9 +36,9 @@ export default function Sales() {
         <ProtectedRoute>
             <PermissionCheck required="api::sale.sale.find">
                 <Layout>
-                    <div style={{ padding: 24 }}>
-                        <h2 style={{ marginBottom: 16 }}>Sales</h2>
-                        <div style={{ background: "#fff", borderRadius: 4, boxShadow: "0 2px 8px #eee", overflow: "hidden" }}>
+                    <div >
+                        <h2 >Sales</h2>
+                        <div >
                             <Table>
                                 <TableHead>
                                     <TableRow>
