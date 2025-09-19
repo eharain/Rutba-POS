@@ -1,5 +1,6 @@
 ﻿import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
 
 // Simple Table Components
 export function Table({ children }) {
@@ -24,6 +25,7 @@ export function TableCell({ children, align, colSpan, title }) {
                 color: "gray",
                 padding: "8px",
                 textAlign: align || "left",
+                wordWrap: 'break-word'
             }}
         >
             {children}
@@ -60,7 +62,6 @@ export function TablePagination1({ count, page, rowsPerPage, onPageChange, onRow
     );
 }
 
-
 export function TablePagination({
     count,
     page,
@@ -71,6 +72,11 @@ export function TablePagination({
 }) {
     const totalPages = Math.ceil(count / rowsPerPage);
     const [inputPage, setInputPage] = useState(page + 1); // user-facing is 1-based
+
+    // 🔄 Keep inputPage in sync when page changes externally
+    useEffect(() => {
+        setInputPage(page + 1);
+    }, [page]);
 
     const handleJump = (e) => {
         e.preventDefault();
@@ -84,13 +90,15 @@ export function TablePagination({
     };
 
     return (
-        <div style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "8px",
-            gap: "12px"
-        }}>
+        <div
+            style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "8px",
+                gap: "12px"
+            }}
+        >
             <span>
                 Rows per page:{" "}
                 <select value={rowsPerPage} onChange={onRowsPerPageChange}>
@@ -101,16 +109,24 @@ export function TablePagination({
                     ))}
                 </select>
             </span>
+
             <span>
-                {page * rowsPerPage + 1}-{Math.min((page + 1) * rowsPerPage, count)} of {count}
+                {page * rowsPerPage + 1}-{Math.min((page + 1) * rowsPerPage, count)} of{" "}
+                {count}
             </span>
 
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <button onClick={() => onPageChange(null, Math.max(0, page - 1))} disabled={page === 0}>
+                <button
+                    onClick={() => onPageChange(null, Math.max(0, page - 1))}
+                    disabled={page === 0}
+                >
                     {"< Prev"}
                 </button>
 
-                <form onSubmit={handleJump} style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                <form
+                    onSubmit={handleJump}
+                    style={{ display: "flex", alignItems: "center", gap: "4px" }}
+                >
                     <input
                         type="number"
                         min={1}
@@ -120,17 +136,20 @@ export function TablePagination({
                         style={{ width: "50px", textAlign: "center" }}
                     />
                     <span>/ {totalPages}</span>
-
                 </form>
 
-                <button onClick={() => onPageChange(null, Math.min(totalPages - 1, page + 1))} disabled={page >= totalPages - 1}>
+                <button
+                    onClick={() =>
+                        onPageChange(null, Math.min(totalPages - 1, page + 1))
+                    }
+                    disabled={page >= totalPages - 1}
+                >
                     {"Next >"}
                 </button>
             </div>
         </div>
     );
 }
-
 
 // Simple Loader
 export function CircularProgress({ size }) {

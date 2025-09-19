@@ -53,7 +53,7 @@ export default function Products() {
             const needle = q.toLowerCase();
             return name.includes(needle) || barcode.includes(q);
         });
-    }, [products, q]);
+    }, [products, q, page, total]);
 
     return (
         <ProtectedRoute>
@@ -62,6 +62,16 @@ export default function Products() {
                     <div style={{ padding: 10 }}>
                         <h1>Products</h1>
                         <div>
+                            <SearchBar value={q} onChange={setQ} />
+
+                            <TablePagination
+                                count={total}
+                                page={page}
+                                onPageChange={handleChangePage}
+                                rowsPerPage={rowsPerPage}
+                                onRowsPerPageChange={handleChangeRowsPerPage}
+                                rowsPerPageOptions={[5, 10, 25, 50, 100, 150, 200]}
+                            />
                             <Table>
                                 <TableHead>
                                     <TableRow>
@@ -117,7 +127,7 @@ export default function Products() {
                                 onPageChange={handleChangePage}
                                 rowsPerPage={rowsPerPage}
                                 onRowsPerPageChange={handleChangeRowsPerPage}
-                                rowsPerPageOptions={[5, 10, 25]}
+                                rowsPerPageOptions={[5, 10, 25,50,100,150,200]}
                             />
 
                         </div>

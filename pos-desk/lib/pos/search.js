@@ -1,7 +1,7 @@
 import qs from 'qs';
 import { authApi } from '../api';
 
-function createQueries(searchText, page, rowsPerPage) {
+export function createQueries(searchText, page, rowsPerPage) {
     // Helper to build filters only if searchText is present
     const hasSearch = !!searchText && searchText.trim().length > 0;
 
@@ -190,6 +190,7 @@ export async function featchSearch(searchTerm, page, rowsPerPage) {
                 email: r.customer?.email ?? r.supplier?.email ?? '',
                 total: r.total,
                 subtotal: r.subtotal,
+                logo: r.logo
             }
         })
     }).flat();
