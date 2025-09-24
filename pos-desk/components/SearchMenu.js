@@ -20,7 +20,7 @@ export default function SearchMenu() {
             if (!searchText) return;
             setLoading(true);
             const data = await pos.featchSearch(searchText, page, rowsPerPage);
-            setResults(data.data||[]);
+            setResults(data.data || []);
             setTotal(data.meta.pagination.total);
             setLoading(false);
         }
@@ -49,29 +49,28 @@ export default function SearchMenu() {
         setPage(0);
     };
     return (
-        <div className="col-md-4">
-            <div className="row ">
-                <div className="p-3 bg-white border rounded">
-                    <input
-                        type="text"
-                        placeholder="Search or scan barcode..."
-                        value={searchText}
-                        onChange={(e) => SearchTerm(e.target.value)}
-                        style={{ padding: "8px 10px", width: "100%", marginBottom: 12, borderRadius: 6, border: "1px solid #ccc" }}
-                    />
-                </div>
-                <div className="p-3 bg-white border rounded" onClick={handleFocus} onFocus={handleFocus}>
-                    <h4>Result {searchText}</h4>
-                    <ul className="list-group list-group-flush">
-                        {results.map((r, i) => {
-                            return (
-                                <li key={r.id} className="list-group-item">
-                                    {i} -{r.name} - {r.data ? new Date(r.date)?.toLocaleDateString() : ''} - {r.total}
-                                </li>
-                            )
-                        })}
-                    </ul>
-                </div>
+
+        <div className="row ">
+            <div className="p-3 bg-white border rounded">
+                <input
+                    type="text"
+                    placeholder="Search or scan barcode..."
+                    value={searchText}
+                    onChange={(e) => SearchTerm(e.target.value)}
+                    style={{ padding: "8px 10px", width: "100%", marginBottom: 12, borderRadius: 6, border: "1px solid #ccc" }}
+                />
+            </div>
+            <div className="p-3 bg-white border rounded" onClick={handleFocus} onFocus={handleFocus}>
+                <h4>Result {searchText}</h4>
+                <ul className="list-group list-group-flush">
+                    {results.map((r, i) => {
+                        return (
+                            <li key={r.id} className="list-group-item">
+                                {i} -{r.name} - {r.data ? new Date(r.date)?.toLocaleDateString() : ''} - {r.total}
+                            </li>
+                        )
+                    })}
+                </ul>
             </div>
             <TablePagination
                 count={total}

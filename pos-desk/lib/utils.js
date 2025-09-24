@@ -85,4 +85,42 @@ export function padHex(value, length, char = ' ') {
 
     let ps = char + String(value ?? '')//.padStart(length, char); // or padEnd for right padding
     return ps.length > length * 2 ? ps.substring(0, length * 2) : ps; // truncate if too long
-}       
+}
+
+
+export function prepareForPut(obj, relations) {
+    const copy = {}
+    const skip = ['id', 'documentId', 'createdAt', 'updatedAt', 'publishedAt']
+
+    const mediaFields = ['logo', 'gallery', 'receipts'] // adjust to your schema
+
+    for (const [name, value] of Object.entries(obj)) {
+        if (skip.includes(name)) continue
+
+        if (relations.includes(name)) {
+            if (Array.isArray(value)) {
+                copy[name] = {
+                    connect: value.map(v =>
+                        mediaFields.includes(name)
+                            ? { id: v.id } // media requires numeric id
+                            : { documentId: v.documentId }
+                    )
+                }
+            } else if (value) {
+                copy[name] = {
+                    connect: [
+                        mediaFields.includes(name)
+                            ? { id: value.id }
+                            : { documentId: value.documentId }
+                    ]
+                }
+            } else {
+                copy[name] = { connect: [] }
+            }
+        } else {
+            copy[name] = value
+        }
+    }
+
+    return copy
+}

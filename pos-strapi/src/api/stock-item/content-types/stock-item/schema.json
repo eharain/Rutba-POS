@@ -34,7 +34,7 @@
         "Transferred"
       ]
     },
-    "purchase_price": {
+    "cost_price": {
       "type": "decimal"
     },
     "selling_price": {
@@ -44,31 +44,31 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::product.product",
-      "inversedBy": "stock_items"
+      "inversedBy": "items"
     },
     "purchase_item": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::purchase-item.purchase-item",
-      "inversedBy": "stock_items"
+      "inversedBy": "items"
     },
     "sale_item": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::sale-item.sale-item",
-      "inversedBy": "stock_items"
+      "inversedBy": "items"
     },
     "sale_return_item": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::sale-return-item.sale-return-item",
-      "inversedBy": "stock_items"
+      "inversedBy": "items"
     },
     "branch": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::branch.branch",
-      "inversedBy": "stock_items"
+      "inversedBy": "items"
     },
     "status_history": {
       "type": "component",

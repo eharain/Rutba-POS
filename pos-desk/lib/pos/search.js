@@ -1,173 +1,49 @@
 import qs from 'qs';
 import { authApi } from '../api';
+import { buildQueries } from './queries';
 
-export function createQueries(searchText, page, rowsPerPage) {
-    // Helper to build filters only if searchText is present
-    const hasSearch = !!searchText && searchText.trim().length > 0;
+//export function buildSearchQueries(searchText, page = 1, rowsPerPage = 5) {
 
-    const queries = [
-        {
-            entity: 'products',
-            query: {
-                filters: {
-                    $or: [
-                        { name: { $containsi: searchText } },
-                        { barcode: { $eq: searchText } },
-                        { sku: { $eq: searchText } }
-                    ]
-                },
-                populate: [
-                    'categories',
-                    'brands',
-                    'logo',
-                    'gallery'
-                ],
-                pagination: { page, pageSize: rowsPerPage }
-            }
-        },
-        {
-            entity: 'purchases',
-            query: {
-                filters: {
-                    $or: [
-                        { suppliers: { $or: [{ name: { $containsi: searchText } }, { phone: { $containsi: searchText } }] } },
-                        { purchase_no: { $eq: searchText } },
-                    ]
-                },
-                populate: [
-                    'suppliers',
-                    'logo',
-                    'gallery'
-                ],
-                pagination: { page, pageSize: rowsPerPage }
-            }
-        },
-        {
-            entity: 'sales',
-            query: {
-                filters: {
-                    $or: [
-                        { customer: { $or: [{ name: { $containsi: searchText } }, { phone: { $containsi: searchText } }] } },
-                        { invoice_no: { $eq: searchText } },
-                    ]
-                },
-                populate: [
-                    'customer',
-                    'logo',
-                    'gallery',
-                    'items'
-                ],
-                pagination: { page, pageSize: rowsPerPage }
-            }
-        },
-        {
-            entity: 'stock-items',
-            query: {
-                filters: {
-                    $or: [
-                        { barcode: { $eq: searchText } },
-                        { sku: { $eq: searchText } }
-                    ]
-                },
-                populate: [
-                    'product',
-                    'logo',
-                    'gallery'
-                ],
-                pagination: { page, pageSize: rowsPerPage }
-            }
-        },
-        {
-            entity: 'branches',
-            query: {
-                filters: {
-                    $or: [
-                        { name: { $containsi: searchText } },
-                        { code: { $eq: searchText } }
-                    ]
-                },
-                populate: [
-                    'logo',
-                    'gallery',
-                    { categories: { populate: ['logo', 'gallery'] } }
-                ],
-                pagination: { page, pageSize: rowsPerPage }
-            }
-        },
-        {
-            entity: 'categories',
-            query: {
-                filters: {
-                    $or: [
-                        { name: { $containsi: searchText } },
-                        { code: { $eq: searchText } }
-                    ]
-                },
-                populate: [
-                    'logo',
-                    'gallery',
-                    { parent: { populate: ['logo', 'gallery'] } }
-                ],
-                pagination: { page, pageSize: rowsPerPage }
-            }
-        },
-        {
-            entity: 'term_types',
-            query: {
-                filters: {
-                    $or: [
-                        { name: { $containsi: searchText } },
-                        { code: { $eq: searchText } }
-                    ]
-                },
-                populate: [
-                    'logo',
-                    'gallery',
-                    { terms: { populate: ['logo', 'gallery'] } }
-                ],
-                pagination: { page, pageSize: rowsPerPage }
-            }
-        },
-        {
-            entity: 'terms',
-            query: {
-                filters: {
-                    $or: [
-                        { name: { $containsi: searchText } },
-                        { code: { $eq: searchText } }
-                    ]
-                },
-                populate: [
-                    'logo',
-                    'gallery',
-                    { term_type: { populate: ['logo', 'gallery'] } }
-                ],
-                pagination: { page, pageSize: rowsPerPage }
-            }
-        }
-    ];
+//    const queriesObject = buildQueries(searchText, page, rowsPerPage);
 
-    if (!hasSearch) {
-        queries.forEach(q => {
-            delete q.query.filters;
-        })
-    }
+//    const queries = Object.entries(queriesObject).map(([entity, { query }]) => {
+//        return {
+//            entity, query: { ...query, ...{ filters: query.search_filters } }
+//        };
+//    });
 
-    return queries;
-}
+//    const hasSearch = !!searchText && searchText.trim().length > 0;
+//    queries.forEach(q => {
+//        if (!hasSearch) {
+//            delete q.query.filters;
+//        }
 
+//        q.url = `/${q.entity}?` + qs.stringify(q.query, { encodeValuesOnly: true });
+//    })
+//    return queries;
+
+//}
+//export function createQueries(searchText, page, rowsPerPage) {
+//    // Helper to build filters only if searchText is present
+
+//    const queries = buildSearchQueries(searchText, page, rowsPerPage);
+
+
+
+//    return queries;
+//}
 
 
 // General search function across multiple entities
 export async function featchSearch(searchTerm, page, rowsPerPage) {
-    let queries = createQueries(searchTerm, page, rowsPerPage);
+    let queries = Object.values(buildQueries(searchTerm, page, rowsPerPage));
 
     let results = [];
     // for (let { name, query } in queries) {
-    for (let { entity, query } of queries) {
+    for (let { entity, query, url } of queries) {
 
-        const res = await authApi.fetch(`/${entity}?` + qs.stringify(query, { encodeValuesOnly: true }));
-        console.log('Fetching', entity, query, res.data);
+        const res = await authApi.fetch(url);
+        console.log('Fetching', entity, url, res.data);
         results.push({ entity, data: res?.data ?? [], pagination: res?.meta?.pagination })
     }
 
@@ -213,11 +89,26 @@ export async function featchSearch(searchTerm, page, rowsPerPage) {
 // Search stock items by name
 export async function searchStockItemsByName(searchTerm) {
     const res = await authApi.get(`/stock-items?filters[name][$containsi]=${searchTerm}`);
-    return res.data.data;
+    return dataNode(res);
 }
 
 // Search stock items by barcode and add to sale
 export async function searchStockItemsByBarcode(barcode) {
     const res = await authApi.get(`/stock-items?filters[barcode][$eq]=${barcode}`);
-    return res.data.data;
+    return dataNode(res);
+}
+
+
+
+// Mock function - replace with your actual API call
+export async function searchProduct(searchTerm, page = 0, rowsPerPage = 100) {
+    const query = buildQueries(searchTerm, page, rowsPerPage).products
+    console.log('Product search query:', query);
+    const res = await authApi.fetch(query.url);
+    return dataNode( res);
+};
+
+
+export function dataNode(res) {
+    return res.data?.data ?? res.data ?? res;
 }

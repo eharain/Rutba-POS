@@ -30,7 +30,7 @@
       "relation": "manyToOne",
       "target": "api::product.product"
     },
-    "stock_items": {
+    "items": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::stock-item.stock-item",

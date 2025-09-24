@@ -1,74 +1,12 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { authApi } from "../../lib/api";
-import { fetchPurchaseByIdOrInvoice } from "../../lib/pos";
+import { fetchPurchaseByIdDocumentIdOrPO, fetchEnumsValues } from "../../lib/pos";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import Layout from "../../components/Layout";
-
-function ProductSearch({ value, onChange }) {
-    const [query, setQuery] = useState(value?.name || "");
-    const [results, setResults] = useState([]);
-    const [showDropdown, setShowDropdown] = useState(false);
-
-    useEffect(() => {
-        if (query.length < 2) {
-            setResults([]);
-            return;
-        }
-        let ignore = false;
-        authApi.fetch(`/api/products?name=${encodeURIComponent(query)}`)
-            .then(res => res.ok ? res.json() : [])
-            .then(data => {
-                if (!ignore) setResults(data);
-            });
-        return () => { ignore = true; };
-    }, [query]);
-
-    return (
-        <div style={{ position: "relative" }}>
-            <input
-                type="text"
-                value={query}
-                onChange={e => {
-                    setQuery(e.target.value);
-                    setShowDropdown(true);
-                }}
-                onFocus={() => setShowDropdown(true)}
-                onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
-                placeholder="Search product..."
-                style={{ width: "150px" }}
-            />
-            {showDropdown && results.length > 0 && (
-                <ul style={{
-                    position: "absolute",
-                    zIndex: 10,
-                    background: "#fff",
-                    border: "1px solid #ccc",
-                    width: "100%",
-                    maxHeight: "150px",
-                    overflowY: "auto",
-                    margin: 0,
-                    padding: 0,
-                    listStyle: "none"
-                }}>
-                    {results.map(product => (
-                        <li
-                            key={product.id}
-                            style={{ padding: "4px", cursor: "pointer" }}
-                            onMouseDown={() => {
-                                onChange(product);
-                                setQuery(product.name);
-                                setShowDropdown(false);
-                            }}
-                        >
-                            {product.name}
-                        </li>
-                    ))}
-                </ul>
-            )}
-        </div>
-    );
-}
+import { Table, TableHead, TableBody, TableRow, TableCell } from "../../components/Table";
+import PurchaseItemsList from "../../components/lists/purchase-items-list";
+import PurchaseItemForm from "../../components/form/purchase-item-form";
 
 export default function PurchasePage() {
     const router = useRouter();
@@ -77,159 +15,276 @@ export default function PurchasePage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [editItems, setEditItems] = useState([]);
+    const [editingItemId, setEditingItemId] = useState(null);
+    const [purchaseStatuses, setPurchaseStatuses] = useState([]);
 
     useEffect(() => {
         if (!id) return;
-        setLoading(true);
-        try {
-            const data = fetchPurchaseByIdOrInvoice(id)
 
-            setPurchase(data);
-            setEditItems(data.items?.map(item => ({
-                ...item,
-                product: item.product || null,
-                isEditing: false
-            })) || []);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
+        const loadData = async () => {
+            setLoading(true);
+            try {
+                const [purchaseData, statuses] = await Promise.all([
+                    fetchPurchaseByIdDocumentIdOrPO(id),
+                    fetchEnumsValues("purchase", "status")
+                ]);
+
+                setPurchase(purchaseData);
+                setPurchaseStatuses(statuses || []);
+                setEditItems(purchaseData.items?.map(item => ({
+                    ...item,
+                    product: item.product || null,
+                    // Handle different field names from your API
+                    price: item.unit_price || item.price || 0,
+                    quantity: item.quantity || 0,
+                    total: (item.quantity || 0) * (item.unit_price || item.price || 0)
+                })) || []);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadData();
     }, [id]);
 
-    const handleEdit = idx => {
-        setEditItems(items =>
-            items.map((item, i) =>
-                i === idx ? { ...item, isEditing: true } : item
-            )
-        );
+    const handleEdit = (itemId) => {
+        setEditingItemId(itemId);
     };
 
-    const handleCancel = idx => {
-        setEditItems(items =>
-            items.map((item, i) =>
-                i === idx ? { ...item, isEditing: false } : item
-            )
-        );
+    const handleCancel = () => {
+        setEditingItemId(null);
     };
 
-    const handleChange = (idx, field, value) => {
-        setEditItems(items =>
-            items.map((item, i) =>
-                i === idx ? { ...item, [field]: value } : item
-            )
-        );
-    };
-
-    const handleSave = async idx => {
-        const item = editItems[idx];
-        // Save to backend
+    const handleSave = async (updatedData) => {
         try {
-            const res = await authApi.put(`/api/purchase/${id}/items/${item.id}`,
-                {
-                    productId: item.product?.id,
-                    quantity: Number(item.quantity),
-                    unitPrice: Number(item.unitPrice)
-                }
-            );
+            const itemToUpdate = editItems.find(item => item.id === editingItemId);
+            if (!itemToUpdate) throw new Error("Item not found");
+
+            const res = await authApi.put(`/api/purchase/${purchase.id}/items/${editingItemId}`, {
+                productId: updatedData.product?.id,
+                quantity: Number(updatedData.quantity),
+                unitPrice: Number(updatedData.price)
+            });
+
             if (!res.ok) throw new Error("Failed to update item");
-            const updated = await res.json();
+
+            const updatedItem = await res.json();
+
             setEditItems(items =>
-                items.map((it, i) =>
-                    i === idx ? { ...updated, product: updated.product, isEditing: false } : it
+                items.map(item =>
+                    item.id === editingItemId
+                        ? {
+                            ...updatedItem,
+                            product: updatedItem.product || updatedData.product,
+                            price: updatedItem.unit_price || updatedItem.price,
+                            total: (updatedItem.quantity || 0) * (updatedItem.unit_price || updatedItem.price || 0)
+                        }
+                        : item
                 )
             );
+
+            setEditingItemId(null);
         } catch (err) {
             alert(err.message);
         }
     };
 
-    if (loading) return <div>Loading purchase...</div>;
-    if (error) return <div>Error: {error}</div>;
-    if (!purchase) return <div>No purchase found.</div>;
+    const handleStatusChange = async (newStatus) => {
+        try {
+            const res = await authApi.put(`/api/purchase/${purchase.id}`, {
+                status: newStatus
+            });
+
+            if (!res.ok) throw new Error("Failed to update status");
+
+            const updatedPurchase = await res.json();
+            setPurchase(updatedPurchase);
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+
+    const handleAddNewItem = () => {
+        const newItem = {
+            id: `temp-${Date.now()}`,
+            quantity: 1,
+            price: 0,
+            total: 0,
+            product: null,
+            isNew: true
+        };
+        setEditItems(prev => [...prev, newItem]);
+        setEditingItemId(newItem.id);
+    };
+
+    const handleSaveNewItem = async (newItemData) => {
+        try {
+            const res = await authApi.post(`/api/purchase/${purchase.id}/items`, {
+                productId: newItemData.product?.id,
+                quantity: Number(newItemData.quantity),
+                unitPrice: Number(newItemData.price)
+            });
+
+            if (!res.ok) throw new Error("Failed to add new item");
+
+            const savedItem = await res.json();
+
+            setEditItems(items =>
+                items.map(item =>
+                    item.id === editingItemId
+                        ? {
+                            ...savedItem,
+                            product: savedItem.product || newItemData.product,
+                            price: savedItem.unit_price || savedItem.price,
+                            total: (savedItem.quantity || 0) * (savedItem.unit_price || savedItem.price || 0)
+                        }
+                        : item
+                )
+            );
+
+            setEditingItemId(null);
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+
+    const handleDeleteItem = async (itemId) => {
+        if (!confirm("Are you sure you want to delete this item?")) return;
+
+        try {
+            const res = await authApi.delete(`/api/purchase/${purchase.id}/items/${itemId}`);
+            if (!res.ok) throw new Error("Failed to delete item");
+
+            setEditItems(items => items.filter(item => item.id !== itemId));
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+
+    const getStatusColor = (status) => {
+        switch (status) {
+            case "Pending": return "#f5c542";
+            case "Submitted": return "#42a5f5";
+            case "Received": return "#66bb6a";
+            case "Cancelled": return "#ef5350";
+            default: return "#9e9e9e";
+        }
+    };
+
+    if (loading) return (
+        <ProtectedRoute>
+            <Layout>
+                <div style={{ padding: '20px', textAlign: 'center' }}>Loading purchase...</div>
+            </Layout>
+        </ProtectedRoute>
+    );
+
+    if (error) return (
+        <ProtectedRoute>
+            <Layout>
+                <div style={{ padding: '20px', color: 'red' }}>Error: {error}</div>
+            </Layout>
+        </ProtectedRoute>
+    );
+
+    if (!purchase) return (
+        <ProtectedRoute>
+            <Layout>
+                <div style={{ padding: '20px' }}>No purchase found.</div>
+            </Layout>
+        </ProtectedRoute>
+    );
 
     return (
         <ProtectedRoute>
             <Layout>
-                <div>
-                    <h1>Purchase #{purchase.id}</h1>
-                    <div>
-                        <strong>Supplier:</strong> {purchase.supplier?.name || "N/A"}
+                <div style={{ padding: '20px' }}>
+                    {/* Back to Purchases List */}
+                    <div style={{ marginBottom: '20px' }}>
+                        <button
+                            onClick={() => router.push('/purchases')}
+                            style={{
+                                padding: '8px 16px',
+                                background: 'transparent',
+                                color: '#007bff',
+                                border: '1px solid #007bff',
+                                borderRadius: '4px',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            ← Back to Purchases
+                        </button>
                     </div>
-                    <div>
-                        <strong>Date:</strong> {purchase.date || "N/A"}
+
+                    <h1>Purchase #{purchase.purchase_no || purchase.id}</h1>
+
+                    {/* Purchase Header Info */}
+                    <div style={{
+                        marginBottom: '20px',
+                        padding: '15px',
+                        background: '#f8f9fa',
+                        borderRadius: '4px',
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                        gap: '10px'
+                    }}>
+                        <div><strong>Supplier:</strong> {purchase.supplier?.name || "N/A"}</div>
+                        <div><strong>Date:</strong> {purchase.order_date || purchase.date || "N/A"}</div>
+                        <div><strong>Invoice:</strong> {purchase.invoice || "N/A"}</div>
+                        <div>
+                            <strong>Status:</strong>
+                            <select
+                                value={purchase.status}
+                                onChange={(e) => handleStatusChange(e.target.value)}
+                                style={{
+                                    marginLeft: '8px',
+                                    padding: '4px 8px',
+                                    borderRadius: '4px',
+                                    border: '1px solid #ccc'
+                                }}
+                            >
+                                {purchaseStatuses.map((status) => (
+                                    <option key={status} value={status}>
+                                        {status}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div><strong>Total:</strong> ${parseFloat(purchase.total || 0).toFixed(2)}</div>
                     </div>
-                    <div>
-                        <strong>Total:</strong> ${purchase.total?.toFixed(2) || "0.00"}
-                    </div>
+
                     <h2>Items</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Product</th>
-                                <th>Qty</th>
-                                <th>Unit Price</th>
-                                <th>Subtotal</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {editItems.map((item, idx) => (
-                                <tr key={item.id}>
-                                    <td>
-                                        {item.isEditing ? (
-                                            <ProductSearch
-                                                value={item.product}
-                                                onChange={prod => handleChange(idx, "product", prod)}
-                                            />
-                                        ) : (
-                                            item.product?.name || "N/A"
-                                        )}
-                                    </td>
-                                    <td>
-                                        {item.isEditing ? (
-                                            <input
-                                                type="number"
-                                                min="1"
-                                                value={item.quantity}
-                                                onChange={e => handleChange(idx, "quantity", e.target.value)}
-                                                style={{ width: "60px" }}
-                                            />
-                                        ) : (
-                                            item.quantity
-                                        )}
-                                    </td>
-                                    <td>
-                                        {item.isEditing ? (
-                                            <input
-                                                type="number"
-                                                min="0"
-                                                step="0.01"
-                                                value={item.unitPrice}
-                                                onChange={e => handleChange(idx, "unitPrice", e.target.value)}
-                                                style={{ width: "80px" }}
-                                            />
-                                        ) : (
-                                            `$${item.unitPrice?.toFixed(2) || "0.00"}`
-                                        )}
-                                    </td>
-                                    <td>
-                                        ${((item.quantity || 0) * (item.unitPrice || 0)).toFixed(2)}
-                                    </td>
-                                    <td>
-                                        {item.isEditing ? (
-                                            <>
-                                                <button onClick={() => handleSave(idx)}>Save</button>
-                                                <button onClick={() => handleCancel(idx)}>Cancel</button>
-                                            </>
-                                        ) : (
-                                            <button onClick={() => handleEdit(idx)}>Edit</button>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+
+                    {/* Purchase Items List */}
+                    <PurchaseItemsList
+                        purchaseItems={editItems}
+                        editingItemId={editingItemId}
+                        onEditItem={handleEdit}
+                        onDeleteItem={handleDeleteItem}
+                        onSaveItem={handleSave}
+                        onCancelEdit={handleCancel}
+                    />
+
+                    {/* Add New Item Button */}
+                    {!editingItemId && (
+                        <div style={{ marginTop: '20px' }}>
+                            <button
+                                onClick={handleAddNewItem}
+                                style={{
+                                    padding: '8px 16px',
+                                    background: '#28a745',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                + Add New Item
+                            </button>
+                        </div>
+                    )}
                 </div>
             </Layout>
         </ProtectedRoute>

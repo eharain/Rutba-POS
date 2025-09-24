@@ -24,10 +24,27 @@
     "status": {
       "type": "enumeration",
       "enum": [
+        "Draft",
         "Pending",
+        "Submitted",
+        "Partially Received",
         "Received",
+        "Closed",
         "Cancelled"
-      ]
+      ],
+      "default": "Draft"
+    },
+    "approval_status": {
+      "type": "enumeration",
+      "enum": [
+        "Draft",
+        "Pending Approval",
+        "Not Required",
+        "Approved",
+        "Rejected",
+        "Revised"
+      ],
+      "default": "Draft"
     },
     "total": {
       "type": "decimal"
@@ -53,8 +70,15 @@
       "type": "media",
       "multiple": true,
       "allowedTypes": [
-        "images",
+        "images"
+      ]
+    },
+    "receipts": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
         "files",
+        "images",
         "videos",
         "audios"
       ]

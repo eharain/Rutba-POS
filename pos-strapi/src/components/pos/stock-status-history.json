@@ -6,21 +6,27 @@
   },
   "options": {},
   "attributes": {
-  "status": {
+    "status": {
       "type": "enumeration",
       "default": "InStock",
       "enum": [
-        "InStock",      
-        "Reserved",     
-        "Sold",         
-        "Returned",     
-        "ReturnedDamaged", 
+        "InStock",
+        "Reserved",
+        "Sold",
+        "Returned",
+        "ReturnedDamaged",
         "ReturnedToSupplier",
-        "Damaged",      
-        "Lost",         
-        "Expired",      
-        "Transferred"  
+        "Damaged",
+        "Lost",
+        "Expired",
+        "Transferred"
       ]
+    },
+    "cost_price": {
+      "type": "decimal"
+    },
+    "selling_price": {
+      "type": "decimal"
     },
     "createdAt": {
       "type": "date",

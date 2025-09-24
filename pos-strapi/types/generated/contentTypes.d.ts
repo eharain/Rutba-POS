@@ -394,6 +394,7 @@ export interface ApiBranchBranch extends Struct.CollectionTypeSchema {
       'images' | 'files' | 'videos' | 'audios',
       true
     >;
+    items: Schema.Attribute.Relation<'oneToMany', 'api::stock-item.stock-item'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -415,10 +416,6 @@ export interface ApiBranchBranch extends Struct.CollectionTypeSchema {
       'api::sale-return.sale-return'
     >;
     sales: Schema.Attribute.Relation<'manyToMany', 'api::sale.sale'>;
-    stock_items: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::stock-item.stock-item'
-    >;
     town: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -610,6 +607,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     barcode: Schema.Attribute.String;
     branches: Schema.Attribute.Relation<'manyToMany', 'api::branch.branch'>;
     brands: Schema.Attribute.Relation<'manyToMany', 'api::brand.brand'>;
+    bundle_size: Schema.Attribute.Integer;
     categories: Schema.Attribute.Relation<
       'manyToMany',
       'api::category.category'
@@ -623,6 +621,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       true
     >;
     is_active: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    items: Schema.Attribute.Relation<'oneToMany', 'api::stock-item.stock-item'>;
     keywords: Schema.Attribute.JSON;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -636,10 +635,6 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     reorder_level: Schema.Attribute.Integer;
     selling_price: Schema.Attribute.Decimal;
     sku: Schema.Attribute.String;
-    stock_items: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::stock-item.stock-item'
-    >;
     stock_quantity: Schema.Attribute.Integer;
     suppliers: Schema.Attribute.Relation<
       'manyToMany',
@@ -672,6 +667,7 @@ export interface ApiPurchaseItemPurchaseItem
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    items: Schema.Attribute.Relation<'oneToMany', 'api::stock-item.stock-item'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -683,10 +679,6 @@ export interface ApiPurchaseItemPurchaseItem
     publishedAt: Schema.Attribute.DateTime;
     purchase: Schema.Attribute.Relation<'manyToOne', 'api::purchase.purchase'>;
     quantity: Schema.Attribute.Integer;
-    stock_items: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::stock-item.stock-item'
-    >;
     total: Schema.Attribute.Decimal;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -782,13 +774,21 @@ export interface ApiPurchasePurchase extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
+    approval_status: Schema.Attribute.Enumeration<
+      [
+        'Draft',
+        'Pending Approval',
+        'Not Required',
+        'Approved',
+        'Rejected',
+        'Revised',
+      ]
+    > &
+      Schema.Attribute.DefaultTo<'Draft'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    gallery: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios',
-      true
-    >;
+    gallery: Schema.Attribute.Media<'images', true>;
     items: Schema.Attribute.Relation<
       'oneToMany',
       'api::purchase-item.purchase-item'
@@ -803,7 +803,22 @@ export interface ApiPurchasePurchase extends Struct.CollectionTypeSchema {
     order_recieved_date: Schema.Attribute.DateTime;
     publishedAt: Schema.Attribute.DateTime;
     purchase_no: Schema.Attribute.String & Schema.Attribute.Required;
-    status: Schema.Attribute.Enumeration<['Pending', 'Received', 'Cancelled']>;
+    receipts: Schema.Attribute.Media<
+      'files' | 'images' | 'videos' | 'audios',
+      true
+    >;
+    status: Schema.Attribute.Enumeration<
+      [
+        'Draft',
+        'Pending',
+        'Submitted',
+        'Partially Received',
+        'Received',
+        'Closed',
+        'Cancelled',
+      ]
+    > &
+      Schema.Attribute.DefaultTo<'Draft'>;
     suppliers: Schema.Attribute.Relation<
       'manyToMany',
       'api::supplier.supplier'
@@ -834,6 +849,7 @@ export interface ApiSaleItemSaleItem extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     discount: Schema.Attribute.Decimal;
+    items: Schema.Attribute.Relation<'oneToMany', 'api::stock-item.stock-item'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -845,10 +861,6 @@ export interface ApiSaleItemSaleItem extends Struct.CollectionTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     quantity: Schema.Attribute.Integer;
     sale: Schema.Attribute.Relation<'manyToOne', 'api::sale.sale'>;
-    stock_items: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::stock-item.stock-item'
-    >;
     tax: Schema.Attribute.Decimal;
     total: Schema.Attribute.Decimal;
     updatedAt: Schema.Attribute.DateTime;
@@ -872,6 +884,7 @@ export interface ApiSaleReturnItemSaleReturnItem
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    items: Schema.Attribute.Relation<'oneToMany', 'api::stock-item.stock-item'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -885,10 +898,6 @@ export interface ApiSaleReturnItemSaleReturnItem
     sale_return: Schema.Attribute.Relation<
       'manyToOne',
       'api::sale-return.sale-return'
-    >;
-    stock_items: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::stock-item.stock-item'
     >;
     total: Schema.Attribute.Decimal;
     updatedAt: Schema.Attribute.DateTime;
@@ -993,6 +1002,7 @@ export interface ApiStockItemStockItem extends Struct.CollectionTypeSchema {
   attributes: {
     barcode: Schema.Attribute.String & Schema.Attribute.Unique;
     branch: Schema.Attribute.Relation<'manyToOne', 'api::branch.branch'>;
+    cost_price: Schema.Attribute.Decimal;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1008,7 +1018,6 @@ export interface ApiStockItemStockItem extends Struct.CollectionTypeSchema {
       'manyToOne',
       'api::purchase-item.purchase-item'
     >;
-    purchase_price: Schema.Attribute.Decimal;
     sale_item: Schema.Attribute.Relation<
       'manyToOne',
       'api::sale-item.sale-item'

@@ -35,6 +35,9 @@
     "stock_quantity": {
       "type": "integer"
     },
+    "bundle_size": {
+      "type": "integer"
+    },
     "reorder_level": {
       "type": "integer"
     },
@@ -52,7 +55,7 @@
       "relation": "manyToMany",
       "target": "api::brand.brand"
     },
-    "stock_items": {
+    "items": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::stock-item.stock-item",

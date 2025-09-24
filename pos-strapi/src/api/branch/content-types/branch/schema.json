@@ -31,7 +31,7 @@
       "component": "pos.sales-desks",
       "repeatable": true
     },
-    "stock_items": {
+    "items": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::stock-item.stock-item"

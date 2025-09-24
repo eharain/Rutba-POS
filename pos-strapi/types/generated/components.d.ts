@@ -20,10 +20,12 @@ export interface PosStockStatusHistory extends Struct.ComponentSchema {
     icon: 'history';
   };
   attributes: {
+    cost_price: Schema.Attribute.Decimal;
     createdAt: Schema.Attribute.Date &
       Schema.Attribute.DefaultTo<{
         $now: true;
       }>;
+    selling_price: Schema.Attribute.Decimal;
     status: Schema.Attribute.Enumeration<
       [
         'InStock',

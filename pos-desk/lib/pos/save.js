@@ -16,8 +16,10 @@ export async function saveSaleItems(id, items) {
     });
 }
 
+
 // Save changes to purchase items
 export async function savePurchaseItems(id, items) {
+
     return await authApi.put(`/purchases/${id}`, {
         data: {
             items: items.map((i) => ({
@@ -100,4 +102,32 @@ export async function saveProduct(id, formData) {
 function containsAlphabet(str) {
     const regex = /[a-zA-Z]/; // Matches any uppercase or lowercase letter
     return regex.test(str);
+}
+
+
+
+
+export async function savePurchase(idx, purchase){
+    const items = purchase.items;
+    const saveItems = [];
+    for (const item of items) {
+        if (item.documentId) {
+            const res = await authApi.put('/purchase-items+/' + item.documentId, { data: item })
+            saveItems.push(res?.data?.data ?? res?.data ?? res);
+        } else {
+            const res = await authApi.post('/purchase-items', { data: item })
+            saveItems.push(res?.data?.data ?? res?.data ?? res);
+        }
+    }
+    const purchaseData = { ...purchase }
+
+    purchaseData.items = { connect: saveItems.map(i => i.documentId) };
+
+    if (idx) {
+        const res = await authApi.put('/purchases/' + idx, { data: purchaseData });
+        return res?.data?.data ?? res?.data ?? res;
+    } else {
+        const res = await authApi.post('/purchases', { data: purchaseData });
+        return res?.data?.data ?? res?.data ?? res;
+    }
 }
