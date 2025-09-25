@@ -1,7 +1,7 @@
 ﻿import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { authApi } from "../../lib/api";
-import { fetchPurchaseByIdDocumentIdOrPO, fetchEnumsValues } from "../../lib/pos";
+import { fetchPurchaseByIdDocumentIdOrPO, fetchEnumsValues, savePurchaseItem } from "../../lib/pos";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import Layout from "../../components/Layout";
 import { Table, TableHead, TableBody, TableRow, TableCell } from "../../components/Table";
@@ -62,7 +62,7 @@ export default function PurchasePage() {
             const itemToUpdate = editItems.find(item => item.id === editingItemId);
             if (!itemToUpdate) throw new Error("Item not found");
 
-            const res = await authApi.put(`/api/purchase/${purchase.id}/items/${editingItemId}`, {
+            const res = await authApi.put(`/purchase/${purchase.id}/items/${editingItemId}`, {
                 productId: updatedData.product?.id,
                 quantity: Number(updatedData.quantity),
                 unitPrice: Number(updatedData.price)
@@ -93,14 +93,14 @@ export default function PurchasePage() {
 
     const handleStatusChange = async (newStatus) => {
         try {
-            const res = await authApi.put(`/api/purchase/${purchase.id}`, {
+            const res = await authApi.put(`/purchases/${purchase.id}`, {
                 status: newStatus
             });
 
-            if (!res.ok) throw new Error("Failed to update status");
+            //if (!res.ok) throw new Error("Failed to update status");
 
-            const updatedPurchase = await res.json();
-            setPurchase(updatedPurchase);
+            //const updatedPurchase = await res.json();
+            //setPurchase(updatedPurchase);
         } catch (err) {
             alert(err.message);
         }
@@ -121,15 +121,24 @@ export default function PurchasePage() {
 
     const handleSaveNewItem = async (newItemData) => {
         try {
-            const res = await authApi.post(`/api/purchase/${purchase.id}/items`, {
-                productId: newItemData.product?.id,
+            const data = {
+                product: newItemData.product,
+                purchase: purchase,
                 quantity: Number(newItemData.quantity),
                 unitPrice: Number(newItemData.price)
-            });
+            }
+            const savedItem = await savePurchaseItem(data);
 
-            if (!res.ok) throw new Error("Failed to add new item");
 
-            const savedItem = await res.json();
+            //const res = await authApi.post(`/purchase/${purchase.documentId}/items`, {
+            //    productId: newItemData.product?.id,
+            //    quantity: Number(newItemData.quantity),
+            //    unitPrice: Number(newItemData.price)
+            //});
+
+            //if (!res.ok) throw new Error("Failed to add new item");
+
+            //const savedItem = await res.json();
 
             setEditItems(items =>
                 items.map(item =>
@@ -154,7 +163,7 @@ export default function PurchasePage() {
         if (!confirm("Are you sure you want to delete this item?")) return;
 
         try {
-            const res = await authApi.delete(`/api/purchase/${purchase.id}/items/${itemId}`);
+            const res = await authApi.del(`/api/purchase-items/${itemId}`);
             if (!res.ok) throw new Error("Failed to delete item");
 
             setEditItems(items => items.filter(item => item.id !== itemId));

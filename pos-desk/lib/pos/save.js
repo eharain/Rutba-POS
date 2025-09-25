@@ -1,6 +1,8 @@
 
 import qs from 'qs';
 import { authApi } from '../api';
+import { prepareForPut } from '../utils';
+import { dataNode } from './search';
 
 
 // Save changes to sale items
@@ -75,6 +77,7 @@ export async function saveProduct(id, formData) {
         'tax_rate',
         'stock_quantity',
         'reorder_level',
+        'bundle_size',
         //'category',
         //'brand'
     ];
@@ -107,27 +110,59 @@ function containsAlphabet(str) {
 
 
 
-export async function savePurchase(idx, purchase){
+export async function savePurchase(idx, purchase) {
     const items = purchase.items;
     const saveItems = [];
-    for (const item of items) {
-        if (item.documentId) {
-            const res = await authApi.put('/purchase-items+/' + item.documentId, { data: item })
-            saveItems.push(res?.data?.data ?? res?.data ?? res);
-        } else {
-            const res = await authApi.post('/purchase-items', { data: item })
-            saveItems.push(res?.data?.data ?? res?.data ?? res);
-        }
+    if (!Array.isArray(purchase.suppliers)) {
+        purchase.suppliers = [];
     }
+    for (const item of items) {
+        if (Array.isArray(item.product.suppliers)) {
+            purchase.suppliers.push(...item.product.suppliers);
+        }
+
+        const saveItem = await savePurchaseItem(item);
+        saveItems.push(saveItem);
+
+    }
+
+    //for (const item of items) {
+    //    if (item.documentId) {
+    //        const res = await authApi.put('/purchase-items+/' + item.documentId, { data: prepareForPut(item, ['product', 'purchase']) })
+    //        saveItems.push(res?.data?.data ?? res?.data ?? res);
+    //    } else {
+    //        const res = await authApi.post('/purchase-items', { data: prepareForPut(item, ['product', 'purchase']) })
+    //        saveItems.push(res?.data?.data ?? res?.data ?? res);
+    //    }
+    //}
+
+
     const purchaseData = { ...purchase }
 
     purchaseData.items = { connect: saveItems.map(i => i.documentId) };
 
     if (idx) {
-        const res = await authApi.put('/purchases/' + idx, { data: purchaseData });
+        const res = await authApi.put('/purchases/' + idx, { data: prepareForPut(purchaseData, ['suppliers', 'products', 'users']) });
         return res?.data?.data ?? res?.data ?? res;
     } else {
         const res = await authApi.post('/purchases', { data: purchaseData });
         return res?.data?.data ?? res?.data ?? res;
+    }
+}
+
+
+
+/**
+* Save a single purchase item, using PUT if documentId exists, otherwise POST.
+* @param {Object} item - The purchase item to save.
+* @returns {Promise<Object>} The saved item response.
+*/
+export async function savePurchaseItem(item) {
+    if (item.documentId) {
+        const res = await authApi.put('/purchase-items/' + item.documentId, { data: prepareForPut(item, ['product', 'purchase']) });
+        return dataNode(res);//?.data?.data ?? res?.data ?? res;
+    } else {
+        const res = await authApi.post('/purchase-items', { data: prepareForPut(item, ['product', 'purchase']) });
+        return dataNode(res);//?.data?.data ?? res?.data ?? res;
     }
 }

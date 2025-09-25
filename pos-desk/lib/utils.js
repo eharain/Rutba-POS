@@ -93,6 +93,9 @@ export function prepareForPut(obj, relations) {
     const skip = ['id', 'documentId', 'createdAt', 'updatedAt', 'publishedAt']
 
     const mediaFields = ['logo', 'gallery', 'receipts'] // adjust to your schema
+    if (relations.includes('users')) {
+        obj.user = Array.isArray(obj.users) ? [...obj.users, getUser()] : [getUser()]
+    }
 
     for (const [name, value] of Object.entries(obj)) {
         if (skip.includes(name)) continue

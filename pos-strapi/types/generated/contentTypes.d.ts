@@ -607,7 +607,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     barcode: Schema.Attribute.String;
     branches: Schema.Attribute.Relation<'manyToMany', 'api::branch.branch'>;
     brands: Schema.Attribute.Relation<'manyToMany', 'api::brand.brand'>;
-    bundle_size: Schema.Attribute.Integer;
+    bundle_size: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<1>;
     categories: Schema.Attribute.Relation<
       'manyToMany',
       'api::category.category'
@@ -632,6 +632,10 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     logo: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     name: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    purchase_items: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::purchase-item.purchase-item'
+    >;
     reorder_level: Schema.Attribute.Integer;
     selling_price: Schema.Attribute.Decimal;
     sku: Schema.Attribute.String;

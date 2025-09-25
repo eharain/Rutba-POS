@@ -19,28 +19,30 @@ const PurchaseItemsList = ({ purchaseItems, onEditItem, onDeleteItem, onSaveItem
                 {purchaseItems.map((item) => (
                     <React.Fragment key={item.id}>
                         {editingItemId === item.id ? (
-                            <TableRow>
-                                <TableCell colSpan={5} style={{ padding: 0 }}>
-                                    <div style={{ padding: '10px', background: '#f9f9f9' }}>
-                                        <PurchaseItemForm
-                                            purchaseItem={item}
-                                            onSubmit={onSaveItem}
-                                            onCancel={onCancelEdit}
-                                        />
-                                    </div>
-                                </TableCell>
-                            </TableRow>
+
+                            <PurchaseItemForm
+                                purchaseItem={item}
+                                onSubmit={onSaveItem}
+                                onCancel={onCancelEdit}
+                            />
+
                         ) : (
                             <TableRow>
                                 <TableCell>
                                     <strong>{item.product?.name || "N/A"}</strong>
-                                    {item.product?.code && (
+                                    {item.product?.barcode && (
                                         <span style={{ color: '#666', marginLeft: '8px' }}>
-                                            ({item.product.code})
+                                            ({item.product.barcode})
                                         </span>
                                     )}
                                 </TableCell>
-                                <TableCell align="center">{item.quantity}</TableCell>
+                                <TableCell align="center">
+                                    <strong>{item.quantity}</strong>
+                                    {item?.product?.bundle_size > 1 && (<span style={{ color: '#666', marginLeft: '8px' }}>
+                                        bundle of  {item?.product?.bundle_size}
+                                    </span>
+                                    )}
+                                </TableCell>
                                 <TableCell align="center">
                                     ${item.unitPrice?.toFixed(2) || item.price?.toFixed(2) || "0.00"}
                                 </TableCell>
@@ -50,7 +52,7 @@ const PurchaseItemsList = ({ purchaseItems, onEditItem, onDeleteItem, onSaveItem
                                     </strong>
                                 </TableCell>
                                 <TableCell align="center">
-                                    <button 
+                                    <button
                                         onClick={() => onEditItem(item.id)}
                                         style={{
                                             padding: '4px 12px',
@@ -64,7 +66,7 @@ const PurchaseItemsList = ({ purchaseItems, onEditItem, onDeleteItem, onSaveItem
                                     >
                                         Edit
                                     </button>
-                                    <button 
+                                    <button
                                         onClick={() => onDeleteItem(item.id)}
                                         style={{
                                             padding: '4px 12px',

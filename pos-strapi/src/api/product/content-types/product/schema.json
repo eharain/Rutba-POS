@@ -36,7 +36,8 @@
       "type": "integer"
     },
     "bundle_size": {
-      "type": "integer"
+      "type": "integer",
+      "default": 1
     },
     "reorder_level": {
       "type": "integer"
@@ -59,6 +60,12 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::stock-item.stock-item",
+      "mappedBy": "product"
+    },
+    "purchase_items": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::purchase-item.purchase-item",
       "mappedBy": "product"
     },
     "users": {

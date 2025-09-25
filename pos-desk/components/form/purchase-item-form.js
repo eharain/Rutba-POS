@@ -56,8 +56,8 @@ const PurchaseItemForm = ({ purchaseItem, onSubmit, onCancel }) => {
     const handleProductSearch = async (searchText) => {
         setLoading(true);
         try {
-            const results = await searchProduct(searchText);
-            setSearchResults(results);
+            const productResult = await searchProduct(searchText);
+            setSearchResults(productResult);
             setShowResults(true);
         } catch (error) {
             console.error('Error searching products:', error);
@@ -76,8 +76,18 @@ const PurchaseItemForm = ({ purchaseItem, onSubmit, onCancel }) => {
     };
 
     const handleProductSelect = (product) => {
+
+        let price = product.cost_price || 0;//formData.price;
+        price = parseFloat(price);
+        if (price > 0) {
+            price = price - 5 * (price / 100)
+        } else {
+            price = formData.price;
+        }
+
         setFormData(prev => ({
             ...prev,
+            price,
             product: product
         }));
         setProductSearch(product.name);
@@ -94,183 +104,196 @@ const PurchaseItemForm = ({ purchaseItem, onSubmit, onCancel }) => {
     };
 
     return (
-        <Table>
-            <TableHead>
-                <TableRow>
-                    <TableCell>Product</TableCell>
-                    <TableCell align="center">Quantity</TableCell>
-                    <TableCell align="center">Price</TableCell>
-                    <TableCell align="center">Total</TableCell>
-                    <TableCell align="center">Actions</TableCell>
-                </TableRow>
-            </TableHead>
-            <TableBody>
-                <TableRow>
-                    <TableCell>
-                        <div style={{ position: 'relative' }}>
-                            <input
-                                type="text"
-                                value={productSearch}
-                                onChange={(e) => setProductSearch(e.target.value)}
-                                placeholder="Search product..."
-                                style={{
-                                    width: '100%',
-                                    padding: '4px 8px',
-                                    border: '1px solid #ccc',
-                                    borderRadius: '4px'
-                                }}
-                            />
+        
+        <TableRow>
+            <TableCell>
+                <div style={{ position: 'relative' }}>
+                    <input
+                        type="text"
+                        value={productSearch}
+                        onChange={(e) => setProductSearch(e.target.value)}
+                        placeholder="Search product..."
+                        style={{
+                            width: '100%',
+                            padding: '4px 8px',
+                            border: '1px solid #ccc',
+                            borderRadius: '4px'
+                        }}
+                    />
 
-                            {loading && (
-                                <div style={{
-                                    position: 'absolute',
-                                    top: '100%',
-                                    left: 0,
-                                    right: 0,
-                                    background: 'white',
-                                    border: '1px solid #ccc',
-                                    padding: '4px',
-                                    zIndex: 10
-                                }}>
-                                    Searching...
-                                </div>
-                            )}
-
-                            {showResults && searchResults.length > 0 && (
-                                <div style={{
-                                    position: 'absolute',
-                                    top: '100%',
-                                    left: 0,
-                                    right: 0,
-                                    background: 'white',
-                                    border: '1px solid #ccc',
-                                    maxHeight: '150px',
-                                    overflowY: 'auto',
-                                    zIndex: 10
-                                }}>
-                                    {searchResults.map(product => (
-                                        <div
-                                            key={product.id}
-                                            onClick={() => handleProductSelect(product)}
-                                            style={{
-                                                padding: '8px',
-                                                cursor: 'pointer',
-                                                borderBottom: '1px solid #eee'
-                                            }}
-                                            onMouseEnter={(e) => e.target.style.background = '#f5f5f5'}
-                                            onMouseLeave={(e) => e.target.style.background = 'white'}
-                                        >
-                                            {product.name}
-                                            {product.barcode && (
-                                                <span style={{ color: '#666', marginLeft: '8px' }}>
-                                                    ({product.barcode})
-                                                </span>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-
-                            {formData.product && (
-                                <div style={{ fontSize: '12px', color: 'green', marginTop: '4px' }}>
-                                    Selected: <strong>{formData.product.name}</strong>
-                                </div>
-                            )}
+                    {loading && (
+                        <div style={{
+                            position: 'absolute',
+                            top: '100%',
+                            left: 0,
+                            right: 0,
+                            background: 'white',
+                            border: '1px solid #ccc',
+                            padding: '4px',
+                            zIndex: 10
+                        }}>
+                            Searching...
                         </div>
-                    </TableCell>
+                    )}
 
-                    <TableCell align="center">
-                        <input
-                            type="number"
-                            name="quantity"
-                            value={formData.quantity}
-                            onChange={handleInputChange}
-                            min="0"
-                            step="1"
-                            style={{
-                                width: '80px',
-                                padding: '4px 8px',
-                                border: '1px solid #ccc',
-                                borderRadius: '4px',
-                                textAlign: 'center'
-                            }}
-                            required
-                        />
-                    </TableCell>
-
-                    <TableCell align="center">
-                        <input
-                            type="number"
-                            name="price"
-                            value={formData.price}
-                            onChange={handleInputChange}
-                            min="0"
-                            step="0.01"
-                            style={{
-                                width: '100px',
-                                padding: '4px 8px',
-                                border: '1px solid #ccc',
-                                borderRadius: '4px',
-                                textAlign: 'center'
-                            }}
-                            required
-                        />
-                    </TableCell>
-
-                    <TableCell align="center">
-                        <input
-                            type="number"
-                            value={formData.total}
-                            readOnly
-                            style={{
-                                width: '100px',
-                                padding: '4px 8px',
-                                border: '1px solid #ccc',
-                                borderRadius: '4px',
-                                background: '#f5f5f5',
-                                textAlign: 'center'
-                            }}
-                        />
-                    </TableCell>
-
-                    <TableCell align="center">
-                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                            <button
-                                type="button"
-                                onClick={handleSubmit}
-                                style={{
-                                    padding: '4px 12px',
-                                    background: '#007bff',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                Save
-                            </button>
-                            <button
-                                type="button"
-                                onClick={handleCancel}
-                                style={{
-                                    padding: '4px 12px',
-                                    background: '#6c757d',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                Cancel
-                            </button>
+                    {showResults && searchResults.length > 0 && (
+                        <div style={{
+                            position: 'absolute',
+                            top: '100%',
+                            left: 0,
+                            right: 0,
+                            background: 'white',
+                            border: '1px solid #ccc',
+                            maxHeight: '150px',
+                            overflowY: 'auto',
+                            zIndex: 10
+                        }}>
+                            {searchResults.map(product => (
+                                <div
+                                    key={product.id}
+                                    onClick={() => handleProductSelect(product)}
+                                    style={{
+                                        padding: '8px',
+                                        cursor: 'pointer',
+                                        borderBottom: '1px solid #eee'
+                                    }}
+                                    onMouseEnter={(e) => e.target.style.background = '#f5f5f5'}
+                                    onMouseLeave={(e) => e.target.style.background = 'white'}
+                                >
+                                    {product.name}
+                                    {product.barcode && (
+                                        <span style={{ color: '#666', marginLeft: '8px' }}>
+                                            ({product.barcode})
+                                        </span>
+                                    )}
+                                </div>
+                            ))}
                         </div>
-                    </TableCell>
-                </TableRow>
-            </TableBody>
-        </Table>
+                    )}
+
+                    {formData.product && (
+                        <div style={{ fontSize: '12px', color: 'green', marginTop: '4px' }}>
+                            Selected: <strong>{formData.product.name}({formData.product.cost_price})</strong>
+                        </div>
+                    )}
+                </div>
+            </TableCell>
+
+            <TableCell align="center">
+                <input
+                    type="number"
+                    name="quantity"
+                    value={formData.quantity}
+                    onChange={handleInputChange}
+                    min="0"
+                    step="1"
+                    style={{
+                        width: '80px',
+                        padding: '4px 8px',
+                        border: '1px solid #ccc',
+                        borderRadius: '4px',
+                        textAlign: 'center'
+                    }}
+                    required
+                />
+                <br />
+                {formData.product?.bundle_size > 0 && (<span style={{ color: '#666', marginLeft: '8px' }}>
+                    bundle of  {formData.product?.bundle_size}
+                </span>
+                )}
+            </TableCell>
+
+            <TableCell align="center">
+                <input
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleInputChange}
+                    min="0"
+                    step="0.01"
+                    style={{
+                        width: '100px',
+                        padding: '4px 8px',
+                        border: '1px solid #ccc',
+                        borderRadius: '4px',
+                        textAlign: 'center'
+                    }}
+                    required
+                />
+            </TableCell>
+
+            <TableCell align="center">
+                <input
+                    type="number"
+                    value={formData.total}
+                    readOnly
+                    style={{
+                        width: '100px',
+                        padding: '4px 8px',
+                        border: '1px solid #ccc',
+                        borderRadius: '4px',
+                        background: '#f5f5f5',
+                        textAlign: 'center'
+                    }}
+                />
+            </TableCell>
+
+            <TableCell align="center">
+                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                    <button
+                        type="button"
+                        onClick={handleSubmit}
+                        style={{
+                            padding: '4px 12px',
+                            background: '#007bff',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Save
+                    </button>
+                    <button
+                        type="button"
+                        onClick={handleCancel}
+                        style={{
+                            padding: '4px 12px',
+                            background: '#6c757d',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </TableCell>
+        </TableRow>
+
     );
 };
 
 
 
 export default PurchaseItemForm;
+
+export function PurchaseItemFormTable({ children }) {
+
+    return (<Table>
+        <TableHead>
+            <TableRow>
+                <TableCell>Product</TableCell>
+                <TableCell align="center">Quantity</TableCell>
+                <TableCell align="center">Price</TableCell>
+                <TableCell align="center">Total</TableCell>
+                <TableCell align="center">Actions</TableCell>
+            </TableRow>
+        </TableHead>
+        <TableBody>
+            {children}
+        </TableBody>
+    </Table>
+    )
+}
