@@ -7,6 +7,7 @@ import Layout from "../../components/Layout";
 import { Table, TableHead, TableBody, TableRow, TableCell } from "../../components/Table";
 import PurchaseItemsList from "../../components/lists/purchase-items-list";
 import PurchaseItemForm from "../../components/form/purchase-item-form";
+import { generateNextDocumentId } from "../../lib/utils";
 
 export default function PurchasePage() {
     const router = useRouter();
@@ -15,7 +16,7 @@ export default function PurchasePage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [editItems, setEditItems] = useState([]);
-    const [editingItemId, setEditingItemId] = useState(null);
+    const [editingDocumentId, setEditingDocumentId] = useState(null);
     const [purchaseStatuses, setPurchaseStatuses] = useState([]);
 
     useEffect(() => {
@@ -49,52 +50,77 @@ export default function PurchasePage() {
         loadData();
     }, [id]);
 
-    const handleEdit = (itemId) => {
-        setEditingItemId(itemId);
+    const handleEdit = (documentId) => {
+        setEditingDocumentId(documentId);
     };
 
     const handleCancel = () => {
-        setEditingItemId(null);
+        setEditingDocumentId(null);
     };
 
     const handleSave = async (updatedData) => {
         try {
-            const itemToUpdate = editItems.find(item => item.id === editingItemId);
-            if (!itemToUpdate) throw new Error("Item not found");
 
-            const res = await authApi.put(`/purchase/${purchase.id}/items/${editingItemId}`, {
-                productId: updatedData.product?.id,
-                quantity: Number(updatedData.quantity),
-                unitPrice: Number(updatedData.price)
-            });
+            const savedItem = await saveItemdData(updatedData);
+            appendItemToItems(savedItem);
+                  
 
-            if (!res.ok) throw new Error("Failed to update item");
-
-            const updatedItem = await res.json();
-
-            setEditItems(items =>
-                items.map(item =>
-                    item.id === editingItemId
-                        ? {
-                            ...updatedItem,
-                            product: updatedItem.product || updatedData.product,
-                            price: updatedItem.unit_price || updatedItem.price,
-                            total: (updatedItem.quantity || 0) * (updatedItem.unit_price || updatedItem.price || 0)
-                        }
-                        : item
-                )
-            );
-
-            setEditingItemId(null);
+            setEditingDocumentId(null);
         } catch (err) {
-            alert(err.message);
+            alert('handleSave',err.message);
+        }
+    };
+    const handleSaveNewItem = async (newItemData) => {
+        try {
+
+            const savedItem = await saveItemdData(newItemData);
+            appendItemToItems(savedItem);
+
+
+            setEditingDocumentId(null);
+        } catch (err) {
+            alert('handleSaveNewItem',err.message);
         }
     };
 
+    async function saveItemdData(newItemData) {
+        const bundle_units = newItemData.product?.bundle_units ?? 1
+        const unit_price = Number(newItemData.price) / bundle_units;
+
+        const data = {
+            product: newItemData.product,
+            purchase: purchase,
+            quantity: Number(newItemData.quantity),
+            price: Number(newItemData.price),
+            unit_price,
+            bundle_units,
+        }
+        const savedItem = await savePurchaseItem(data);
+        return savedItem;
+    }
+
+    async function appendItemToItems(updatedItem) {
+        // const savedItem = await saveItemdData(newItemData);
+        const items = [...editItems];
+
+        let itemIndex = items.findIndex(item => item.documentId === updatedItem.documentId);
+        if (itemIndex > -1) {
+            items[itemIndex] = updatedItem;
+        } else {
+            items.push(updatedItem);
+        }
+
+        setEditItems(items)
+        
+        return updatedItem;
+    }
+
+
+
     const handleStatusChange = async (newStatus) => {
         try {
-            const res = await authApi.put(`/purchases/${purchase.id}`, {
-                status: newStatus
+            const res = await authApi.put(`/purchases/${purchase.documentId}`, {
+                data: { status: newStatus }
             });
 
             //if (!res.ok) throw new Error("Failed to update status");
@@ -108,67 +134,29 @@ export default function PurchasePage() {
 
     const handleAddNewItem = () => {
         const newItem = {
-            id: `temp-${Date.now()}`,
+            documentId: generateNextDocumentId(),
             quantity: 1,
             price: 0,
             total: 0,
             product: null,
-            isNew: true
+            purchase
         };
         setEditItems(prev => [...prev, newItem]);
-        setEditingItemId(newItem.id);
+        setEditingDocumentId(newItem.documentId);
     };
 
-    const handleSaveNewItem = async (newItemData) => {
-        try {
-            const data = {
-                product: newItemData.product,
-                purchase: purchase,
-                quantity: Number(newItemData.quantity),
-                unitPrice: Number(newItemData.price)
-            }
-            const savedItem = await savePurchaseItem(data);
 
-
-            //const res = await authApi.post(`/purchase/${purchase.documentId}/items`, {
-            //    productId: newItemData.product?.id,
-            //    quantity: Number(newItemData.quantity),
-            //    unitPrice: Number(newItemData.price)
-            //});
-
-            //if (!res.ok) throw new Error("Failed to add new item");
-
-            //const savedItem = await res.json();
-
-            setEditItems(items =>
-                items.map(item =>
-                    item.id === editingItemId
-                        ? {
-                            ...savedItem,
-                            product: savedItem.product || newItemData.product,
-                            price: savedItem.unit_price || savedItem.price,
-                            total: (savedItem.quantity || 0) * (savedItem.unit_price || savedItem.price || 0)
-                        }
-                        : item
-                )
-            );
-
-            setEditingItemId(null);
-        } catch (err) {
-            alert(err.message);
-        }
-    };
-
-    const handleDeleteItem = async (itemId) => {
+    const handleDeleteItem = async (documentId) => {
         if (!confirm("Are you sure you want to delete this item?")) return;
 
         try {
-            const res = await authApi.del(`/api/purchase-items/${itemId}`);
-            if (!res.ok) throw new Error("Failed to delete item");
-
-            setEditItems(items => items.filter(item => item.id !== itemId));
+            const res = await authApi.del(`/purchase-items/${documentId}`);
+            
+            setEditItems(items.filter(item => item.documentId !== documentId));
         } catch (err) {
+           
             alert(err.message);
+             throw new Error("Failed to delete item");
         }
     };
 
@@ -227,7 +215,7 @@ export default function PurchasePage() {
                         </button>
                     </div>
 
-                    <h1>Purchase #{purchase.purchase_no || purchase.id}</h1>
+                    <h1>Purchase #{purchase.purchase_no || purchase.documentId}</h1>
 
                     {/* Purchase Header Info */}
                     <div style={{
@@ -241,7 +229,7 @@ export default function PurchasePage() {
                     }}>
                         <div><strong>Supplier:</strong> {purchase.supplier?.name || "N/A"}</div>
                         <div><strong>Date:</strong> {purchase.order_date || purchase.date || "N/A"}</div>
-                        <div><strong>Invoice:</strong> {purchase.invoice || "N/A"}</div>
+                        <div><strong>Invoice:</strong> {purchase.purchase_no || "N/A"}</div>
                         <div>
                             <strong>Status:</strong>
                             <select
@@ -269,7 +257,7 @@ export default function PurchasePage() {
                     {/* Purchase Items List */}
                     <PurchaseItemsList
                         purchaseItems={editItems}
-                        editingItemId={editingItemId}
+                        editingDocumentId={editingDocumentId}
                         onEditItem={handleEdit}
                         onDeleteItem={handleDeleteItem}
                         onSaveItem={handleSave}
@@ -277,7 +265,7 @@ export default function PurchasePage() {
                     />
 
                     {/* Add New Item Button */}
-                    {!editingItemId && (
+                    {!editingDocumentId && (
                         <div style={{ marginTop: '20px' }}>
                             <button
                                 onClick={handleAddNewItem}

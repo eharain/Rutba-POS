@@ -21,7 +21,9 @@ const PurchaseItemForm = ({ purchaseItem, onSubmit, onCancel }) => {
                 quantity: purchaseItem.quantity || 0,
                 price: purchaseItem.price || 0,
                 total: purchaseItem.total || 0,
-                product: purchaseItem.product || null
+                product: purchaseItem.product || null,
+                unit_price: purchaseItem.unit_price,
+                bundle_units: purchaseItem.bundle_units ?? purchaseItem.product?.bundle_units??1,
             });
 
             if (purchaseItem.product) {
@@ -197,8 +199,8 @@ const PurchaseItemForm = ({ purchaseItem, onSubmit, onCancel }) => {
                     required
                 />
                 <br />
-                {formData.product?.bundle_size > 0 && (<span style={{ color: '#666', marginLeft: '8px' }}>
-                    bundle of  {formData.product?.bundle_size}
+                {formData.product?.bundle_units > 0 && (<span style={{ color: '#666', marginLeft: '8px' }}>
+                    bundle of  {formData.product?.bundle_units}
                 </span>
                 )}
             </TableCell>

@@ -607,7 +607,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     barcode: Schema.Attribute.String;
     branches: Schema.Attribute.Relation<'manyToMany', 'api::branch.branch'>;
     brands: Schema.Attribute.Relation<'manyToMany', 'api::brand.brand'>;
-    bundle_size: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<1>;
+    bundle_units: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<1>;
     categories: Schema.Attribute.Relation<
       'manyToMany',
       'api::category.category'
@@ -668,6 +668,7 @@ export interface ApiPurchaseItemPurchaseItem
     draftAndPublish: false;
   };
   attributes: {
+    bundle_units: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<1>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -678,12 +679,14 @@ export interface ApiPurchaseItemPurchaseItem
       'api::purchase-item.purchase-item'
     > &
       Schema.Attribute.Private;
+    order_units: Schema.Attribute.Integer;
     price: Schema.Attribute.Decimal;
     product: Schema.Attribute.Relation<'manyToOne', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
     purchase: Schema.Attribute.Relation<'manyToOne', 'api::purchase.purchase'>;
     quantity: Schema.Attribute.Integer;
     total: Schema.Attribute.Decimal;
+    unit_price: Schema.Attribute.Decimal;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

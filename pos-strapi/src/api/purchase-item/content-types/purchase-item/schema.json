@@ -17,6 +17,16 @@
     "price": {
       "type": "decimal"
     },
+    "bundle_units": {
+      "type": "decimal",
+      "default": 1
+    },
+    "unit_price": {
+      "type": "decimal"
+    },
+    "order_units": {
+      "type": "integer"
+    },
     "total": {
       "type": "decimal"
     },

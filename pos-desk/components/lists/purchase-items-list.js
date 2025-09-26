@@ -3,7 +3,7 @@ import React from 'react';
 import { Table, TableHead, TableBody, TableRow, TableCell } from '../Table';
 import PurchaseItemForm from '../form/purchase-item-form';
 
-const PurchaseItemsList = ({ purchaseItems, onEditItem, onDeleteItem, onSaveItem, onCancelEdit, editingItemId }) => {
+const PurchaseItemsList = ({ purchaseItems, onEditItem, onDeleteItem, onSaveItem, onCancelEdit, editingDocumentId }) => {
     return (
         <Table>
             <TableHead>
@@ -17,8 +17,8 @@ const PurchaseItemsList = ({ purchaseItems, onEditItem, onDeleteItem, onSaveItem
             </TableHead>
             <TableBody>
                 {purchaseItems.map((item) => (
-                    <React.Fragment key={item.id}>
-                        {editingItemId === item.id ? (
+                    <React.Fragment key={item.documentId}>
+                        {editingDocumentId === item.editingDocumentId ? (
 
                             <PurchaseItemForm
                                 purchaseItem={item}
@@ -38,8 +38,8 @@ const PurchaseItemsList = ({ purchaseItems, onEditItem, onDeleteItem, onSaveItem
                                 </TableCell>
                                 <TableCell align="center">
                                     <strong>{item.quantity}</strong>
-                                    {item?.product?.bundle_size > 1 && (<span style={{ color: '#666', marginLeft: '8px' }}>
-                                        bundle of  {item?.product?.bundle_size}
+                                    {item?.product?.bundle_units > 1 && (<span style={{ color: '#666', marginLeft: '8px' }}>
+                                        bundle of  {item?.product?.bundle_units}
                                     </span>
                                     )}
                                 </TableCell>
@@ -67,7 +67,7 @@ const PurchaseItemsList = ({ purchaseItems, onEditItem, onDeleteItem, onSaveItem
                                         Edit
                                     </button>
                                     <button
-                                        onClick={() => onDeleteItem(item.id)}
+                                        onClick={() => onDeleteItem(item.documentId)}
                                         style={{
                                             padding: '4px 12px',
                                             background: 'transparent',

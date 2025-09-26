@@ -35,7 +35,7 @@
     "stock_quantity": {
       "type": "integer"
     },
-    "bundle_size": {
+    "bundle_units": {
       "type": "integer",
       "default": 1
     },

@@ -133,8 +133,8 @@ export default function PurchasesPage() {
                                                 <strong>{purchase.purchase_no}</strong>
                                             </TableCell>
                                             <TableCell>{purchase.order_date}</TableCell>
-                                            <TableCell>{purchase?.supplier?.name}</TableCell>
-                                            <TableCell>{purchase.invoice}</TableCell>
+                                            <TableCell>{purchase?.suppliers?.map(s=>s.name)}</TableCell>
+                                            <TableCell>{purchase.purchase_no}</TableCell>
                                             <TableCell align="right">
                                                 ${parseFloat(purchase.total || 0).toFixed(2)}
                                             </TableCell>

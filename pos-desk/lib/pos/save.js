@@ -3,6 +3,7 @@ import qs from 'qs';
 import { authApi } from '../api';
 import { prepareForPut } from '../utils';
 import { dataNode } from './search';
+import { urlAndRelations } from './queries';
 
 
 // Save changes to sale items
@@ -77,7 +78,7 @@ export async function saveProduct(id, formData) {
         'tax_rate',
         'stock_quantity',
         'reorder_level',
-        'bundle_size',
+        'bundle_units',
         //'category',
         //'brand'
     ];
@@ -126,27 +127,18 @@ export async function savePurchase(idx, purchase) {
 
     }
 
-    //for (const item of items) {
-    //    if (item.documentId) {
-    //        const res = await authApi.put('/purchase-items+/' + item.documentId, { data: prepareForPut(item, ['product', 'purchase']) })
-    //        saveItems.push(res?.data?.data ?? res?.data ?? res);
-    //    } else {
-    //        const res = await authApi.post('/purchase-items', { data: prepareForPut(item, ['product', 'purchase']) })
-    //        saveItems.push(res?.data?.data ?? res?.data ?? res);
-    //    }
-    //}
-
-
     const purchaseData = { ...purchase }
 
     purchaseData.items = { connect: saveItems.map(i => i.documentId) };
 
-    if (idx) {
-        const res = await authApi.put('/purchases/' + idx, { data: prepareForPut(purchaseData, ['suppliers', 'products', 'users']) });
-        return res?.data?.data ?? res?.data ?? res;
+    const { url, relations } = urlAndRelations('purchases', purchaseData.id >-1 ? purchaseData.documentId : null, null, 1, 1);
+
+    if (purchaseData.id > 0) {
+        const res = await authApi.put(url, { data: prepareForPut(purchaseData, relations) });
+        return dataNode(res);
     } else {
-        const res = await authApi.post('/purchases', { data: purchaseData });
-        return res?.data?.data ?? res?.data ?? res;
+        const res = await authApi.post(url, { data: prepareForPut(purchaseData, relations) });
+        return dataNode(res);
     }
 }
 
@@ -158,11 +150,13 @@ export async function savePurchase(idx, purchase) {
 * @returns {Promise<Object>} The saved item response.
 */
 export async function savePurchaseItem(item) {
-    if (item.documentId) {
-        const res = await authApi.put('/purchase-items/' + item.documentId, { data: prepareForPut(item, ['product', 'purchase']) });
+    const { url, relations } = urlAndRelations('purchase-items', item.id>-1 ? item.documentId : null, null, 1, 1);
+
+    if (item.id>-1) {
+        const res = await authApi.put(url, { data: prepareForPut(item, relations) });
         return dataNode(res);//?.data?.data ?? res?.data ?? res;
     } else {
-        const res = await authApi.post('/purchase-items', { data: prepareForPut(item, ['product', 'purchase']) });
+        const res = await authApi.post(url, { data: prepareForPut(item, relations) });
         return dataNode(res);//?.data?.data ?? res?.data ?? res;
     }
 }

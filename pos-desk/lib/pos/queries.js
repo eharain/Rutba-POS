@@ -159,12 +159,9 @@ export const buildQueries = (searchText, page = 1, rowsPerPage = 5) => {
     return queries;
 }
 
-export function QueryUrl(q) {
-    return `/${q.entity}?` + qs.stringify(q.query, { encodeValuesOnly: true });
-}
 
 
-export function buildItemQuery(entity, page = 1, rowsPerPage = 5) {
+export function buildItemQueries(searchText,page = 1, rowsPerPage = 5) {
     const queries = {
 
         "purchase-items": {
@@ -236,5 +233,30 @@ export function buildItemQuery(entity, page = 1, rowsPerPage = 5) {
     });
     return queries;
 
+}
 
+export function QueryUrl(q, documentId) {
+    return (documentId ? `/${q.entity}/${documentId}?` : `/${q.entity}?`) + qs.stringify(q.query, { encodeValuesOnly: true });
+}
+
+export function queryRelationsFromPopulate(q) {
+    const relations = new Set();
+    const extractRelations = (item) => {
+        if (typeof item === 'string') {
+            relations.add(item);
+        } else if (typeof item === 'object' && item !== null) {
+            relations.add(...Object.keys(item));
+        }
+    };
+
+    if (q && q.query && q.query.populate) {
+        const populate = q.query.populate;
+        populate.forEach(item => extractRelations(item));
+    }
+    return Array.from(relations);
+}
+export function urlAndRelations(entity, documentId, searchText, page = 1, rowsPerPage = 100) {
+    const q = buildQueries(searchText, page, rowsPerPage)[entity] ?? buildItemQueries(searchText, page, rowsPerPage)[entity];
+
+    return { url: QueryUrl(q, documentId), relations: queryRelationsFromPopulate(q) };
 }
