@@ -87,7 +87,7 @@ export const authAPI = authApi;
 
 export function querify(u, data) {
     if (typeof data == "object" && Object.keys(data).length > 0) {
-        return u + '?' + qs.stringify(data);
+        return u + '?' + qs.stringify(data, { encodeValuesOnly: true });
     }
     return u;
 }

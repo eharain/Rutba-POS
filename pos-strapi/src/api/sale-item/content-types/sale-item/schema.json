@@ -29,7 +29,8 @@
     "sale": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "api::sale.sale"
+      "target": "api::sale.sale",
+      "inversedBy": "items"
     },
     "product": {
       "type": "relation",

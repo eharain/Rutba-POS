@@ -1,5 +1,7 @@
 import qs from 'qs';
 import { authApi } from '../api';
+import { urlAndRelations } from './queries';
+import { dataNode } from './search';
 
 // Fetch sales and returns for reports
 export async function fetchEntities(entities, page, rowsPerPage = 100) {
@@ -8,7 +10,7 @@ export async function fetchEntities(entities, page, rowsPerPage = 100) {
     },);
 }
 export async function fetchSales(page, rowsPerPage = 200) {
-    return await authApi.fetch("/sales", { sort: ["id:desc"], pagination: { page, pageSize: rowsPerPage } },);
+    return await authApi.fetch("/sales", { sort: ['createdAt:desc'], pagination: { page, pageSize: rowsPerPage } },);
 }
 
 export async function fetchReturns(page, rowsPerPage = 100) {
@@ -17,7 +19,7 @@ export async function fetchReturns(page, rowsPerPage = 100) {
 
 // Fetch purchases for reports
 export async function fetchPurchases(page, rowsPerPage = 100) {
-    return await authApi.fetch("/purchases", { sort: ["id:desc"], pagination: { page, pageSize: rowsPerPage } });
+    return await authApi.fetch("/purchases", { sort: ['createdAt:desc'], pagination: { page, pageSize: rowsPerPage } });
 }
 
 //fetchCategories 
@@ -46,13 +48,10 @@ export async function fetchSaleByIdOrInvoice(id) {
 
 export async function fetchPurchaseByIdDocumentIdOrPO(id) {
     let res;
-    res = await authApi.get("/purchases/", {
-        filters: {
-            $or: [{ purchase_no: id }, { id }, { documentId: id }]
-        },
-        populate: { items: { populate: ["items"] } }
-    });
-    let data = res?.data?.data ?? res?.data;
+    let { url, relations } = urlAndRelations('purchases', id)
+    
+    res = await authApi.get(url);
+    let data = dataNode(res);
     return Array.isArray(data) ? data[0] : data;
 }
 
@@ -61,6 +60,6 @@ export async function fetchEnumsValues(name, field) {
 
     const res = await authApi.fetch(`/enums/${name}/${field}`);
     console.log('res',res)
-    const data = res?.data?.data ?? res.data ?? res;
+    let data = dataNode(res);
     return data?.values;
 }

@@ -4,7 +4,7 @@ const meController = require('./controllers/me');
 
 const isEdiding = false;
 
-const meSchema = require('./content-types/me/schema');
+const meSchema = require('./content-types/me/schema.json');
 
 //const providers = require('./services/providers')
 //const email = require('./services/email')

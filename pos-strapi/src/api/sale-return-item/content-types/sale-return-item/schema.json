@@ -23,7 +23,8 @@
     "sale_return": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "api::sale-return.sale-return"
+      "target": "api::sale-return.sale-return",
+      "inversedBy": "items"
     },
     "product": {
       "type": "relation",

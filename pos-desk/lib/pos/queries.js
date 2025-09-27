@@ -35,12 +35,16 @@ export const buildQueries = (searchText, page = 1, rowsPerPage = 5) => {
             },
             query: {
 
-                populate: [
-                    'suppliers',
-                    'logo',
-                    'gallery',
-                    { 'items': { populate: ['product'] } }
-                ],
+                populate: {
+                    suppliers: true,
+                    receipts: true,
+                    gallery: true,
+                    items: {
+                        populate: {
+                            product:true
+                            }
+                    }
+                },
                 pagination: { page, pageSize: rowsPerPage }
             }
         },
@@ -251,7 +255,12 @@ export function queryRelationsFromPopulate(q) {
 
     if (q && q.query && q.query.populate) {
         const populate = q.query.populate;
-        populate.forEach(item => extractRelations(item));
+        if( Array.isArray(populate)) {
+            populate.forEach(item => extractRelations(item));
+        } else if (typeof populate === 'object') {
+            Object.keys(populate).forEach(key => extractRelations(key));
+        }
+        //populate.forEach(item => extractRelations(item));
     }
     return Array.from(relations);
 }

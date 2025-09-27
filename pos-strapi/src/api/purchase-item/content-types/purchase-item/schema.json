@@ -33,7 +33,8 @@
     "purchase": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "api::purchase.purchase"
+      "target": "api::purchase.purchase",
+      "inversedBy": "items"
     },
     "product": {
       "type": "relation",

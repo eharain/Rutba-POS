@@ -6,7 +6,6 @@ import ProtectedRoute from "../../components/ProtectedRoute";
 import Layout from "../../components/Layout";
 import { Table, TableHead, TableBody, TableRow, TableCell } from "../../components/Table";
 import PurchaseItemsList from "../../components/lists/purchase-items-list";
-import PurchaseItemForm from "../../components/form/purchase-item-form";
 import { generateNextDocumentId } from "../../lib/utils";
 
 export default function PurchasePage() {

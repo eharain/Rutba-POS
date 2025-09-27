@@ -58,7 +58,8 @@
     "items": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::purchase-item.purchase-item"
+      "target": "api::purchase-item.purchase-item",
+      "mappedBy": "purchase"
     },
     "users": {
       "type": "relation",

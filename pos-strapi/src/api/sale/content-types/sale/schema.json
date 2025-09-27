@@ -54,7 +54,9 @@
     "items": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::sale-item.sale-item"
+      "target": "api::sale-item.sale-item",
+      "mappedBy": "sale"
+
     },
     "payments": {
       "type": "relation",

@@ -30,7 +30,8 @@
     "items": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::sale-return-item.sale-return-item"
+      "target": "api::sale-return-item.sale-return-item",
+      "mappedBy": "sale_return"
     },
     "users": {
       "type": "relation",
