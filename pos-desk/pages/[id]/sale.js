@@ -1,11 +1,12 @@
 ﻿import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { authApi } from '../../lib/api';
-import { fetchSaleByIdOrInvoice, searchProduct, saveSaleItems } from '../../lib/pos';
+import { fetchSaleByIdOrInvoice } from '../../lib/pos';
 import ProtectedRoute from '../../components/ProtectedRoute';
 import Layout from '../../components/Layout';
 import PermissionCheck from '../../components/PermissionCheck';
-import { Table, TableHead, TableBody, TableRow, TableCell } from '../../components/Table';
+import SalesItemsForm from '../../components/form/sales-items-form';
+import SalesItemsList from '../../components/lists/sales-items-list';
 
 export default function SalePage() {
     const router = useRouter();
@@ -13,9 +14,6 @@ export default function SalePage() {
 
     const [sale, setSale] = useState(null);
     const [items, setItems] = useState([]);
-    const [productSearch, setProductSearch] = useState('');
-    const [searchResults, setSearchResults] = useState([]);
-    const [showResults, setShowResults] = useState(false);
     const [loading, setLoading] = useState(false);
     const [totals, setTotals] = useState({
         subtotal: 0,
@@ -58,32 +56,7 @@ export default function SalePage() {
         });
     };
 
-    // Product search with debounce
-    useEffect(() => {
-        const delayDebounceFn = setTimeout(() => {
-            if (productSearch.length > 2) {
-                handleProductSearch(productSearch);
-            } else {
-                setSearchResults([]);
-                setShowResults(false);
-            }
-        }, 300);
-
-        return () => clearTimeout(delayDebounceFn);
-    }, [productSearch]);
-
-    const handleProductSearch = async (searchText) => {
-        try {
-            const productResult = await searchProduct(searchText);
-            setSearchResults(productResult);
-            setShowResults(true);
-        } catch (error) {
-            console.error('Error searching products:', error);
-            setSearchResults([]);
-        }
-    };
-
-    const handleProductSelect = (product) => {
+    const addItem = (product) => {
         const newItem = {
             product,
             quantity: 1,
@@ -94,8 +67,6 @@ export default function SalePage() {
         };
 
         setItems(prev => [...prev, newItem]);
-        setProductSearch('');
-        setShowResults(false);
     };
 
     const updateItem = (index, updates) => {
@@ -106,28 +77,6 @@ export default function SalePage() {
 
     const removeItem = (index) => {
         setItems(prev => prev.filter((_, i) => i !== index));
-    };
-
-    const handleQuantityChange = (index, quantity) => {
-        const item = items[index];
-        const newQuantity = Math.max(1, quantity);
-        const newTotal = item.price * newQuantity;
-
-        updateItem(index, {
-            quantity: newQuantity,
-            total: newTotal
-        });
-    };
-
-    const handlePriceChange = (index, price) => {
-        const item = items[index];
-        const newPrice = Math.max(0, price);
-        const newTotal = newPrice * item.quantity;
-
-        updateItem(index, {
-            price: newPrice,
-            total: newTotal
-        });
     };
 
     const handleSave = async () => {
@@ -234,152 +183,17 @@ export default function SalePage() {
                             </div>
                         </div>
 
-                        {/* Product Search - Fast POS Entry */}
-                        <div style={{ marginBottom: '20px', position: 'relative' }}>
-                            <input
-                                type="text"
-                                value={productSearch}
-                                onChange={(e) => setProductSearch(e.target.value)}
-                                placeholder="Scan barcode or search product..."
-                                style={{
-                                    width: '100%',
-                                    padding: '12px',
-                                    fontSize: '16px',
-                                    border: '2px solid #007bff',
-                                    borderRadius: '4px'
-                                }}
-                                autoFocus
-                            />
+                        {/* Product Search Form */}
+                        <SalesItemsForm
+                            onAddItem={addItem}
+                        />
 
-                            {showResults && searchResults.length > 0 && (
-                                <div style={{
-                                    position: 'absolute',
-                                    top: '100%',
-                                    left: 0,
-                                    right: 0,
-                                    background: 'white',
-                                    border: '1px solid #ccc',
-                                    maxHeight: '200px',
-                                    overflowY: 'auto',
-                                    zIndex: 1000,
-                                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                                }}>
-                                    {searchResults.map(product => (
-                                        <div
-                                            key={product.id}
-                                            onClick={() => handleProductSelect(product)}
-                                            style={{
-                                                padding: '12px',
-                                                cursor: 'pointer',
-                                                borderBottom: '1px solid #eee',
-                                                display: 'flex',
-                                                justifyContent: 'space-between',
-                                                alignItems: 'center'
-                                            }}
-                                            onMouseEnter={(e) => e.target.style.background = '#f5f5f5'}
-                                            onMouseLeave={(e) => e.target.style.background = 'white'}
-                                        >
-                                            <div>
-                                                <strong>{product.name}</strong>
-                                                {product.barcode && (
-                                                    <span style={{ color: '#666', marginLeft: '10px' }}>
-                                                        ({product.barcode})
-                                                    </span>
-                                                )}
-                                            </div>
-                                            <div style={{ fontWeight: 'bold', color: '#28a745' }}>
-                                                ${product.selling_price}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Items Table - Fast Editing */}
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>Product</TableCell>
-                                    <TableCell align="center">Quantity</TableCell>
-                                    <TableCell align="center">Price</TableCell>
-                                    <TableCell align="center">Total</TableCell>
-                                    <TableCell align="center">Actions</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {items.map((item, index) => (
-                                    <TableRow key={index}>
-                                        <TableCell>
-                                            <strong>{item.product?.name}</strong>
-                                            {item.product?.barcode && (
-                                                <div style={{ fontSize: '12px', color: '#666' }}>
-                                                    SKU: {item.product.sku}
-                                                </div>
-                                            )}
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <input
-                                                type="number"
-                                                min="1"
-                                                value={item.quantity}
-                                                onChange={(e) => handleQuantityChange(index, parseInt(e.target.value) || 1)}
-                                                style={{
-                                                    width: '80px',
-                                                    padding: '8px',
-                                                    border: '1px solid #ccc',
-                                                    borderRadius: '4px',
-                                                    textAlign: 'center',
-                                                    fontSize: '14px'
-                                                }}
-                                            />
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <input
-                                                type="number"
-                                                min="0"
-                                                step="0.01"
-                                                value={item.price}
-                                                onChange={(e) => handlePriceChange(index, parseFloat(e.target.value) || 0)}
-                                                style={{
-                                                    width: '100px',
-                                                    padding: '8px',
-                                                    border: '1px solid #ccc',
-                                                    borderRadius: '4px',
-                                                    textAlign: 'center',
-                                                    fontSize: '14px'
-                                                }}
-                                            />
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <strong>${item.total.toFixed(2)}</strong>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <button
-                                                onClick={() => removeItem(index)}
-                                                style={{
-                                                    padding: '6px 12px',
-                                                    background: '#dc3545',
-                                                    color: 'white',
-                                                    border: 'none',
-                                                    borderRadius: '4px',
-                                                    cursor: 'pointer',
-                                                    fontSize: '12px'
-                                                }}
-                                            >
-                                                Remove
-                                            </button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-
-                        {items.length === 0 && (
-                            <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
-                                <p>No items added to sale. Search for products above to add items.</p>
-                            </div>
-                        )}
+                        {/* Items List */}
+                        <SalesItemsList
+                            items={items}
+                            onUpdateItem={updateItem}
+                            onRemoveItem={removeItem}
+                        />
 
                         {/* Totals Summary */}
                         {items.length > 0 && (
