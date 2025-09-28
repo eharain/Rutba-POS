@@ -14,6 +14,10 @@
     "quantity": {
       "type": "integer"
     },
+    "received_quantity": {
+      "type": "integer",
+      "default": 0
+    },
     "price": {
       "type": "decimal"
     },
@@ -29,6 +33,19 @@
     },
     "total": {
       "type": "decimal"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "Draft",
+        "Pending",
+        "Ordered",
+        "Partially Received",
+        "Received",
+        "Cancelled",
+        "Supplier Cancelled"
+      ],
+      "default": "pending"
     },
     "purchase": {
       "type": "relation",

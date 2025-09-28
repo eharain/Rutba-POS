@@ -685,6 +685,19 @@ export interface ApiPurchaseItemPurchaseItem
     publishedAt: Schema.Attribute.DateTime;
     purchase: Schema.Attribute.Relation<'manyToOne', 'api::purchase.purchase'>;
     quantity: Schema.Attribute.Integer;
+    received_quantity: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    status: Schema.Attribute.Enumeration<
+      [
+        'Draft',
+        'Pending',
+        'Ordered',
+        'Partially Received',
+        'Received',
+        'Cancelled',
+        'Supplier Cancelled',
+      ]
+    > &
+      Schema.Attribute.DefaultTo<'pending'>;
     total: Schema.Attribute.Decimal;
     unit_price: Schema.Attribute.Decimal;
     updatedAt: Schema.Attribute.DateTime;
