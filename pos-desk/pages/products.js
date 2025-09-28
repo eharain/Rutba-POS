@@ -10,7 +10,7 @@ import { authApi } from "../lib/api";
 import { fetchEntities } from "../lib/pos";
 import { useCart } from "../context/CartContext";
 import StrapiImage from "../components/StrapiImage";
-
+import { ProductFilter } from "../components/filter/product-filter";
 
 export default function Products() {
     const [products, setProducts] = useState([]);
@@ -20,6 +20,8 @@ export default function Products() {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(false);
+    const [filters, setFilters] = useState({});
+
     useEffect(() => {
         loadProductsData();
 
@@ -44,6 +46,10 @@ export default function Products() {
         setPage(0);
     };
 
+    function handleFiltersChange(filters) {
+        setFilters(filters);
+    }
+
 
     const filtered = useMemo(() => {
         return products.filter((p) => {
@@ -63,7 +69,7 @@ export default function Products() {
                         <h1>Products</h1>
                         <div>
                             <SearchBar value={q} onChange={setQ} />
-
+                            <ProductFilter onFilterChange={handleFiltersChange}></ProductFilter>
                             <TablePagination
                                 count={total}
                                 page={page}

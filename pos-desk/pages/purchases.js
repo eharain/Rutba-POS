@@ -1,6 +1,7 @@
 ﻿import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+
 import {
     Table,
     TableHead,
@@ -26,7 +27,10 @@ export default function PurchasesPage() {
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(false);
     const [purchaseStatuses, setPurchaseStatuses] = useState([]);
+   
     const router = useRouter();
+
+    
 
     useEffect(() => {
         loadData();
@@ -44,7 +48,7 @@ export default function PurchasesPage() {
 
             setLoading(false);
         }
-    }, [page, rowsPerPage]);
+    }, [page, rowsPerPage, filters]);
 
     const handleChangePage = (_, newPage) => {
         setPage(newPage);
@@ -99,7 +103,7 @@ export default function PurchasesPage() {
                             </button>
                         </Link>
                     </div>
-
+            
                     <div>
                         <Table>
                             <TableHead>
@@ -133,7 +137,7 @@ export default function PurchasesPage() {
                                                 <strong>{purchase.purchase_no}</strong>
                                             </TableCell>
                                             <TableCell>{purchase.order_date}</TableCell>
-                                            <TableCell>{purchase?.suppliers?.map(s=>s.name)}</TableCell>
+                                            <TableCell>{purchase?.suppliers?.map(s => s.name)}</TableCell>
                                             <TableCell>{purchase.purchase_no}</TableCell>
                                             <TableCell align="right">
                                                 ${parseFloat(purchase.total || 0).toFixed(2)}

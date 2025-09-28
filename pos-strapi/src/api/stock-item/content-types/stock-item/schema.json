@@ -40,6 +40,11 @@
     "selling_price": {
       "type": "decimal"
     },
+    "discount": {
+      "type": "decimal",
+      "default": 0
+    },
+
     "product": {
       "type": "relation",
       "relation": "manyToOne",

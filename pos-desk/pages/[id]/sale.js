@@ -1,7 +1,7 @@
 ﻿import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { authApi } from '../../lib/api';
-import { fetchSaleByIdOrInvoice } from '../../lib/pos';
+import { fetchSaleByIdOrInvoice, saveSaleItems } from '../../lib/pos';
 import ProtectedRoute from '../../components/ProtectedRoute';
 import Layout from '../../components/Layout';
 import PermissionCheck from '../../components/PermissionCheck';
@@ -35,7 +35,13 @@ export default function SalePage() {
         try {
             const saleData = await fetchSaleByIdOrInvoice(id);
             setSale(saleData);
-            setItems(saleData.items || []);
+            // Initialize items with discount if present
+            const initialItems = saleData.items?.map(item => ({
+                ...item,
+                discount: item.discount || 0,
+                total: calculateItemTotal(item)
+            })) || [];
+            setItems(initialItems);
         } catch (error) {
             console.error('Error loading sale:', error);
         } finally {
@@ -43,14 +49,27 @@ export default function SalePage() {
         }
     };
 
+    const calculateItemTotal = (item) => {
+        const subtotal = item.price * item.quantity;
+        const discountAmount = subtotal * ((item.discount || 0) / 100);
+        const taxableAmount = subtotal - discountAmount;
+        const taxAmount = taxableAmount * 0.1; // 10% tax
+        return taxableAmount + taxAmount;
+    };
+
     const calculateTotals = () => {
         const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        const tax = subtotal * 0.1; // 10% tax - adjust as needed
-        const total = subtotal + tax;
+        const totalDiscount = items.reduce((sum, item) => {
+            const itemSubtotal = item.price * item.quantity;
+            return sum + (itemSubtotal * ((item.discount || 0) / 100));
+        }, 0);
+        const taxableAmount = subtotal - totalDiscount;
+        const tax = taxableAmount * 0.1; // 10% tax
+        const total = taxableAmount + tax;
 
         setTotals({
             subtotal,
-            discount: 0,
+            discount: totalDiscount,
             tax,
             total
         });
@@ -61,7 +80,7 @@ export default function SalePage() {
             product,
             quantity: 1,
             price: product.selling_price || 0,
-            discount: 0,
+            discount: 0, // Default 0% discount
             tax: (product.selling_price || 0) * 0.1,
             total: product.selling_price || 0
         };
@@ -70,9 +89,17 @@ export default function SalePage() {
     };
 
     const updateItem = (index, updates) => {
-        setItems(prev => prev.map((item, i) =>
-            i === index ? { ...item, ...updates } : item
-        ));
+        setItems(prev => prev.map((item, i) => {
+            if (i === index) {
+                const updatedItem = { ...item, ...updates };
+                // Recalculate total when price, quantity, or discount changes
+                if (updates.price !== undefined || updates.quantity !== undefined || updates.discount !== undefined) {
+                    updatedItem.total = calculateItemTotal(updatedItem);
+                }
+                return updatedItem;
+            }
+            return item;
+        }));
     };
 
     const removeItem = (index) => {
@@ -103,6 +130,7 @@ export default function SalePage() {
                     payment_status: 'Paid',
                     total: totals.total,
                     subtotal: totals.subtotal,
+                    discount: totals.discount,
                     tax: totals.tax
                 }
             });
@@ -202,15 +230,23 @@ export default function SalePage() {
                                 padding: '20px',
                                 background: '#f8f9fa',
                                 borderRadius: '4px',
-                                maxWidth: '300px',
+                                maxWidth: '400px',
                                 marginLeft: 'auto'
                             }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                                     <span>Subtotal:</span>
                                     <span>${totals.subtotal.toFixed(2)}</span>
                                 </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', color: '#dc3545' }}>
+                                    <span>Discount:</span>
+                                    <span>-${totals.discount.toFixed(2)}</span>
+                                </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                                    <span>Tax:</span>
+                                    <span>Taxable Amount:</span>
+                                    <span>${(totals.subtotal - totals.discount).toFixed(2)}</span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                    <span>Tax (10%):</span>
                                     <span>${totals.tax.toFixed(2)}</span>
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '18px', borderTop: '1px solid #ccc', paddingTop: '8px' }}>
