@@ -48,7 +48,7 @@ export default function PurchasesPage() {
 
             setLoading(false);
         }
-    }, [page, rowsPerPage, filters]);
+    }, [page, rowsPerPage]);
 
     const handleChangePage = (_, newPage) => {
         setPage(newPage);

@@ -7,35 +7,36 @@ import SearchBar from "../components/SearchBar";
 import ProtectedRoute from "../components/ProtectedRoute";
 import PermissionCheck from "../components/PermissionCheck";
 import { authApi } from "../lib/api";
-import { fetchEntities } from "../lib/pos";
+import { fetchEntities, fetchProducts } from "../lib/pos";
 import { useCart } from "../context/CartContext";
 import StrapiImage from "../components/StrapiImage";
 import { ProductFilter } from "../components/filter/product-filter";
 
 export default function Products() {
     const [products, setProducts] = useState([]);
-    const [q, setQ] = useState("");
+   
     const { add } = useCart();
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(false);
     const [filters, setFilters] = useState({});
+    async function loadProductsData() {
+        setLoading(true);
+        // Fetch purchases for reports
+        const { data, meta } = await fetchProducts(filters, page, rowsPerPage);
+
+        setProducts(data);
+        setTotal(meta.pagination.total);
+        setLoading(false);
+    }
 
     useEffect(() => {
         loadProductsData();
-
-
-        async function loadProductsData() {
-            setLoading(true);
-            const data = await fetchEntities('products', page, rowsPerPage);
-
-            setProducts(data.data);
-            setTotal(data.meta.pagination.total);
-            setLoading(false);
-        }
-
     }, [page, rowsPerPage]);
+
+
+
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -48,18 +49,19 @@ export default function Products() {
 
     function handleFiltersChange(filters) {
         setFilters(filters);
+        setPage(0);
     }
 
 
-    const filtered = useMemo(() => {
-        return products.filter((p) => {
-            const a = p.attributes || p;
-            const name = (a.name || "").toLowerCase();
-            const barcode = (a.barcode || "");
-            const needle = q.toLowerCase();
-            return name.includes(needle) || barcode.includes(q);
-        });
-    }, [products, q, page, total]);
+    //const filtered = useMemo(() => {
+    //    return products.filter((a) => {
+    //        // const a =  p;
+    //        const name = (a.name || "").toLowerCase();
+    //        const barcode = (a.barcode || "");
+    //        const needle = searchText.toLowerCase();
+    //        return name.includes(needle) || barcode.includes(searchText);
+    //    });
+    //}, [products, searchText, page, total]);
 
     return (
         <ProtectedRoute>
@@ -68,7 +70,7 @@ export default function Products() {
                     <div style={{ padding: 10 }}>
                         <h1>Products</h1>
                         <div>
-                            <SearchBar value={q} onChange={setQ} />
+                          
                             <ProductFilter onFilterChange={handleFiltersChange}></ProductFilter>
                             <TablePagination
                                 count={total}
@@ -108,7 +110,7 @@ export default function Products() {
                                             </TableCell>
                                         </TableRow>
                                     ) : (
-                                        filtered.map((product) => (
+                                        products.map((product) => (
                                             <TableRow key={product.id}>
                                                 <TableCell title={product.documentId}>{product.id}</TableCell>
                                                 <TableCell>{product.name}</TableCell>
@@ -135,7 +137,7 @@ export default function Products() {
                                 onPageChange={handleChangePage}
                                 rowsPerPage={rowsPerPage}
                                 onRowsPerPageChange={handleChangeRowsPerPage}
-                                rowsPerPageOptions={[5, 10, 25,50,100,150,200]}
+                                rowsPerPageOptions={[5, 10, 25, 50, 100, 150, 200]}
                             />
 
                         </div>

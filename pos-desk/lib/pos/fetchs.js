@@ -18,7 +18,7 @@ export async function fetchReturns(page, rowsPerPage = 100) {
 }
 
 // Fetch purchases for reports
-export async function fetchPurchases(filters,page, rowsPerPage = 100) {
+export async function fetchPurchases( page, rowsPerPage = 100) {
     return await authApi.fetch("/purchases", { sort: ['createdAt:desc'], pagination: { page, pageSize: rowsPerPage } });
 }
 
@@ -49,7 +49,7 @@ export async function fetchSaleByIdOrInvoice(id) {
 export async function fetchPurchaseByIdDocumentIdOrPO(id) {
     let res;
     let { url, relations } = urlAndRelations('purchases', id)
-    
+
     res = await authApi.get(url);
     let data = dataNode(res);
     return Array.isArray(data) ? data[0] : data;
@@ -59,7 +59,22 @@ export async function fetchPurchaseByIdDocumentIdOrPO(id) {
 export async function fetchEnumsValues(name, field) {
 
     const res = await authApi.fetch(`/enums/${name}/${field}`);
-    console.log('res',res)
+    console.log('res', res)
     let data = dataNode(res);
     return data?.values;
 }
+
+
+export async function fetchProducts(filters, page, rowsPerPage) {
+    const { brands, caategories, suppliers, terms, stockStatus, searchText } = filters;
+    const entity = 'products';
+    const documentId = null;
+    const { query, relations, url } = urlAndRelations(entity, documentId, searchText, page, rowsPerPage)
+
+    const res = await authApi.get(url);
+    console.log('res', res)
+    let data = dataNode(res);
+    return res; //{data: res.data, meta: res.meta };
+    //  return await fetchEntities('products', page, rowsPerPage);
+}
+

@@ -1,7 +1,8 @@
 // components/filter/product-filter.js
 import { useState, useEffect } from "react";
 import { authApi } from "../../lib/api";
-export  function ProductFilter({ onFilterChange }) {
+import SearchBar from "../SearchBar";
+export function ProductFilter({ onFilterChange }) {
     const [brands, setBrands] = useState([]);
     const [categories, setCategories] = useState([]);
     const [suppliers, setSuppliers] = useState([]);
@@ -11,14 +12,16 @@ export  function ProductFilter({ onFilterChange }) {
     const [selectedCategory, setSelectedCategory] = useState("");
     const [selectedSupplier, setSelectedSupplier] = useState("");
     const [selectedTerm, setSelectedTerm] = useState("");
-    const [inStockOnly, setInStockOnly] = useState(false);
+    const [stockStatus, setStockStatus] = useState(false);
+    const [outofStockOnly, setOutofStockOnly] = useState(false);
+    const [searchText, setSearchText] = useState("");
 
     useEffect(() => {
         Promise.all([
             authApi.fetch("/brands"),
             authApi.fetch("/categories"),
             authApi.fetch("/suppliers"),
-            authApi.fetch("/term-types",   { populate: ["terms"] } ),
+            authApi.fetch("/term-types", { populate: ["terms"] }),
         ]).then(([b, c, s, t]) => {
             setBrands(b?.data || []);
             setCategories(c?.data || []);
@@ -31,8 +34,16 @@ export  function ProductFilter({ onFilterChange }) {
     useEffect(() => {
 
 
-        const filters = { brand: selectedBrand, category: selectedCategory, supplier: selectedSupplier, term: selectedTerm, inStockOnly }
+        const filters = { brands: [selectedBrand], categories: [selectedCategory], suppliers: [selectedSupplier], terms: [selectedTerm], stockStatus,  searchText }
 
+        for (const [key, value] of Object.entries(filters)) {
+            if (Array.isArray(value)) {
+                filters[key] = value.filter(v => v); // Remove empty values
+                if (filters[key].length === 0) delete filters[key]; // Remove key if
+            }
+        }
+
+        console.log('selected filters', filters); 
 
         //const filters = {
         //    ...(selectedBrand) ? { brands: { populate: "*", selectedBrand } } : {},
@@ -49,12 +60,15 @@ export  function ProductFilter({ onFilterChange }) {
 
         // Pass query object upwards
         onFilterChange(filters);
-    }, [selectedBrand, selectedCategory, selectedSupplier, selectedTerm, inStockOnly]);
+    }, [selectedBrand, selectedCategory, selectedSupplier, selectedTerm, stockStatus, searchText]);
 
     return (
+
         <div className="grid grid-cols-5 gap-3 mb-4 items-center">
+            <SearchBar value={searchText} onChange={setSearchText} />
+
             {/* Brand */}
-            hello
+
             <select
                 className="border p-2 rounded"
                 value={selectedBrand}
@@ -62,7 +76,7 @@ export  function ProductFilter({ onFilterChange }) {
             >
                 <option value="">All Brands</option>
                 {brands.map((b) => (
-                    <option key={b.id} value={b.id}>
+                    <option key={b.documentId} value={b.documentId}>
                         {b.name}
                     </option>
                 ))}
@@ -76,7 +90,7 @@ export  function ProductFilter({ onFilterChange }) {
             >
                 <option value="">All Categories</option>
                 {categories.map((c) => (
-                    <option key={c.id} value={c.id}>
+                    <option key={c.documentId} value={c.documentId}>
                         {c.name}
                     </option>
                 ))}
@@ -90,7 +104,7 @@ export  function ProductFilter({ onFilterChange }) {
             >
                 <option value="">All Suppliers</option>
                 {suppliers.map((s) => (
-                    <option key={s.id} value={s.id}>
+                    <option key={s.documentId} value={s.documentId}>
                         {s.name}
                     </option>
                 ))}
@@ -105,22 +119,25 @@ export  function ProductFilter({ onFilterChange }) {
                 <option value="">All Terms</option>
                 {termTypes.map((tt) =>
                     tt.terms?.map((t) => (
-                        <option key={t.id} value={t.id}>
+                        <option key={t.documentId} value={t.documentId}>
                             {tt.name} - {t.name}
                         </option>
                     ))
                 )}
             </select>
 
-            {/* In Stock Checkbox */}
-            <label className="flex items-center space-x-2 text-sm">
-                <input
-                    type="checkbox"
-                    checked={inStockOnly}
-                    onChange={(e) => setInStockOnly(e.target.checked)}
-                />
-                <span>In Stock Only</span>
-            </label>
+            <select
+                className="border p-2 rounded"
+                value={stockStatus}
+                onChange={(e) => setStockStatus(e.target.value)}
+            >
+
+                <option value="">Any</option>
+                <option value="inStock">In Stock</option>
+                <option value="outofStock">Out Of Stock</option>
+               
+            </select>
+
         </div>
     );
 }

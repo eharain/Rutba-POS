@@ -265,7 +265,7 @@ export function queryRelationsFromPopulate(q) {
     return Array.from(relations);
 }
 export function urlAndRelations(entity, documentId, searchText, page = 1, rowsPerPage = 100) {
-    const q = buildQueries(searchText, page, rowsPerPage)[entity] ?? buildItemQueries(searchText, page, rowsPerPage)[entity];
+    const query = buildQueries(searchText, page, rowsPerPage)[entity] ?? buildItemQueries(searchText, page, rowsPerPage)[entity];
 
-    return { url: QueryUrl(q, documentId), relations: queryRelationsFromPopulate(q) };
+    return { url: QueryUrl(query, documentId), relations: queryRelationsFromPopulate(query), query };
 }
