@@ -66,6 +66,7 @@ export default function PurchasePage() {
 
             setEditingDocumentId(null);
         } catch (err) {
+            console.error(err,up);
             alert('handleSave',err.message);
         }
     };
@@ -93,6 +94,7 @@ export default function PurchasePage() {
             price: Number(newItemData.price),
             unit_price,
             bundle_units,
+            status:newItemData.status || 'Draft',
         }
         const savedItem = await savePurchaseItem(data);
         return savedItem;
@@ -140,7 +142,7 @@ export default function PurchasePage() {
             product: null,
             purchase
         };
-        setEditItems(prev => [...prev, newItem]);
+       appendItemToItems(newItem);
         setEditingDocumentId(newItem.documentId);
     };
 
@@ -149,11 +151,11 @@ export default function PurchasePage() {
         if (!confirm("Are you sure you want to delete this item?")) return;
 
         try {
-            const res = await authApi.del(`/purchase-items/${documentId}`);
-            
-            setEditItems(items.filter(item => item.documentId !== documentId));
+            if(editItems.find(item => item.documentId === documentId)?.id>0){
+                        const res = await authApi.del(`/purchase-items/${documentId}`);
+            }
+            setEditItems(editItems.filter(item => item.documentId !== documentId));
         } catch (err) {
-           
             alert(err.message);
              throw new Error("Failed to delete item");
         }

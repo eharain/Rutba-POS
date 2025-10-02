@@ -66,14 +66,29 @@ export async function fetchEnumsValues(name, field) {
 
 
 export async function fetchProducts(filters, page, rowsPerPage) {
-    const { brands, caategories, suppliers, terms, stockStatus, searchText } = filters;
+    const { brands, categories, suppliers, terms, stockStatus, searchText } = filters;
+
+   
+
     const entity = 'products';
     const documentId = null;
+
     const { query, relations, url } = urlAndRelations(entity, documentId, searchText, page, rowsPerPage)
+
+    
+    for (const key of Object.entries(filters)) {
+
+        if (relations.includes(key)) {
+            query.filters
+
+        }
+     //   delete query.query.filters[key];
+    }
+
 
     const res = await authApi.get(url);
     console.log('res', res)
-    let data = dataNode(res);
+   // let data = dataNode(res);
     return res; //{data: res.data, meta: res.meta };
     //  return await fetchEntities('products', page, rowsPerPage);
 }

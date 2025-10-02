@@ -151,19 +151,11 @@ export const buildQueries = (searchText, page = 1, rowsPerPage = 5) => {
             }
         }
     }
-    Object.entries(queries).forEach(([entity, q]) => {
-        if (!searchText || searchText.trim().length === 0) {
-            delete q.search_filters;
-        } else {
-            q.query.filters = q.search_filters;
-        }
-        q.entity = entity;
-        q.url = QueryUrl(q);
-    });
-    return queries;
+
+
+    return __standeriseQuery(queries, !searchText || searchText.trim().length === 0)
+
 }
-
-
 
 export function buildItemQueries(searchText,page = 1, rowsPerPage = 5) {
     const queries = {
@@ -225,9 +217,18 @@ export function buildItemQueries(searchText,page = 1, rowsPerPage = 5) {
         }
     }
 
+    return __standeriseQuery(queries, !searchText || searchText.trim().length === 0);
+    
+}
 
+
+export function QueryUrl(q, documentId) {
+    return (documentId ? `/${q.entity}/${documentId}?` : `/${q.entity}?`) + qs.stringify(q.query, { encodeValuesOnly: true });
+}
+
+export function __standeriseQuery(queries, hasNoSearch) {
     Object.entries(queries).forEach(([entity, q]) => {
-        if (!searchText || searchText.trim().length === 0) {
+        if (hasNoSearch) {
             delete q.search_filters;
         } else {
             q.query.filters = q.search_filters;
@@ -236,11 +237,12 @@ export function buildItemQueries(searchText,page = 1, rowsPerPage = 5) {
         q.url = QueryUrl(q);
     });
     return queries;
-
 }
 
-export function QueryUrl(q, documentId) {
-    return (documentId ? `/${q.entity}/${documentId}?` : `/${q.entity}?`) + qs.stringify(q.query, { encodeValuesOnly: true });
+export function urlAndRelations(entity, documentId, searchText, page = 1, rowsPerPage = 100) {
+    const query = buildQueries(searchText, page, rowsPerPage)[entity] ?? buildItemQueries(searchText, page, rowsPerPage)[entity];
+
+    return { url: QueryUrl(query, documentId), relations: queryRelationsFromPopulate(query), query };
 }
 
 export function queryRelationsFromPopulate(q) {
@@ -263,9 +265,4 @@ export function queryRelationsFromPopulate(q) {
         //populate.forEach(item => extractRelations(item));
     }
     return Array.from(relations);
-}
-export function urlAndRelations(entity, documentId, searchText, page = 1, rowsPerPage = 100) {
-    const query = buildQueries(searchText, page, rowsPerPage)[entity] ?? buildItemQueries(searchText, page, rowsPerPage)[entity];
-
-    return { url: QueryUrl(query, documentId), relations: queryRelationsFromPopulate(query), query };
 }

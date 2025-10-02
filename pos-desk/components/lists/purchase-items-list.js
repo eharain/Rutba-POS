@@ -18,7 +18,7 @@ const PurchaseItemsList = ({ purchaseItems, onEditItem, onDeleteItem, onSaveItem
             <TableBody>
                 {purchaseItems.map((item) => (
                     <React.Fragment key={item.documentId}>
-                        {editingDocumentId === item.editingDocumentId ? (
+                        {editingDocumentId === item.documentId ? (
 
                             <PurchaseItemForm
                                 purchaseItem={item}
@@ -42,6 +42,7 @@ const PurchaseItemsList = ({ purchaseItems, onEditItem, onDeleteItem, onSaveItem
                                         bundle of  {item?.product?.bundle_units}
                                     </span>
                                     )}
+                                          ({item.documentId})
                                 </TableCell>
                                 <TableCell align="center">
                                     ${item.unitPrice?.toFixed(2) || item.price?.toFixed(2) || "0.00"}
@@ -53,7 +54,7 @@ const PurchaseItemsList = ({ purchaseItems, onEditItem, onDeleteItem, onSaveItem
                                 </TableCell>
                                 <TableCell align="center">
                                     <button
-                                        onClick={() => onEditItem(item.id)}
+                                        onClick={() => onEditItem(item.documentId)}
                                         style={{
                                             padding: '4px 12px',
                                             background: 'transparent',

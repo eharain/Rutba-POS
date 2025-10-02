@@ -59,10 +59,32 @@ export default function PurchasesPage() {
         setPage(0);
     };
 
+
+    function getStatusAction(purchase) {
+        const identifier = purchase.documentId || purchase.id || purchase.purchase_no;
+
+        if(['Submitted','Partially Received'].includes(purchase.status)){
+            return {action:'Receive' ,url:`/${identifier}/receive`,identifier}
+        }
+        
+        if(['Draft','Pending'].includes(purchase.status)){
+            return {action:'Edit',url:`/${identifier}/purchase`,identifier};
+         }
+         if(['Received'].includes(purchase.status)){
+            { return {action:'View',url:`/${identifier}/purchase-view`,identifier};}
+         }
+         
+    }
+    
+
+
     const handleEdit = (purchase) => {
         // Navigate to individual purchase edit page using documentId, id, or purchase_no
-        const identifier = purchase.documentId || purchase.id || purchase.purchase_no;
-        router.push(`/${identifier}/purchase`);
+        
+
+        const sa = getStatusAction(purchase)
+        if(sa.url)
+        router.push(sa.url);
     };
 
     const getStatusColor = (status) => {
@@ -170,7 +192,7 @@ export default function PurchasesPage() {
                                                             fontSize: "12px"
                                                         }}
                                                     >
-                                                        Edit
+                                                        {getStatusAction(purchase)?.action}
                                                     </button>
                                                 </div>
                                             </TableCell>

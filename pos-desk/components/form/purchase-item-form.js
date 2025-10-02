@@ -94,6 +94,7 @@ const PurchaseItemForm = ({ purchaseItem, onSubmit, onCancel }) => {
         }));
         setProductSearch(product.name);
         setShowResults(false);
+        return false;
     };
 
     const handleSubmit = (e) => {
