@@ -94,6 +94,7 @@ export const buildQueries = (searchText, page = 1, rowsPerPage = 5) => {
                 populate: [
                     'logo',
                     'gallery',
+                    'currency',
                     { categories: { populate: ['logo', 'gallery'] } }
                 ],
                 pagination: { page, pageSize: rowsPerPage }

@@ -1,11 +1,9 @@
 'use strict';
 
 /**
- * payment router
+ * currency router
  */
 
 const { createCoreRouter } = require('@strapi/strapi').factories;
 
-module.exports = createCoreRouter('api::payment.payment');
-
-
+module.exports = createCoreRouter('api::currency.currency');

@@ -11,7 +11,7 @@ export default function SettingsPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await authApi.get("/branches?populate=desks");
+                const response = await authApi.get("/branches?populate[0]=desks&populate[1]=currency");
                 setBranches(response.data || []);
                 setSelectedBranch(branch);
                 setSelectedDesk(desk)

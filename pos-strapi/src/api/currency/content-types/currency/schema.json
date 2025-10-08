@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "currencies",
+  "info": {
+    "singularName": "currency",
+    "pluralName": "currencies",
+    "displayName": "Currencies",
+    "description": "List of global currencies with ISO code, symbol, and region"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "country": {
+      "type": "string",
+      "required": true
+    },
+    "currency": {
+      "type": "string",
+      "required": true
+    },
+    "code": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "symbol": {
+      "type": "string"
+    },
+    "region": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

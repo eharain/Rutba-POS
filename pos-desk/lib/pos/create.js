@@ -41,7 +41,7 @@ export async function createNewEntity(name) {
                 connect: [branch.id],
                 disconnect: [],
             },
-            
+
             users: {
                 connect: [user.id],
                 disconnect: [],
@@ -52,4 +52,46 @@ export async function createNewEntity(name) {
     const rdata = res?.data || {};
     const id = rdata.purchase_no ?? rdata.invoice_no ?? rdata.documentId ?? rdata.id;
     return { data: rdata, id, nameSinglar, namePlural };
+}
+
+
+
+export async function generateStockItems(purchase, purchaseItem, quantity) {
+    const stockItems = [];
+
+    const product = purchaseItem.product;
+
+    for (let i = 0; i < quantity; i++) {
+        let sku = purchaseItem.product.sku;
+        let barcode = purchaseItem.product.barcode;
+        if (!sku) {
+            sku = product.id.toString(22).toUpperCase();
+        }
+       
+
+        sku = `${sku}-${Date.now().toString(22)}-${i.toString(22)}`.toUpperCase();
+
+        barcode = barcode ? `${barcode}-${i.toString(22)}`.toUpperCase() : undefined;
+
+
+        const stockItem = {
+            sku,
+            barcode,
+            status: 'Received',
+            cost_price: purchaseItem.unit_price,
+            selling_price: purchaseItem.product.selling_price,
+            product: purchaseItem.product.documentId || purchaseItem.product.id,
+            purchase_item: purchaseItem.documentId || purchaseItem.id,
+            branch: purchase.branch?.documentId || purchase.branch?.id
+        };
+
+        try {
+            const response = await authApi.post('/stock-items', { data: stockItem });
+            stockItems.push(response.data);
+        } catch (error) {
+            console.error('Error creating stock item:', error);
+        }
+    }
+
+    return stockItems;
 }

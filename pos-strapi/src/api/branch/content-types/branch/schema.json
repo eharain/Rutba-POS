@@ -85,6 +85,11 @@
         "videos",
         "audios"
       ]
+    },
+    "currency": {
+      "type": "relation",
+      "target": "api::currency.currency",
+      "relation": "oneToOne"
     }
   }
 }

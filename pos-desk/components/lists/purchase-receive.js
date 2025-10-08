@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { authApi } from '../../lib/api';
 import { Table, TableHead, TableBody, TableRow, TableCell } from '../Table';
+import {generateStockItems} from '../../lib/pos/create';
 
 const PurchaseReceive = ({ purchase, onComplete }) => {
     const [receivedItems, setReceivedItems] = useState([]);
@@ -29,32 +30,7 @@ const PurchaseReceive = ({ purchase, onComplete }) => {
         ));
     };
 
-    const generateStockItems = async (purchaseItem, quantity) => {
-        const stockItems = [];
-
-        for (let i = 0; i < quantity; i++) {
-            const stockItem = {
-                sku: `${purchaseItem.product.sku}-${Date.now()}-${i}`,
-                barcode: purchaseItem.product.barcode ?
-                    `${purchaseItem.product.barcode}-${i}` : undefined,
-                status: 'InStock',
-                cost_price: purchaseItem.unit_price,
-                selling_price: purchaseItem.product.selling_price,
-                product: purchaseItem.product.documentId || purchaseItem.product.id,
-                purchase_item: purchaseItem.documentId || purchaseItem.id,
-                branch: purchase.branch?.documentId || purchase.branch?.id
-            };
-
-            try {
-                const response = await authApi.post('/stock-items', { data: stockItem });
-                stockItems.push(response.data);
-            } catch (error) {
-                console.error('Error creating stock item:', error);
-            }
-        }
-
-        return stockItems;
-    };
+  
 
     const receiveItem = async (itemIndex) => {
         const item = receivedItems[itemIndex];
@@ -63,7 +39,7 @@ const PurchaseReceive = ({ purchase, onComplete }) => {
         setLoading(true);
         try {
             // Generate stock items
-            const generatedStockItems = await generateStockItems(item, item.received_quantity);
+            const generatedStockItems = await generateStockItems(purchase,item, item.received_quantity);
 
             // Update purchase item with received quantity
             await authApi.put(`/purchase-items/${item.documentId}`, {

@@ -389,6 +389,7 @@ export interface ApiBranchBranch extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    currency: Schema.Attribute.Relation<'oneToOne', 'api::currency.currency'>;
     desks: Schema.Attribute.Component<'pos.sales-desks', true>;
     gallery: Schema.Attribute.Media<
       'images' | 'files' | 'videos' | 'audios',
@@ -487,6 +488,41 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
     parent: Schema.Attribute.Relation<'manyToOne', 'api::category.category'>;
     publishedAt: Schema.Attribute.DateTime;
     slug: Schema.Attribute.String & Schema.Attribute.Unique;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiCurrencyCurrency extends Struct.CollectionTypeSchema {
+  collectionName: 'currencies';
+  info: {
+    description: 'List of global currencies with ISO code, symbol, and region';
+    displayName: 'Currencies';
+    pluralName: 'currencies';
+    singularName: 'currency';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    code: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    country: Schema.Attribute.String & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    currency: Schema.Attribute.String & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::currency.currency'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    region: Schema.Attribute.String & Schema.Attribute.Required;
+    symbol: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1051,6 +1087,7 @@ export interface ApiStockItemStockItem extends Struct.CollectionTypeSchema {
     sku: Schema.Attribute.String;
     status: Schema.Attribute.Enumeration<
       [
+        'Received',
         'InStock',
         'Reserved',
         'Sold',
@@ -1757,6 +1794,7 @@ declare module '@strapi/strapi' {
       'api::branch.branch': ApiBranchBranch;
       'api::brand.brand': ApiBrandBrand;
       'api::category.category': ApiCategoryCategory;
+      'api::currency.currency': ApiCurrencyCurrency;
       'api::customer.customer': ApiCustomerCustomer;
       'api::employee.employee': ApiEmployeeEmployee;
       'api::payment.payment': ApiPaymentPayment;
