@@ -93,6 +93,7 @@ export function querify(u, data) {
 }
 
 export const stock_status = [
+    "Received",     // Newly received, not yet available for sale
     "InStock",      // Available for sale
     "Reserved",     // Held for a customer/order but not yet sold
     "Sold",         // Already sold

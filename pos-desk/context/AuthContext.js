@@ -1,3 +1,4 @@
+'use client'
 import { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
 import { storage } from "../lib/storage";
 import { api, authApi } from "../lib/api";

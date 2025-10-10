@@ -17,6 +17,9 @@ export default function Layout({ children }) {
                     <li className="nav-item"><Link className="nav-link" href="/sales">Sales</Link></li>
                     <li className="nav-item"><Link className="nav-link" href="/sale-returns">Sale Returns</Link></li>
                     <li className="nav-item"><Link className="nav-link" href="/purchase-returns">Purchase Returns</Link></li>
+                    {/*// Update in /pos-desk/components/Navigation.js*/}
+                    {/*// Add this line to the navigation list:*/}
+                    <li className="nav-item"><Link className="nav-link" href="/stock-items">Stock Items</Link></li>
                     <li className="nav-item"><Link className="nav-link" href="/reports">Reports</Link></li>
                 </ul>
 

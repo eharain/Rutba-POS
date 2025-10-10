@@ -1,3 +1,4 @@
+'use client';
 function buildWrapper() {
     function getStore() {
         return localStorage;
