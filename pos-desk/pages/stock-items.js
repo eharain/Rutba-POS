@@ -12,11 +12,12 @@ import {
 } from "../components/Table";
 import Layout from "../components/Layout";
 import ProtectedRoute from "../components/ProtectedRoute";
-import { authApi } from "../lib/api";
-import { stock_status } from "../lib/api";
+import { authApi, getStockStatus } from "../lib/api";
 
-export  function StockItemsPage() {
+
+export default function StockItemsPage() {
     const [stockItems, setStockItems] = useState([]);
+    const [stock_status, setStockStatus] = useState({ statuses: [] });
     const [filteredItems, setFilteredItems] = useState([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(20);
@@ -27,21 +28,29 @@ export  function StockItemsPage() {
     const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
+        (async () => {
+            setStockStatus(await getStockStatus());
+        })();
+    }, [])
+
+    useEffect(() => {
         loadStockItems();
     }, [page, rowsPerPage, statusFilter]);
 
     useEffect(() => {
+        let sterm= searchTerm.toLowerCase()
         const filtered = stockItems.filter(item =>
-            item.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.barcode?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.product?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+            item.sku?.toLowerCase().includes(sterm) ||
+            item.barcode?.toLowerCase().includes(sterm) ||
+            item.product?.name?.toLowerCase().includes(sterm)
         );
         setFilteredItems(filtered);
     }, [stockItems, searchTerm]);
 
-    const loadStockItems = async () => {
+    async function loadStockItems() {
         setLoading(true);
         try {
+           
             const response = await authApi.get("/stock-items", {
                 populate: ["product", "purchase_item"],
                 filters: {
@@ -65,7 +74,7 @@ export  function StockItemsPage() {
         }
     };
 
-    const handleChangePage = (_, newPage) => {
+    const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
 
@@ -100,16 +109,21 @@ export  function StockItemsPage() {
             return;
         }
 
-        const itemsToPrint = filteredItems.filter(item =>
-            selectedItems.has(item.documentId || item.id)
-        );
+        // Get document IDs
+        const documentIdsToPrint = Array.from(selectedItems);
 
-        // Prepare data for bulk print
-        const itemsParam = encodeURIComponent(JSON.stringify(itemsToPrint));
-        const title = `Bulk Barcode Labels - ${itemsToPrint.length} Items`;
+        // Store data in localStorage and get a key
+        const storageKey = `bulk_print_data_${Date.now()}`;
+        localStorage.setItem(storageKey, JSON.stringify({
+            documentIds: documentIdsToPrint,
+            timestamp: Date.now()
+        }));
+
+        const title = `Bulk Barcode Labels - ${documentIdsToPrint.length} Items`;
         const titleParam = encodeURIComponent(title);
 
-        window.open(`/print-bulk-barcodes?items=${itemsParam}&title=${titleParam}`, '_blank', 'width=1200,height=800');
+        // Pass only the storage key in URL
+        window.open(`/print-bulk-barcodes?key=${storageKey}&title=${titleParam}`, '_blank', 'width=1200,height=800');
     };
 
     const handleBulkPrintAllFiltered = () => {
@@ -118,19 +132,39 @@ export  function StockItemsPage() {
             return;
         }
 
-        const itemsParam = encodeURIComponent(JSON.stringify(filteredItems));
-        const title = `Bulk ${statusFilter} Items - ${filteredItems.length} Total`;
+        // Get document IDs
+        const documentIdsToPrint = filteredItems.map(item => item.documentId || item.id);
+
+        // Store data in localStorage and get a key
+        const storageKey = `bulk_print_data_${Date.now()}`;
+        localStorage.setItem(storageKey, JSON.stringify({
+            documentIds: documentIdsToPrint,
+            timestamp: Date.now()
+        }));
+
+        const title = `Bulk ${statusFilter} Items - ${documentIdsToPrint.length} Total`;
         const titleParam = encodeURIComponent(title);
 
-        window.open(`/print-bulk-barcodes?items=${itemsParam}&title=${titleParam}`, '_blank', 'width=1200,height=800');
+        // Pass only the storage key in URL
+        window.open(`/print-bulk-barcodes?key=${storageKey}&title=${titleParam}`, '_blank', 'width=1200,height=800');
     };
 
     const handleQuickPrint = (item) => {
-        const itemsParam = encodeURIComponent(JSON.stringify([item]));
+        // Get document ID
+        const documentId = item.documentId || item.id;
+
+        // Store data in localStorage and get a key
+        const storageKey = `bulk_print_data_${Date.now()}`;
+        localStorage.setItem(storageKey, JSON.stringify({
+            documentIds: [documentId],
+            timestamp: Date.now()
+        }));
+
         const title = `Single Label - ${item.sku || item.product?.name || 'Item'}`;
         const titleParam = encodeURIComponent(title);
 
-        window.open(`/print-bulk-barcodes?items=${itemsParam}&title=${titleParam}`, '_blank', 'width=800,height=600');
+        // Pass only the storage key in URL
+        window.open(`/print-bulk-barcodes?key=${storageKey}&title=${titleParam}`, '_blank', 'width=800,height=600');
     };
 
     const getStatusColor = (status) => {
@@ -173,6 +207,7 @@ export  function StockItemsPage() {
                                     borderRadius: '4px'
                                 }}
                             >
+                                <option value="">All Statuses</option>
                                 {stock_status.statuses.map(status => (
                                     <option key={status} value={status}>
                                         {status}
@@ -278,12 +313,18 @@ export  function StockItemsPage() {
                                 <TableRow>
                                     <TableCell colSpan={8} align="center">
                                         <CircularProgress size={24} />
+                                        <div style={{ marginTop: '10px' }}>Loading stock items...</div>
                                     </TableCell>
                                 </TableRow>
                             ) : filteredItems.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={8} align="center">
                                         No stock items found.
+                                        {stockItems.length > 0 && searchTerm && (
+                                            <div style={{ marginTop: '10px', color: '#666' }}>
+                                                Try changing your search term
+                                            </div>
+                                        )}
                                     </TableCell>
                                 </TableRow>
                             ) : (
@@ -378,4 +419,3 @@ export  function StockItemsPage() {
     );
 }
 
-export default StockItemsPage;

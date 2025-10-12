@@ -1,10 +1,84 @@
-// file: /pos-desk/components/BulkBarcodePrint.js
-import React from 'react';
+﻿// file: /pos-desk/components/BulkBarcodePrint.js
+import React, { useEffect, useState } from 'react';
+import { authApi } from '../lib/api';
 
-const BulkBarcodePrint = ({ items, title = "Bulk Barcode Labels" }) => {
+const BulkBarcodePrint = ({ storageKey, title = "Bulk Barcode Labels" }) => {
+    const [items, setItems] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const loadItems = async () => {
+            if (!storageKey) {
+                setError('No storage key provided');
+                setLoading(false);
+                return;
+            }
+
+            try {
+                setLoading(true);
+                setError(null);
+
+                // Get document IDs from storage
+                const storedData = JSON.parse(localStorage.getItem(storageKey) || '{}');
+                const documentIds = storedData.documentIds || [];
+
+                if (documentIds.length === 0) {
+                    setError('No items found to print');
+                    setLoading(false);
+                    return;
+                }
+
+                console.log(`Loading ${documentIds.length} items for printing...`);
+
+                // Load items in batches to avoid overwhelming the API
+                const batchSize = 20;
+                const itemsData = [];
+
+                for (let i = 0; i < documentIds.length; i += batchSize) {
+                    const batch = documentIds.slice(i, i + batchSize);
+                    const batchPromises = batch.map(async (docId) => {
+                        try {
+                            const response = await authApi.get(`/stock-items/${docId}`, {
+                                populate: ['product']
+                            });
+                            return response.data;
+                        } catch (error) {
+                            console.error(`Error loading item ${docId}:`, error);
+                            return null;
+                        }
+                    });
+
+                    const batchResults = await Promise.all(batchPromises);
+                    itemsData.push(...batchResults.filter(item => item !== null));
+
+                    // Small delay between batches to avoid rate limiting
+                    if (i + batchSize < documentIds.length) {
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                    }
+                }
+
+                setItems(itemsData);
+
+                // Clean up storage after successful load
+                localStorage.removeItem(storageKey);
+
+            } catch (error) {
+                console.error('Error loading items for print:', error);
+                setError('Failed to load items for printing');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadItems();
+    }, [storageKey]);
+
     // Group items for better print layout
     const generateLabelSheets = () => {
-        const labelsPerSheet = 30; // 6x5 grid
+        if (loading || items.length === 0) return [];
+
+        const labelsPerSheet = 30;
         const sheets = [];
 
         for (let i = 0; i < items.length; i += labelsPerSheet) {
@@ -15,6 +89,70 @@ const BulkBarcodePrint = ({ items, title = "Bulk Barcode Labels" }) => {
     };
 
     const sheets = generateLabelSheets();
+
+    if (error) {
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '200px',
+                fontSize: '16px',
+                color: '#dc3545',
+                flexDirection: 'column',
+                gap: '10px'
+            }}>
+                <div>❌ {error}</div>
+                <button
+                    onClick={() => window.close()}
+                    style={{
+                        padding: '8px 16px',
+                        background: '#6c757d',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer'
+                    }}
+                >
+                    Close
+                </button>
+            </div>
+        );
+    }
+
+    if (loading) {
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '200px',
+                fontSize: '16px',
+                flexDirection: 'column',
+                gap: '10px'
+            }}>
+                <div>🔄 Loading items for printing...</div>
+                <div style={{ fontSize: '12px', color: '#666' }}>
+                    Loading {items.length > 0 ? `${items.length} items` : 'items'}...
+                </div>
+            </div>
+        );
+    }
+
+    if (items.length === 0) {
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '200px',
+                fontSize: '16px',
+                color: '#666'
+            }}>
+                No items found to print.
+            </div>
+        );
+    }
 
     return (
         <div className="bulk-barcode-print">
@@ -167,7 +305,7 @@ const BulkBarcodePrint = ({ items, title = "Bulk Barcode Labels" }) => {
 
                     <div className="labels-grid">
                         {sheet.map((item, index) => (
-                            <div key={index} className="barcode-label">
+                            <div key={item.documentId || item.id || index} className="barcode-label">
                                 <div className="product-name">
                                     {item.product?.name || 'N/A'}
                                 </div>

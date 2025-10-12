@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import BulkBarcodePrint from './BulkBarcodePrint';
 
-const BulkPrintPreview = ({ items, title, onClose }) => {
+const BulkPrintPreview = ({ storageKey, title, onClose }) => {
     const handlePrint = () => {
         window.print();
     };
@@ -18,17 +18,13 @@ const BulkPrintPreview = ({ items, title, onClose }) => {
     };
 
     useEffect(() => {
-        // Auto-print when component mounts
+        // Auto-print when component mounts with longer delay for data loading
         const timer = setTimeout(() => {
             window.print();
-        }, 1000);
+        }, 3000);
 
         return () => clearTimeout(timer);
     }, []);
-
-    // Calculate print summary
-    const totalSheets = Math.ceil(items.length / 30);
-    const totalLabels = items.length;
 
     return (
         <div>
@@ -48,13 +44,6 @@ const BulkPrintPreview = ({ items, title, onClose }) => {
                         gap: 10px;
                         align-items: center;
                     }
-                    
-                    .print-summary {
-                        margin-right: 15px;
-                        font-size: 14px;
-                        font-weight: bold;
-                        color: #333;
-                    }
                 }
                 
                 @media print {
@@ -72,9 +61,6 @@ const BulkPrintPreview = ({ items, title, onClose }) => {
 
             {/* Print Controls - Only visible on screen */}
             <div className="print-controls no-print">
-                <div className="print-summary">
-                    {totalLabels} labels • {totalSheets} sheets
-                </div>
                 <button
                     onClick={handlePrint}
                     style={{
@@ -104,7 +90,7 @@ const BulkPrintPreview = ({ items, title, onClose }) => {
                 </button>
             </div>
 
-            <BulkBarcodePrint items={items} title={title} />
+            <BulkBarcodePrint storageKey={storageKey} title={title} />
         </div>
     );
 };

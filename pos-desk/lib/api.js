@@ -92,21 +92,23 @@ export function querify(u, data) {
     return u;
 }
 
-export const stock_status = [
-    "Received",     // Newly received, not yet available for sale
-    "InStock",      // Available for sale
-    "Reserved",     // Held for a customer/order but not yet sold
-    "Sold",         // Already sold
-    "Returned",     // Returned by customer and added back
-    "ReturnedDamaged", // Returned but damaged",
-    "ReturnedToSupplier", // Returned back to supplier
-    "Damaged",      // Not sellable due to damage
-    "Lost",         // Missing in inventory
-    "Expired",      // Expired product (if applicable)
-    "Transferred"   // Moved to another branch/warehouse
-].reduce((pre, status) => {
-    pre[status] = status;
-    pre.statuses.push(status);
-    return pre;
-}, { statuses: [] });
+export async function getStockStatus() {
+    return [
+        "Received",     // Newly received, not yet available for sale
+        "InStock",      // Available for sale
+        "Reserved",     // Held for a customer/order but not yet sold
+        "Sold",         // Already sold
+        "Returned",     // Returned by customer and added back
+        "ReturnedDamaged", // Returned but damaged",
+        "ReturnedToSupplier", // Returned back to supplier
+        "Damaged",      // Not sellable due to damage
+        "Lost",         // Missing in inventory
+        "Expired",      // Expired product (if applicable)
+        "Transferred"   // Moved to another branch/warehouse
+    ].reduce((pre, status) => {
+        pre[status] = status;
+        pre.statuses.push(status);
+        return pre;
+    }, { statuses: [] });
 
+}

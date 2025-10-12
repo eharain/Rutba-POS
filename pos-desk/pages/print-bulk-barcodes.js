@@ -5,34 +5,27 @@ import BulkPrintPreview from '../components/BulkPrintPreview';
 
 const PrintBulkBarcodesPage = () => {
     const router = useRouter();
-    const [items, setItems] = useState([]);
+    const [storageKey, setStorageKey] = useState(null);
     const [title, setTitle] = useState('Bulk Barcode Labels');
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const loadPrintData = () => {
             try {
-                // Try to get data from URL parameters first
+                // Get storage key from URL parameters
                 const urlParams = new URLSearchParams(window.location.search);
-                const itemsParam = urlParams.get('items');
+                const key = urlParams.get('key');
                 const titleParam = urlParams.get('title');
 
-                if (itemsParam) {
-                    const parsedItems = JSON.parse(decodeURIComponent(itemsParam));
-                    setItems(parsedItems);
+                if (key) {
+                    setStorageKey(key);
                     setTitle(titleParam ? decodeURIComponent(titleParam) : 'Bulk Barcode Labels');
                 } else {
-                    // Fallback to localStorage
-                    const storedData = localStorage.getItem('bulkBarcodePrintData');
-                    if (storedData) {
-                        const { items: storedItems, title: storedTitle } = JSON.parse(storedData);
-                        setItems(storedItems || []);
-                        setTitle(storedTitle || 'Bulk Barcode Labels');
-                        localStorage.removeItem('bulkBarcodePrintData'); // Clean up
-                    }
+                    setStorageKey(null);
                 }
             } catch (error) {
                 console.error('Error loading print data:', error);
+                setStorageKey(null);
             } finally {
                 setLoading(false);
             }
@@ -50,12 +43,12 @@ const PrintBulkBarcodesPage = () => {
                 height: '100vh',
                 fontSize: '18px'
             }}>
-                Loading print data...
+                Loading print configuration...
             </div>
         );
     }
 
-    if (items.length === 0) {
+    if (!storageKey) {
         return (
             <div style={{
                 display: 'flex',
@@ -66,8 +59,8 @@ const PrintBulkBarcodesPage = () => {
                 padding: '20px',
                 textAlign: 'center'
             }}>
-                <h2>No items to print</h2>
-                <p>Please go back and select some items to print.</p>
+                <h2>Invalid print request</h2>
+                <p>No valid print data found. Please go back and try again.</p>
                 <button
                     onClick={() => window.close()}
                     style={{
@@ -86,7 +79,7 @@ const PrintBulkBarcodesPage = () => {
         );
     }
 
-    return <BulkPrintPreview items={items} title={title} />;
+    return <BulkPrintPreview storageKey={storageKey} title={title} />;
 };
 
 export default PrintBulkBarcodesPage;
