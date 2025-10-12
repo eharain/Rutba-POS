@@ -1,4 +1,4 @@
-// file: /pos-desk/pages/stock-items.js
+﻿// file: /pos-desk/pages/stock-items.js
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import {
@@ -15,7 +15,7 @@ import ProtectedRoute from "../components/ProtectedRoute";
 import { authApi } from "../lib/api";
 import { stock_status } from "../lib/api";
 
-export default function StockItemsPage() {
+export  function StockItemsPage() {
     const [stockItems, setStockItems] = useState([]);
     const [filteredItems, setFilteredItems] = useState([]);
     const [page, setPage] = useState(0);
@@ -94,7 +94,7 @@ export default function StockItemsPage() {
         }
     };
 
-    const handlePrintSelected = () => {
+    const handleBulkPrintSelected = () => {
         if (selectedItems.size === 0) {
             alert("Please select items to print");
             return;
@@ -104,33 +104,33 @@ export default function StockItemsPage() {
             selectedItems.has(item.documentId || item.id)
         );
 
-        // Open print page in new tab
+        // Prepare data for bulk print
         const itemsParam = encodeURIComponent(JSON.stringify(itemsToPrint));
-        const title = `Stock Items Barcodes (${itemsToPrint.length} items)`;
+        const title = `Bulk Barcode Labels - ${itemsToPrint.length} Items`;
         const titleParam = encodeURIComponent(title);
 
-        window.open(`/print-barcodes?items=${itemsParam}&title=${titleParam}`, '_blank');
+        window.open(`/print-bulk-barcodes?items=${itemsParam}&title=${titleParam}`, '_blank', 'width=1200,height=800');
     };
 
-    const handlePrintAllFiltered = () => {
+    const handleBulkPrintAllFiltered = () => {
         if (filteredItems.length === 0) {
             alert("No items to print");
             return;
         }
 
         const itemsParam = encodeURIComponent(JSON.stringify(filteredItems));
-        const title = `${statusFilter} Stock Items (${filteredItems.length} items)`;
+        const title = `Bulk ${statusFilter} Items - ${filteredItems.length} Total`;
         const titleParam = encodeURIComponent(title);
 
-        window.open(`/print-barcodes?items=${itemsParam}&title=${titleParam}`, '_blank');
+        window.open(`/print-bulk-barcodes?items=${itemsParam}&title=${titleParam}`, '_blank', 'width=1200,height=800');
     };
 
-    const handlePrintSingle = (item) => {
+    const handleQuickPrint = (item) => {
         const itemsParam = encodeURIComponent(JSON.stringify([item]));
-        const title = `Barcode - ${item.sku || item.product?.name || 'Item'}`;
+        const title = `Single Label - ${item.sku || item.product?.name || 'Item'}`;
         const titleParam = encodeURIComponent(title);
 
-        window.open(`/print-barcodes?items=${itemsParam}&title=${titleParam}`, '_blank');
+        window.open(`/print-bulk-barcodes?items=${itemsParam}&title=${titleParam}`, '_blank', 'width=800,height=600');
     };
 
     const getStatusColor = (status) => {
@@ -148,16 +148,17 @@ export default function StockItemsPage() {
         <ProtectedRoute>
             <Layout>
                 <div style={{ padding: '20px' }}>
-                    <h2 style={{ marginBottom: '20px' }}>Stock Items</h2>
+                    <h2 style={{ marginBottom: '20px' }}>Stock Items - Bulk Print</h2>
 
-                    {/* Filters and Actions */}
+                    {/* Enhanced Filters and Actions */}
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: '1fr 1fr auto auto',
+                        gridTemplateColumns: '1fr 1fr auto auto auto',
                         gap: '15px',
                         marginBottom: '20px',
                         alignItems: 'end'
                     }}>
+                        {/* Status Filter */}
                         <div>
                             <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                                 Status Filter:
@@ -180,6 +181,7 @@ export default function StockItemsPage() {
                             </select>
                         </div>
 
+                        {/* Search */}
                         <div>
                             <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                                 Search:
@@ -198,35 +200,57 @@ export default function StockItemsPage() {
                             />
                         </div>
 
+                        {/* Bulk Print Buttons */}
                         <button
-                            onClick={handlePrintSelected}
+                            onClick={handleBulkPrintSelected}
                             disabled={selectedItems.size === 0}
                             style={{
-                                padding: '8px 16px',
-                                background: selectedItems.size > 0 ? '#007bff' : '#6c757d',
+                                padding: '10px 16px',
+                                background: selectedItems.size > 0 ? '#dc3545' : '#6c757d',
                                 color: 'white',
                                 border: 'none',
                                 borderRadius: '4px',
-                                cursor: selectedItems.size > 0 ? 'pointer' : 'not-allowed'
+                                cursor: selectedItems.size > 0 ? 'pointer' : 'not-allowed',
+                                fontWeight: 'bold',
+                                fontSize: '14px'
                             }}
+                            title={`Print ${selectedItems.size} selected items`}
                         >
-                            Print Selected ({selectedItems.size})
+                            🖨️ Bulk Print Selected
                         </button>
 
                         <button
-                            onClick={handlePrintAllFiltered}
+                            onClick={handleBulkPrintAllFiltered}
                             disabled={filteredItems.length === 0}
                             style={{
-                                padding: '8px 16px',
+                                padding: '10px 16px',
                                 background: filteredItems.length > 0 ? '#28a745' : '#6c757d',
                                 color: 'white',
                                 border: 'none',
                                 borderRadius: '4px',
-                                cursor: filteredItems.length > 0 ? 'pointer' : 'not-allowed'
+                                cursor: filteredItems.length > 0 ? 'pointer' : 'not-allowed',
+                                fontWeight: 'bold',
+                                fontSize: '14px'
                             }}
+                            title={`Print all ${filteredItems.length} filtered items`}
                         >
-                            Print All Filtered
+                            🖨️ Bulk Print All
                         </button>
+
+                        {/* Selection Info */}
+                        <div style={{
+                            padding: '8px 12px',
+                            background: '#f8f9fa',
+                            border: '1px solid #dee2e6',
+                            borderRadius: '4px',
+                            textAlign: 'center',
+                            minWidth: '120px'
+                        }}>
+                            <div style={{ fontSize: '12px', color: '#6c757d' }}>Selected</div>
+                            <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#007bff' }}>
+                                {selectedItems.size} / {filteredItems.length}
+                            </div>
+                        </div>
                     </div>
 
                     {/* Stock Items Table */}
@@ -318,7 +342,7 @@ export default function StockItemsPage() {
                                             </TableCell>
                                             <TableCell>
                                                 <button
-                                                    onClick={() => handlePrintSingle(item)}
+                                                    onClick={() => handleQuickPrint(item)}
                                                     style={{
                                                         padding: '4px 12px',
                                                         background: 'transparent',
@@ -328,8 +352,9 @@ export default function StockItemsPage() {
                                                         cursor: 'pointer',
                                                         fontSize: '12px'
                                                     }}
+                                                    title="Print single label"
                                                 >
-                                                    Print
+                                                    🖨️ Print
                                                 </button>
                                             </TableCell>
                                         </TableRow>
@@ -352,3 +377,5 @@ export default function StockItemsPage() {
         </ProtectedRoute>
     );
 }
+
+export default StockItemsPage;

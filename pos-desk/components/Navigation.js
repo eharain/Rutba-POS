@@ -1,10 +1,11 @@
+// file: /pos-desk/components/Navigation.js
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
 
-export default function Layout({ children }) {
+export default function Navigation() {
     const { user, logout } = useAuth();
-    return (
 
+    return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-3">
             <Link className="navbar-brand fw-bold" href="/">Rutba POS</Link>
             <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -15,11 +16,9 @@ export default function Layout({ children }) {
                     <li className="nav-item"><Link className="nav-link" href="/products">Products</Link></li>
                     <li className="nav-item"><Link className="nav-link" href="/purchases">Purchases</Link></li>
                     <li className="nav-item"><Link className="nav-link" href="/sales">Sales</Link></li>
+                    <li className="nav-item"><Link className="nav-link" href="/stock-items">Stock Items</Link></li>
                     <li className="nav-item"><Link className="nav-link" href="/sale-returns">Sale Returns</Link></li>
                     <li className="nav-item"><Link className="nav-link" href="/purchase-returns">Purchase Returns</Link></li>
-                    {/*// Update in /pos-desk/components/Navigation.js*/}
-                    {/*// Add this line to the navigation list:*/}
-                    <li className="nav-item"><Link className="nav-link" href="/stock-items">Stock Items</Link></li>
                     <li className="nav-item"><Link className="nav-link" href="/reports">Reports</Link></li>
                 </ul>
 
