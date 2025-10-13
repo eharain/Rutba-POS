@@ -1,4 +1,4 @@
-﻿// file: /pos-desk/components/BulkPrintPreview.js
+﻿// file: /pos-desk/components/print/BulkPrintPreview.js
 import React, { useEffect } from 'react';
 import BulkBarcodePrint from './BulkBarcodePrint';
 
