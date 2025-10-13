@@ -3,7 +3,7 @@
 
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import BarcodePrintPreview from '../components/BarcodePrintPreview';
+import BarcodePrintPreview from '../components/print/BarcodePrintPreview';
 
 const PrintBarcodesPage = () => {
     const router = useRouter();

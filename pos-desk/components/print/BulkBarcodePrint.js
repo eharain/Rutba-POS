@@ -1,6 +1,6 @@
 ﻿// file: /pos-desk/components/BulkBarcodePrint.js
 import React, { useEffect, useState } from 'react';
-import { authApi } from '../lib/api';
+import { authApi } from '../../lib/api';
 
 const BulkBarcodePrint = ({ storageKey, title = "Bulk Barcode Labels" }) => {
     const [items, setItems] = useState([]);

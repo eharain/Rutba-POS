@@ -1,7 +1,7 @@
 // file: /pos-desk/pages/print-bulk-barcodes.js
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import BulkPrintPreview from '../components/BulkPrintPreview';
+import BulkPrintPreview from '../components/print/BulkPrintPreview';
 
 const PrintBulkBarcodesPage = () => {
     const router = useRouter();
