@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 
 
 // Strapi-compliant file object builder
-import React, { useRef, useState } from 'react';
+//import React, { useRef, useState } from 'react';
 
 // Utility functions
 const isImage = (file) => file.type.startsWith('image/');

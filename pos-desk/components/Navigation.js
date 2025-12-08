@@ -25,13 +25,13 @@ export default function Navigation() {
                 <div className="d-flex align-items-center">
                     {user ? (
                         <>
-                            <span className="text-white me-3">Hello, {user.username || user.email}</span>
+                            <span className="text-grey me-3">Hello, {user.username || user.email}</span>
                             <button className="btn btn-outline-light btn-sm me-2" onClick={logout}>Logout</button>
                         </>
                     ) : (
                         <Link className="btn btn-outline-light btn-sm me-2" href="/login">Login</Link>
                     )}
-                    <Link className="nav-link text-white" href="/settings" title="Settings">
+                    <Link className="nav-link text-grey" href="/settings" title="Settings">
                         <i className="fas fa-cog"></i>
                     </Link>
                 </div>

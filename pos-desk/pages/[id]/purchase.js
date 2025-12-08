@@ -273,7 +273,7 @@ export default function PurchasePage() {
                                 style={{
                                     padding: '8px 16px',
                                     background: '#28a745',
-                                    color: 'white',
+                                    color: 'black',
                                     border: 'none',
                                     borderRadius: '4px',
                                     cursor: 'pointer'

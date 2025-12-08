@@ -42,13 +42,13 @@ const BarcodeLabel = ({ item, isEmpty = false }) => {
                     min-height: 1.2in;
                     font-size: 10px;
                     page-break-inside: avoid;
-                    background: white;
+                    background: grey;
                 }
                 
                 @media print {
                     .barcode-label {
                         border: 1px solid #000;
-                        background: white;
+                        background: grey;
                     }
                 }
                 

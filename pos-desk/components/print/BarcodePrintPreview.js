@@ -52,7 +52,7 @@ const BarcodePrintPreview = ({ items, title, onClose }) => {
                 position: 'fixed',
                 top: '10px',
                 right: '10px',
-                background: 'white',
+                background: 'grey',
                 padding: '10px',
                 border: '1px solid #ccc',
                 borderRadius: '4px',
@@ -64,7 +64,7 @@ const BarcodePrintPreview = ({ items, title, onClose }) => {
                         marginRight: '10px',
                         padding: '8px 16px',
                         background: '#007bff',
-                        color: 'white',
+                        color: 'grey',
                         border: 'none',
                         borderRadius: '4px',
                         cursor: 'pointer'
@@ -77,7 +77,7 @@ const BarcodePrintPreview = ({ items, title, onClose }) => {
                     style={{
                         padding: '8px 16px',
                         background: '#6c757d',
-                        color: 'white',
+                        color: 'grey',
                         border: 'none',
                         borderRadius: '4px',
                         cursor: 'pointer'

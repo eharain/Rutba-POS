@@ -95,7 +95,7 @@ export default function SalesItemsList({ items, onUpdateItem, onRemoveItem }) {
                                             style={{
                                                 padding: '4px 8px',
                                                 background: '#dc3545',
-                                                color: 'white',
+                                                color: 'lightgrey',
                                                 border: 'none',
                                                 borderRadius: '4px',
                                                 cursor: 'pointer',
@@ -123,7 +123,7 @@ export default function SalesItemsList({ items, onUpdateItem, onRemoveItem }) {
                                             style={{
                                                 padding: '4px 8px',
                                                 background: '#28a745',
-                                                color: 'white',
+                                                color: 'lightgrey',
                                                 border: 'none',
                                                 borderRadius: '4px',
                                                 cursor: 'pointer',
@@ -162,7 +162,7 @@ export default function SalesItemsList({ items, onUpdateItem, onRemoveItem }) {
                                             style={{
                                                 padding: '4px 8px',
                                                 background: '#6c757d',
-                                                color: 'white',
+                                                color: 'lightgrey',
                                                 border: 'none',
                                                 borderRadius: '4px',
                                                 cursor: 'pointer',
@@ -192,7 +192,7 @@ export default function SalesItemsList({ items, onUpdateItem, onRemoveItem }) {
                                             style={{
                                                 padding: '4px 8px',
                                                 background: '#6c757d',
-                                                color: 'white',
+                                                color: 'lightgrey',
                                                 border: 'none',
                                                 borderRadius: '4px',
                                                 cursor: 'pointer',
@@ -228,7 +228,7 @@ export default function SalesItemsList({ items, onUpdateItem, onRemoveItem }) {
                                         style={{
                                             padding: '6px 12px',
                                             background: '#dc3545',
-                                            color: 'white',
+                                            color: 'lightgrey',
                                             border: 'none',
                                             borderRadius: '4px',
                                             cursor: 'pointer',

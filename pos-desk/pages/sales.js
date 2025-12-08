@@ -61,9 +61,9 @@ export default function Sales() {
                                             <TableCell>{new Date(s.sale_date).toLocaleString()}</TableCell>
                                             <TableCell>{s?.customer?.name}</TableCell>
                                             <TableCell align="right">${s.total}</TableCell>
-                                            <TableCell>{s.status}</TableCell>
+                                            <TableCell>{s.payment_status}</TableCell>
                                             <TableCell>
-                                                <Link href={`/${s.invoice_no}/sale`}>
+                                                <Link href={`/${s.payment_status!=='Paid'?s.id:s.invoice_no}/sale`}>
                                                     Edit
                                                 </Link>
                                             </TableCell>

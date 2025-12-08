@@ -231,14 +231,14 @@ const SalesForm = ({ sale, onSubmit, onCancel }) => {
                     <button
                         type="submit"
                         disabled={loading}
-                        style={{ padding: '10px 20px', background: '#007bff', color: 'white', border: 'none' }}
+                        style={{ padding: '10px 20px', background: '#007bff', color: 'black', border: 'none' }}
                     >
                         {loading ? 'Saving...' : (sale ? 'Update Sale' : 'Create Sale')}
                     </button>
                     <button
                         type="button"
                         onClick={onCancel}
-                        style={{ padding: '10px 20px', background: '#6c757d', color: 'white', border: 'none' }}
+                        style={{ padding: '10px 20px', background: '#6c757d', color: 'grey', border: 'none' }}
                     >
                         Cancel
                     </button>

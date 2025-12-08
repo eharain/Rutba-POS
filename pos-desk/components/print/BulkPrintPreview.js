@@ -35,7 +35,7 @@ const BulkPrintPreview = ({ storageKey, title, onClose }) => {
                         position: fixed;
                         top: 20px;
                         right: 20px;
-                        background: white;
+                        background: lightgrey;
                         padding: 15px;
                         border: 2px solid #007bff;
                         border-radius: 8px;
@@ -66,7 +66,7 @@ const BulkPrintPreview = ({ storageKey, title, onClose }) => {
                     style={{
                         padding: '10px 20px',
                         background: '#28a745',
-                        color: 'white',
+                        color: 'lightgrey',
                         border: 'none',
                         borderRadius: '4px',
                         cursor: 'pointer',
@@ -80,7 +80,7 @@ const BulkPrintPreview = ({ storageKey, title, onClose }) => {
                     style={{
                         padding: '10px 20px',
                         background: '#6c757d',
-                        color: 'white',
+                        color: 'lightgrey',
                         border: 'none',
                         borderRadius: '4px',
                         cursor: 'pointer'

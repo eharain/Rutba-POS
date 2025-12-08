@@ -75,7 +75,7 @@ export default function SalesItemsForm({ onAddItem }) {
                     top: '100%',
                     left: 0,
                     right: 0,
-                    background: 'white',
+                    background: 'grey',
                     border: '1px solid #ccc',
                     padding: '8px',
                     zIndex: 1001
@@ -90,7 +90,7 @@ export default function SalesItemsForm({ onAddItem }) {
                     top: '100%',
                     left: 0,
                     right: 0,
-                    background: 'white',
+                    background: 'grey',
                     border: '1px solid #ccc',
                     maxHeight: '200px',
                     overflowY: 'auto',
@@ -110,7 +110,7 @@ export default function SalesItemsForm({ onAddItem }) {
                                 alignItems: 'center'
                             }}
                             onMouseEnter={(e) => e.target.style.background = '#f5f5f5'}
-                            onMouseLeave={(e) => e.target.style.background = 'white'}
+                            onMouseLeave={(e) => e.target.style.background = 'grey'}
                         >
                             <div>
                                 <strong>{product.name}</strong>

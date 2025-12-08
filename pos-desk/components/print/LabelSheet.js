@@ -56,7 +56,7 @@ const LabelSheet = ({ items, sheetIndex, totalSheets, title, totalItems }) => {
                     .label-sheet {
                         border: 1px solid #ccc;
                         margin-bottom: 20px;
-                        background: white;
+                        background: grey;
                         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
                     }
                 }

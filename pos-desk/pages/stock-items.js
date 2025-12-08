@@ -242,7 +242,7 @@ export default function StockItemsPage() {
                             style={{
                                 padding: '10px 16px',
                                 background: selectedItems.size > 0 ? '#dc3545' : '#6c757d',
-                                color: 'white',
+                                color: 'grey',
                                 border: 'none',
                                 borderRadius: '4px',
                                 cursor: selectedItems.size > 0 ? 'pointer' : 'not-allowed',
@@ -260,7 +260,7 @@ export default function StockItemsPage() {
                             style={{
                                 padding: '10px 16px',
                                 background: filteredItems.length > 0 ? '#28a745' : '#6c757d',
-                                color: 'white',
+                                color: 'grey',
                                 border: 'none',
                                 borderRadius: '4px',
                                 cursor: filteredItems.length > 0 ? 'pointer' : 'not-allowed',
@@ -373,7 +373,7 @@ export default function StockItemsPage() {
                                                         padding: '4px 8px',
                                                         borderRadius: '4px',
                                                         backgroundColor: getStatusColor(item.status),
-                                                        color: 'white',
+                                                        color: 'grey',
                                                         fontSize: '12px',
                                                         fontWeight: 'bold'
                                                     }}

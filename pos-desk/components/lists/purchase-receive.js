@@ -142,7 +142,7 @@ const PurchaseReceive = ({ purchase, onComplete }) => {
                                     padding: '4px 8px',
                                     borderRadius: '4px',
                                     backgroundColor: item.status === 'Received' ? '#28a745' : '#ffc107',
-                                    color: 'white',
+                                    color: 'grey',
                                     fontSize: '12px'
                                 }}>
                                     {item.status}
@@ -156,7 +156,7 @@ const PurchaseReceive = ({ purchase, onComplete }) => {
                                         style={{
                                             padding: '5px 10px',
                                             background: '#007bff',
-                                            color: 'white',
+                                            color: 'grey',
                                             border: 'none',
                                             borderRadius: '4px'
                                         }}
@@ -181,7 +181,7 @@ const PurchaseReceive = ({ purchase, onComplete }) => {
                         style={{
                             padding: '10px 20px',
                             background: '#28a745',
-                            color: 'white',
+                            color: 'grey',
                             border: 'none',
                             borderRadius: '4px',
                             fontSize: '16px'

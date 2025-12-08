@@ -57,7 +57,7 @@ const SalesItemForm = ({ items, onAddItem, onUpdateItem, onRemoveItem }) => {
                         top: '100%',
                         left: 0,
                         right: 0,
-                        background: 'white',
+                        background: 'lightgrey',
                         border: '1px solid #ccc',
                         maxHeight: '200px',
                         overflowY: 'auto',
@@ -137,7 +137,7 @@ const SalesItemForm = ({ items, onAddItem, onUpdateItem, onRemoveItem }) => {
                                     style={{
                                         padding: '5px 10px',
                                         background: '#dc3545',
-                                        color: 'white',
+                                        color: 'lightgrey',
                                         border: 'none',
                                         borderRadius: '4px'
                                     }}

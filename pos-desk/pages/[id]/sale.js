@@ -185,7 +185,7 @@ export default function SalePage() {
                                         style={{
                                             padding: '10px 20px',
                                             background: '#007bff',
-                                            color: 'white',
+                                            color: 'black',
                                             border: 'none',
                                             borderRadius: '4px',
                                             cursor: 'pointer'
@@ -199,7 +199,7 @@ export default function SalePage() {
                                         style={{
                                             padding: '10px 20px',
                                             background: '#28a745',
-                                            color: 'white',
+                                            color: 'black',
                                             border: 'none',
                                             borderRadius: '4px',
                                             cursor: 'pointer'
@@ -228,7 +228,7 @@ export default function SalePage() {
                             <div style={{
                                 marginTop: '20px',
                                 padding: '20px',
-                                background: '#f8f9fa',
+                                background: 'black',
                                 borderRadius: '4px',
                                 maxWidth: '400px',
                                 marginLeft: 'auto'

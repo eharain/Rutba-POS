@@ -66,7 +66,7 @@ const PrintBulkBarcodesPage = () => {
                     style={{
                         padding: '10px 20px',
                         background: '#007bff',
-                        color: 'white',
+                        color: 'grey',
                         border: 'none',
                         borderRadius: '4px',
                         cursor: 'pointer',

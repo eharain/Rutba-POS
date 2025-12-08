@@ -51,7 +51,7 @@ export default function SearchMenu() {
     return (
 
         <div className="row ">
-            <div className="p-3 bg-white border rounded">
+            <div className="p-3 bg-lightgrey border rounded">
                 <input
                     type="text"
                     placeholder="Search or scan barcode..."
@@ -60,7 +60,7 @@ export default function SearchMenu() {
                     style={{ padding: "8px 10px", width: "100%", marginBottom: 12, borderRadius: 6, border: "1px solid #ccc" }}
                 />
             </div>
-            <div className="p-3 bg-white border rounded" onClick={handleFocus} onFocus={handleFocus}>
+            <div className="p-3 bg-lightgrey border rounded" onClick={handleFocus} onFocus={handleFocus}>
                 <h4>Result {searchText}</h4>
                 <ul className="list-group list-group-flush">
                     {results.map((r, i) => {

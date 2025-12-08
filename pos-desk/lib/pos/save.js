@@ -11,7 +11,7 @@ export async function saveSaleItems(id, items) {
     return await authApi.put(`/sales/${id}`, {
         data: {
             items: items.map((i) => ({
-                stock_item: i.stock_item.id,
+                stock_item: i?.stock_item?.id,
                 quantity: i.quantity,
                 price: i.price,
             })),

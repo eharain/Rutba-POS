@@ -166,9 +166,9 @@ export const Button = ({
 }) => {
     const baseClasses = 'font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline';
     const variantClasses = {
-        primary: 'bg-blue-500 hover:bg-blue-700 text-white',
-        secondary: 'bg-gray-500 hover:bg-gray-700 text-white',
-        danger: 'bg-red-500 hover:bg-red-700 text-white',
+        primary: 'bg-blue-500 hover:bg-blue-700 text-grey',
+        secondary: 'bg-gray-500 hover:bg-gray-700 text-grey',
+        danger: 'bg-red-500 hover:bg-red-700 text-grey',
     };
 
     return (
@@ -186,7 +186,7 @@ export const Button = ({
 // Reusable Form Component
 export const Form = ({ onSubmit, children, className = '' }) => {
     return (
-        <form onSubmit={onSubmit} className={`bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 ${className}`}>
+        <form onSubmit={onSubmit} className={`bg-grey shadow-md rounded px-8 pt-6 pb-8 mb-4 ${className}`}>
             {children}
         </form>
     );

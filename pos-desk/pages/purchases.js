@@ -115,7 +115,7 @@ export default function PurchasesPage() {
                                 style={{
                                     padding: "8px 16px",
                                     background: "#007bff",
-                                    color: "white",
+                                    color: "grey",
                                     border: "none",
                                     borderRadius: "4px",
                                     cursor: "pointer"
@@ -170,7 +170,7 @@ export default function PurchasesPage() {
                                                         padding: "4px 8px",
                                                         borderRadius: "4px",
                                                         backgroundColor: getStatusColor(purchase.status),
-                                                        color: "white",
+                                                        color: "grey",
                                                         fontSize: "12px",
                                                         fontWeight: "bold"
                                                     }}

@@ -130,7 +130,7 @@ const PurchaseItemForm = ({ purchaseItem, onSubmit, onCancel }) => {
                             top: '100%',
                             left: 0,
                             right: 0,
-                            background: 'white',
+                            background: 'grey',
                             border: '1px solid #ccc',
                             padding: '4px',
                             zIndex: 10
@@ -145,7 +145,7 @@ const PurchaseItemForm = ({ purchaseItem, onSubmit, onCancel }) => {
                             top: '100%',
                             left: 0,
                             right: 0,
-                            background: 'white',
+                            background: 'grey',
                             border: '1px solid #ccc',
                             maxHeight: '150px',
                             overflowY: 'auto',
@@ -161,7 +161,7 @@ const PurchaseItemForm = ({ purchaseItem, onSubmit, onCancel }) => {
                                         borderBottom: '1px solid #eee'
                                     }}
                                     onMouseEnter={(e) => e.target.style.background = '#f5f5f5'}
-                                    onMouseLeave={(e) => e.target.style.background = 'white'}
+                                    onMouseLeave={(e) => e.target.style.background = 'grey'}
                                 >
                                     {product.name}
                                     {product.barcode && (
@@ -249,7 +249,7 @@ const PurchaseItemForm = ({ purchaseItem, onSubmit, onCancel }) => {
                         style={{
                             padding: '4px 12px',
                             background: '#007bff',
-                            color: 'white',
+                            color: 'grey',
                             border: 'none',
                             borderRadius: '4px',
                             cursor: 'pointer'
@@ -263,7 +263,7 @@ const PurchaseItemForm = ({ purchaseItem, onSubmit, onCancel }) => {
                         style={{
                             padding: '4px 12px',
                             background: '#6c757d',
-                            color: 'white',
+                            color: 'grey',
                             border: 'none',
                             borderRadius: '4px',
                             cursor: 'pointer'

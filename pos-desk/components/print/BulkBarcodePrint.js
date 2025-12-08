@@ -109,7 +109,7 @@ const BulkBarcodePrint = ({ storageKey, title = "Bulk Barcode Labels" }) => {
                     style={{
                         padding: '8px 16px',
                         background: '#6c757d',
-                        color: 'white',
+                        color: 'lightgrey',
                         border: 'none',
                         borderRadius: '4px',
                         cursor: 'pointer'
@@ -166,7 +166,7 @@ const BulkBarcodePrint = ({ storageKey, title = "Bulk Barcode Labels" }) => {
                 
                 @media screen {
                     .bulk-barcode-print {
-                        background: white;
+                        background: lightgrey;
                         padding: 20px;
                     }
                 }

@@ -89,7 +89,7 @@ export default function PurchaseViewPage() {
                             style={{
                                 padding: '10px 20px',
                                 background: '#007bff',
-                                color: 'white',
+                                color: 'grey',
                                 border: 'none',
                                 borderRadius: '4px',
                                 cursor: 'pointer'
@@ -132,7 +132,7 @@ export default function PurchaseViewPage() {
                                 style={{
                                     padding: '8px 16px',
                                     background: '#007bff',
-                                    color: 'white',
+                                    color: 'grey',
                                     border: 'none',
                                     borderRadius: '4px',
                                     cursor: 'pointer',
@@ -148,7 +148,7 @@ export default function PurchaseViewPage() {
                                     style={{
                                         padding: '8px 16px',
                                         background: '#28a745',
-                                        color: 'white',
+                                        color: 'grey',
                                         border: 'none',
                                         borderRadius: '4px',
                                         cursor: 'pointer'

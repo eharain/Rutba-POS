@@ -1,13 +1,12 @@
-'use client';
-
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { Input, Select, Checkbox, Button, Form } from '../../components/FormElements';
-import ProtectedRoute from '../../components/ProtectedRoute';
 import Layout from '../../components/Layout';
+import ProtectedRoute from '../../components/ProtectedRoute';
 import { authApi } from '../../lib/api';
 import { saveProduct, loadProduct } from '../../lib/pos';
-// Example usage in a product edit form
+import StrapiImage from '../../components/StrapiImage';
+import FileView from '../../components/FileView';
+
 export default function EditProduct() {
     const router = useRouter();
     const { id } = router.query;
@@ -21,41 +20,48 @@ export default function EditProduct() {
         tax_rate: '',
         stock_quantity: '',
         reorder_level: '',
+        bundle_units: 1,
         is_active: true,
         category: '',
-        brand: ''
+        brand: '',
+        suppliers: [],
+        description: ''
     });
 
     const [categories, setCategories] = useState([]);
     const [brands, setBrands] = useState([]);
-    const [branches, setBranches] = useState([]);
+    const [suppliers, setSuppliers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 setLoading(true);
 
-                // Fetch categories and brands
-                const [categoriesData, brandsData] = await Promise.all([
-                    authApi.fetch('/categories').data || [],
-                    authApi.fetch('/brands').data || [],
-                    authApi.fetch('/branches').data || []
+                // Fetch categories, brands, and suppliers
+                const [categoriesRes, brandsRes, suppliersRes] = await Promise.all([
+                    authApi.get('/categories'),
+                    authApi.get('/brands'),
+                    authApi.get('/suppliers')
                 ]);
 
-
-                setCategories(categoriesData);
-                setBrands(brandsData);
-
-                console.log('Categories:', categoriesData);
-
+                setCategories(categoriesRes.data || []);
+                setBrands(brandsRes.data || []);
+                setSuppliers(suppliersRes.data || []);
 
                 // If editing existing product, fetch product data
                 if (id && id !== 'new') {
-                    let data = loadProduct(id);
-                    setFormData(data);
+                    const productData = await loadProduct(id);
+                    setFormData(prev => ({
+                        ...prev,
+                        ...productData,
+                        category: productData.category?.id || productData.category || '',
+                        brand: productData.brand?.id || productData.brand || '',
+                        suppliers: productData.suppliers || []
+                    }));
                 }
             } catch (err) {
                 setError('Failed to fetch data');
@@ -65,30 +71,44 @@ export default function EditProduct() {
             }
         };
 
-        fetchData();
+        if (id) {
+            fetchData();
+        }
     }, [id]);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: type === 'checkbox' ? checked : value
+            [name]: type === 'checkbox' ? checked :
+                type === 'number' ? (value === '' ? '' : parseFloat(value)) :
+                    value
         }));
+    };
+
+    const handleSupplierChange = (e) => {
+        const selectedOptions = Array.from(e.target.selectedOptions, option =>
+            suppliers.find(s => s.id == option.value)
+        );
+        setFormData(prev => ({ ...prev, suppliers: selectedOptions }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmitting(true);
         setError('');
+        setSuccess('');
 
         try {
             const response = await saveProduct(id, formData);
 
-            if (response.data.id > 0) {
-                router.push('/products');
+            if (response.data?.id || response.data?.documentId) {
+                setSuccess('Product saved successfully!');
+                setTimeout(() => {
+                    router.push('/products');
+                }, 1500);
             } else {
-                const errorData = await response.message;
-                setError(errorData.message || 'Failed to save product');
+                setError('Failed to save product');
             }
         } catch (err) {
             setError('An error occurred while saving the product');
@@ -98,14 +118,16 @@ export default function EditProduct() {
         }
     };
 
+    const handleCancel = () => {
+        router.push('/products');
+    };
+
     if (loading) {
         return (
             <ProtectedRoute>
                 <Layout>
-                    <div className="container mx-auto p-6">
-                        <div className="flex justify-center items-center h-64">
-                            <p>Loading...</p>
-                        </div>
+                    <div style={{ padding: '20px', textAlign: 'center' }}>
+                        <p>Loading product data...</p>
                     </div>
                 </Layout>
             </ProtectedRoute>
@@ -115,152 +137,380 @@ export default function EditProduct() {
     return (
         <ProtectedRoute>
             <Layout>
-                <div className="container mx-auto p-6 max-w-4xl">
-                    <h1 className="text-2xl font-bold mb-6">
+                <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
+                    <h1 style={{ marginBottom: '20px' }}>
                         {id && id !== 'new' ? 'Edit Product' : 'Create New Product'}
                     </h1>
 
                     {error && (
-                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                        <div style={{
+                            background: '#fee',
+                            border: '1px solid #fcc',
+                            color: '#c00',
+                            padding: '10px',
+                            borderRadius: '4px',
+                            marginBottom: '20px'
+                        }}>
                             {error}
                         </div>
                     )}
 
-                    <Form onSubmit={handleSubmit}>
-                        <div className="grid grid-cols-1 md:grid-cols-2 pl-10 gap-4 mb-4">
-                            <Input
-                                label="Product Name"
-                                name="name"
-                                type="text"
-                                value={formData.name}
-                                onChange={handleChange}
-                                required={true}
-                                placeholder="Product Name"
-                            />
+                    {success && (
+                        <div style={{
+                            background: '#efe',
+                            border: '1px solid #cfc',
+                            color: '#0c0',
+                            padding: '10px',
+                            borderRadius: '4px',
+                            marginBottom: '20px'
+                        }}>
+                            {success}
+                        </div>
+                    )}
 
-                            <Input
-                                label="SKU"
-                                name="sku"
-                                type="text"
-                                value={formData.sku}
-                                onChange={handleChange}
-                                placeholder="SKU"
-                            />
+                    <form onSubmit={handleSubmit} style={{ background: '#f9f9f9', padding: '20px', borderRadius: '8px' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                                    Product Name *
+                                </label>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    required
+                                    style={{
+                                        width: '100%',
+                                        padding: '8px',
+                                        border: '1px solid #ccc',
+                                        borderRadius: '4px'
+                                    }}
+                                    placeholder="Product Name"
+                                />
+                            </div>
+
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                                    SKU
+                                </label>
+                                <input
+                                    type="text"
+                                    name="sku"
+                                    value={formData.sku}
+                                    onChange={handleChange}
+                                    style={{
+                                        width: '100%',
+                                        padding: '8px',
+                                        border: '1px solid #ccc',
+                                        borderRadius: '4px'
+                                    }}
+                                    placeholder="SKU"
+                                />
+                            </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                            <Input
-                                label="Barcode"
-                                name="barcode"
-                                type="text"
-                                value={formData.barcode}
-                                onChange={handleChange}
-                                placeholder="Barcode"
-                            />
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                                    Barcode
+                                </label>
+                                <input
+                                    type="text"
+                                    name="barcode"
+                                    value={formData.barcode}
+                                    onChange={handleChange}
+                                    style={{
+                                        width: '100%',
+                                        padding: '8px',
+                                        border: '1px solid #ccc',
+                                        borderRadius: '4px'
+                                    }}
+                                    placeholder="Barcode"
+                                />
+                            </div>
 
-                            <Input
-                                label="Selling Price"
-                                name="selling_price"
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                value={formData.selling_price}
-                                onChange={handleChange}
-                                required={true}
-                                placeholder="0.00"
-                            />
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                                    Selling Price *
+                                </label>
+                                <input
+                                    type="number"
+                                    name="selling_price"
+                                    step="0.01"
+                                    min="0"
+                                    value={formData.selling_price}
+                                    onChange={handleChange}
+                                    required
+                                    style={{
+                                        width: '100%',
+                                        padding: '8px',
+                                        border: '1px solid #ccc',
+                                        borderRadius: '4px'
+                                    }}
+                                    placeholder="0.00"
+                                />
+                            </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                            <Input
-                                label="Cost Price"
-                                name="cost_price"
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                value={formData.cost_price}
-                                onChange={handleChange}
-                                placeholder="0.00"
-                            />
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                                    Cost Price
+                                </label>
+                                <input
+                                    type="number"
+                                    name="cost_price"
+                                    step="0.01"
+                                    min="0"
+                                    value={formData.cost_price}
+                                    onChange={handleChange}
+                                    style={{
+                                        width: '100%',
+                                        padding: '8px',
+                                        border: '1px solid #ccc',
+                                        borderRadius: '4px'
+                                    }}
+                                    placeholder="0.00"
+                                />
+                            </div>
 
-                            <Input
-                                label="Tax Rate (%)"
-                                name="tax_rate"
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                value={formData.tax_rate}
-                                onChange={handleChange}
-                                placeholder="0.00"
-                            />
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                                    Tax Rate (%)
+                                </label>
+                                <input
+                                    type="number"
+                                    name="tax_rate"
+                                    step="0.01"
+                                    min="0"
+                                    value={formData.tax_rate}
+                                    onChange={handleChange}
+                                    style={{
+                                        width: '100%',
+                                        padding: '8px',
+                                        border: '1px solid #ccc',
+                                        borderRadius: '4px'
+                                    }}
+                                    placeholder="0.00"
+                                />
+                            </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                            <Input
-                                label="Stock Quantity"
-                                name="stock_quantity"
-                                type="number"
-                                min="0"
-                                value={formData.stock_quantity}
-                                onChange={handleChange}
-                                placeholder="0"
-                            />
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                                    Stock Quantity
+                                </label>
+                                <input
+                                    type="number"
+                                    name="stock_quantity"
+                                    min="0"
+                                    value={formData.stock_quantity}
+                                    onChange={handleChange}
+                                    style={{
+                                        width: '100%',
+                                        padding: '8px',
+                                        border: '1px solid #ccc',
+                                        borderRadius: '4px'
+                                    }}
+                                    placeholder="0"
+                                />
+                            </div>
 
-                            <Input
-                                label="Reorder Level"
-                                name="reorder_level"
-                                type="number"
-                                min="0"
-                                value={formData.reorder_level}
-                                onChange={handleChange}
-                                placeholder="0"
-                            />
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                                    Reorder Level
+                                </label>
+                                <input
+                                    type="number"
+                                    name="reorder_level"
+                                    min="0"
+                                    value={formData.reorder_level}
+                                    onChange={handleChange}
+                                    style={{
+                                        width: '100%',
+                                        padding: '8px',
+                                        border: '1px solid #ccc',
+                                        borderRadius: '4px'
+                                    }}
+                                    placeholder="0"
+                                />
+                            </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                            <Select
-                                label="Category"
-                                name="category"
-                                value={formData.category}
-                                onChange={handleChange}
-                                options={categories.map(cat => ({ value: cat.id, label: cat.name }))}
-                            />
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                                    Bundle Units
+                                </label>
+                                <input
+                                    type="number"
+                                    name="bundle_units"
+                                    min="1"
+                                    value={formData.bundle_units}
+                                    onChange={handleChange}
+                                    style={{
+                                        width: '100%',
+                                        padding: '8px',
+                                        border: '1px solid #ccc',
+                                        borderRadius: '4px'
+                                    }}
+                                    placeholder="1"
+                                />
+                            </div>
 
-                            <Select
-                                label="Brand"
-                                name="brand"
-                                value={formData.brand}
-                                onChange={handleChange}
-                                options={brands.map(brand => ({ value: brand.id, label: brand.name }))}
-                            />
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                                    Category
+                                </label>
+                                <select
+                                    name="category"
+                                    value={formData.category}
+                                    onChange={handleChange}
+                                    style={{
+                                        width: '100%',
+                                        padding: '8px',
+                                        border: '1px solid #ccc',
+                                        borderRadius: '4px'
+                                    }}
+                                >
+                                    <option value="">Select Category</option>
+                                    {categories.map(cat => (
+                                        <option key={cat.id} value={cat.id}>
+                                            {cat.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
 
-                        <Checkbox
-                            label="Product is active"
-                            name="is_active"
-                            checked={formData.is_active}
-                            onChange={handleChange}
-                        />
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                                    Brand
+                                </label>
+                                <select
+                                    name="brand"
+                                    value={formData.brand}
+                                    onChange={handleChange}
+                                    style={{
+                                        width: '100%',
+                                        padding: '8px',
+                                        border: '1px solid #ccc',
+                                        borderRadius: '4px'
+                                    }}
+                                >
+                                    <option value="">Select Brand</option>
+                                    {brands.map(brand => (
+                                        <option key={brand.id} value={brand.id}>
+                                            {brand.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
 
-                        <div className="flex items-center justify-between">
-                            <Button
-                                type="button"
-                                onClick={() => router.back()}
-                                variant="secondary"
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                                    Active Status
+                                </label>
+                                <div style={{ marginTop: '8px' }}>
+                                    <input
+                                        type="checkbox"
+                                        name="is_active"
+                                        checked={formData.is_active}
+                                        onChange={handleChange}
+                                        style={{ marginRight: '8px' }}
+                                    />
+                                    <span>Product is active</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style={{ marginBottom: '20px' }}>
+                            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                                Suppliers
+                            </label>
+                            <select
+                                multiple
+                                value={formData.suppliers.map(s => s.id)}
+                                onChange={handleSupplierChange}
+                                style={{
+                                    width: '100%',
+                                    padding: '8px',
+                                    border: '1px solid #ccc',
+                                    borderRadius: '4px',
+                                    height: '100px'
+                                }}
                             >
-                                Cancel
-                            </Button>
-                            <Button
+                                {suppliers.map(supplier => (
+                                    <option key={supplier.id} value={supplier.id}>
+                                        {supplier.name} - {supplier.contact_person}
+                                    </option>
+                                ))}
+                            </select>
+                            <small>Hold Ctrl/Cmd to select multiple suppliers</small>
+                        </div>
+
+                        <div style={{ marginBottom: '20px' }}>
+                            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                                Description
+                            </label>
+                            <textarea
+                                name="description"
+                                value={formData.description}
+                                onChange={handleChange}
+                                rows="4"
+                                style={{
+                                    width: '100%',
+                                    padding: '8px',
+                                    border: '1px solid #ccc',
+                                    borderRadius: '4px'
+                                }}
+                                placeholder="Product description..."
+                            />
+                        </div>
+
+                        <div style={{ marginBottom: '20px' }}>
+                            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                                Product Images
+                            </label>
+                            <FileView multiple={true} />
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                            <button
                                 type="submit"
                                 disabled={submitting}
+                                style={{
+                                    padding: '10px 20px',
+                                    background: '#007bff',
+                                    color: 'grey',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: submitting ? 'not-allowed' : 'pointer'
+                                }}
                             >
                                 {submitting ? 'Saving...' : (id && id !== 'new' ? 'Update Product' : 'Create Product')}
-                            </Button>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleCancel}
+                                style={{
+                                    padding: '10px 20px',
+                                    background: '#6c757d',
+                                    color: 'grey',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Cancel
+                            </button>
                         </div>
-                    </Form>
+                    </form>
                 </div>
             </Layout>
         </ProtectedRoute>
     );
 }
-
