@@ -709,6 +709,7 @@ export interface ApiProductGroupProductGroup
     draftAndPublish: true;
   };
   attributes: {
+    cover_image: Schema.Attribute.Media<'images'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
